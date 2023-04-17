@@ -6,6 +6,8 @@ import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;

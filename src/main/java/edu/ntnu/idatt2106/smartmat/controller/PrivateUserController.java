@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.controller;
 import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
 import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
