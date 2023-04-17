@@ -9,11 +9,8 @@ import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
 import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,8 +26,6 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private UserRepository userRepository;
-
-  private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
   /**
    * Checks if a user with the given username exists.
@@ -87,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     if (emailExists(user.getEmail())) throw new EmailAlreadyExistsException();
 
-    user.setPassword(hashPassword(user.getPassword()));
+    user.setPassword(PasswordService.hashPassword(user.getPassword()));
 
     return userRepository.save(user);
   }
@@ -135,7 +130,7 @@ public class UserServiceImpl implements UserService {
    */
   public User updateUser(@NonNull User user) throws UserDoesNotExistsException {
     if (!userRepository.existsById(user.getUsername())) throw new UserDoesNotExistsException();
-    user.setPassword(hashPassword(user.getPassword()));
+    user.setPassword(PasswordService.hashPassword(user.getPassword()));
 
     return userRepository.save(user);
   }
@@ -150,6 +145,8 @@ public class UserServiceImpl implements UserService {
    * @param newPassword the new password.
    * @return the updated user.
    * @throws BadCredentialsException if the old password is incorrect.
+   * @throws UserDoesNotExistsException if the user does not exist.
+   * @throws NullPointerException if user is null.
    */
   @Override
   public User partialUpdate(
@@ -159,14 +156,15 @@ public class UserServiceImpl implements UserService {
     String lastName,
     String oldPassword,
     String newPassword
-  ) throws BadCredentialsException {
+  ) throws UserDoesNotExistsException, BadCredentialsException, NullPointerException {
+    if (!userRepository.existsById(user.getUsername())) throw new UserDoesNotExistsException();
     if (email != null) user.setEmail(email);
     if (firstName != null) user.setFirstName(firstName);
     if (lastName != null) user.setLastName(lastName);
 
     if (oldPassword != null && newPassword != null) {
-      if (checkPassword(oldPassword, user.getPassword())) user.setPassword(
-        hashPassword(newPassword)
+      if (PasswordService.checkPassword(oldPassword, user.getPassword())) user.setPassword(
+        PasswordService.hashPassword(newPassword)
       ); else throw new BadCredentialsException("Invalid password");
     } else if (newPassword != null) throw new BadCredentialsException(
       "Old password is required to update password"
@@ -199,39 +197,11 @@ public class UserServiceImpl implements UserService {
   public boolean authenticateUser(String username, String password)
     throws UserDoesNotExistsException, BadCredentialsException {
     User user = getUserByUsername(username);
-    if (user == null) {
-      throw new UserDoesNotExistsException();
-    }
-    if (!checkPassword(password, user.getPassword())) {
+
+    if (!PasswordService.checkPassword(password, user.getPassword())) {
       throw new BadCredentialsException("Invalid password");
     }
 
     return true;
-  }
-
-  /**
-   * Method to hash a password.
-   * @param password the password to hash.
-   * @return the hashed password.
-   */
-  public static String hashPassword(String password) {
-    String salt = BCrypt.gensalt(); // generate a random salt value
-    return salt + ":" + BCrypt.hashpw(password, salt);
-  }
-
-  /**
-   * Method to check a password.
-   * @param password the password to check.
-   * @param hashedPassword the hashed password to check against.
-   * @return true if the password is correct.
-   */
-  private boolean checkPassword(String password, String hashedPassword) {
-    logger.info(password + " -> " + hashedPassword);
-    String[] parts = hashedPassword.split(":");
-    String salt = parts[0];
-    String hashedPasswordFromDB = parts[1];
-    String hashedPasswordToCheck = BCrypt.hashpw(password, salt);
-    logger.info(hashedPasswordToCheck + " == " + hashedPasswordFromDB);
-    return hashedPasswordFromDB.equals(hashedPasswordToCheck);
   }
 }

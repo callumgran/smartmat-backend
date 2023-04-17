@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
@@ -15,6 +16,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsExceptio
 import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
+import edu.ntnu.idatt2106.smartmat.service.user.PasswordService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserServiceImpl;
 import java.util.ArrayList;
@@ -23,10 +25,12 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -54,6 +58,8 @@ public class UserServiceIntegrationTest {
   User existingUser;
 
   User nonExistingUser;
+
+  User updateUser;
 
   @Before
   public void setUp() {
@@ -83,6 +89,18 @@ public class UserServiceIntegrationTest {
     when(userRepository.save(nonExistingUser)).thenReturn(nonExistingUser);
 
     doNothing().when(userRepository).delete(nonExistingUser);
+
+    // Update user
+    updateUser = new User("username", "email", "firstName", "lastName", "password", Role.USER);
+
+    when(userRepository.findByUsername(updateUser.getUsername()))
+      .thenReturn(Optional.of(updateUser));
+
+    when(userRepository.existsById(updateUser.getUsername())).thenReturn(true);
+
+    when(userRepository.findByEmail(updateUser.getEmail())).thenReturn(Optional.of(updateUser));
+
+    when(userRepository.save(updateUser)).thenReturn(updateUser);
   }
 
   @Test
@@ -234,6 +252,136 @@ public class UserServiceIntegrationTest {
   public void testUpdateUserBadUsername() {
     assertFalse(userService.usernameExists(nonExistingUser.getUsername()));
     assertThrows(UserDoesNotExistsException.class, () -> userService.updateUser(nonExistingUser));
+  }
+
+  @Test
+  public void testPartialUpdate() {
+    User newUser;
+    String newEmail = "newEmail";
+    String newFirstName = "newFirstName";
+
+    try {
+      newUser = userService.partialUpdate(updateUser, newEmail, newFirstName, null, null, null);
+    } catch (Exception e) {
+      fail();
+      return;
+    }
+
+    assertEquals(updateUser.getUsername(), newUser.getUsername());
+    assertEquals(newEmail, newUser.getEmail());
+    assertEquals(newFirstName, newUser.getFirstName());
+    assertEquals(updateUser.getLastName(), newUser.getLastName());
+    assertEquals(updateUser.getRole(), newUser.getRole());
+  }
+
+  @Test
+  public void testPartialUpdateBadUsername() {
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () -> userService.partialUpdate(nonExistingUser, null, null, null, null, null)
+    );
+  }
+
+  @Test
+  public void testPartialUpdateOnlyNewPassword() {
+    assertThrows(
+      BadCredentialsException.class,
+      () -> userService.partialUpdate(updateUser, null, null, null, null, "newPassword")
+    );
+  }
+
+  @Test
+  public void testPartialUpdatePasswordDoesNotMatch() {
+    try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
+      mocked
+        .when(() ->
+          PasswordService.checkPassword(
+            updateUser.getPassword(),
+            PasswordService.hashPassword("wrongPassword")
+          )
+        )
+        .thenReturn(false);
+
+      assertThrows(
+        BadCredentialsException.class,
+        () ->
+          userService.partialUpdate(
+            updateUser,
+            null,
+            null,
+            null,
+            PasswordService.hashPassword("wrongPassword"),
+            "newPassword"
+          )
+      );
+    }
+  }
+
+  @Test
+  public void testPartialUpdatePasswordMatches() {
+    User newUser;
+    String newEmail = "newEmail";
+    String newFirstName = "newFirstName";
+
+    try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
+      mocked
+        .when(() -> PasswordService.checkPassword(updateUser.getPassword(), "password"))
+        .thenReturn(true);
+      mocked.when(() -> PasswordService.hashPassword("newPassword")).thenReturn("newPassword");
+
+      try {
+        newUser =
+          userService.partialUpdate(
+            updateUser,
+            newEmail,
+            newFirstName,
+            null,
+            "password",
+            "newPassword"
+          );
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail();
+        return;
+      }
+    }
+
+    assertEquals(updateUser.getUsername(), newUser.getUsername());
+    assertEquals(newEmail, newUser.getEmail());
+    assertEquals(newFirstName, newUser.getFirstName());
+    assertEquals(updateUser.getLastName(), newUser.getLastName());
+    assertEquals(updateUser.getRole(), newUser.getRole());
+    assertEquals("newPassword", newUser.getPassword());
+  }
+
+  @Test
+  public void testAuthenticate() {
+    assertDoesNotThrow(() ->
+      userService.authenticateUser(existingUser.getUsername(), existingUser.getPassword())
+    );
+  }
+
+  @Test
+  public void testAuthenticateBadUsername() {
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () ->
+        userService.authenticateUser(nonExistingUser.getUsername(), nonExistingUser.getPassword())
+    );
+  }
+
+  @Test
+  public void testAuthenticateBadPassword() {
+    try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
+      mocked
+        .when(() -> PasswordService.checkPassword(existingUser.getPassword(), "wrongPassword"))
+        .thenReturn(false);
+
+      assertThrows(
+        BadCredentialsException.class,
+        () -> userService.authenticateUser(existingUser.getUsername(), "wrongPassword")
+      );
+    }
   }
 
   @Test

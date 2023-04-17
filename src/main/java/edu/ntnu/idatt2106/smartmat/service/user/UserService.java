@@ -43,7 +43,7 @@ public interface UserService {
     String lastName,
     String oldPassword,
     String newPassword
-  ) throws UserDoesNotExistsException, BadCredentialsException;
+  ) throws UserDoesNotExistsException, BadCredentialsException, NullPointerException;
 
   public List<User> getAllUsers() throws DatabaseException;
 
