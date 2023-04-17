@@ -28,6 +28,6 @@ public class DatabaseException extends Exception {
    * Has a default message.
    */
   public DatabaseException() {
-    super("An error occurred while communicating with the database.");
+    super("En feil oppstod under kommunikasjon med databasen.");
   }
 }

@@ -20,6 +20,6 @@ public class UsernameAlreadyExistsException extends Exception {
    * Has a default message.
    */
   public UsernameAlreadyExistsException() {
-    super("A user with this username already exists");
+    super("En bruker med dette brukernavnet finnes allerede.");
   }
 }
