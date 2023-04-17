@@ -1,0 +1,30 @@
+image: maven:latest
+
+stages:
+  - checkstyle
+  - compile
+  - test
+  - install
+
+checkstyle:
+  stage: checkstyle
+  script:
+    - mvn prettier:check
+
+compile:
+  stage: compile
+  script:
+      - mvn compile
+      - mvn clean
+
+test:
+  stage: test
+  script:
+      - mvn test
+      - mvn clean
+
+install:
+  stage: install
+  script:
+      - mvn install
+      - mvn clean
