@@ -50,9 +50,7 @@ public class PrivateUserController {
     throws UserDoesNotExistsException {
     LOGGER.info("GET request for user: {}", username);
 
-    UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
-      userService.getUserByUsername(username)
-    );
+    UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(userService.getUserByUsername(username));
 
     LOGGER.info("Mapped to UserDTO: {}", userDTO);
 

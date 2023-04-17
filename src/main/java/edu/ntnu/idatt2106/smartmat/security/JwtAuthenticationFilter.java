@@ -65,7 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String jwtToken = authHeader.substring(7);
     final String username = validateJwtTokenAndGetUsername(jwtToken);
 
-
     if (username == null) {
       // validation failed or token expired
       filterChain.doFilter(request, response);

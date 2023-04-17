@@ -23,10 +23,6 @@ public interface RegisterMapper {
    * @param registerDTO A user registration in the form of a DTO
    * @return A user object with the USER role
    */
-  @Mappings(
-    {
-      @Mapping(target = "role", constant = "USER"),
-    }
-  )
+  @Mappings({ @Mapping(target = "role", constant = "USER") })
   User registerDTOtoUser(RegisterDTO registerDTO);
 }
