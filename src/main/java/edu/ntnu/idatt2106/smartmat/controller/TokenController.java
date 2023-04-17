@@ -1,13 +1,13 @@
-package edu.ntnu.idatt2105.funn.controller.user;
+package edu.ntnu.idatt2106.smartmat.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import edu.ntnu.idatt2105.funn.dto.user.AuthenticateDTO;
-import edu.ntnu.idatt2105.funn.exceptions.user.UserDoesNotExistsException;
-import edu.ntnu.idatt2105.funn.exceptions.validation.BadInputException;
-import edu.ntnu.idatt2105.funn.model.user.User;
-import edu.ntnu.idatt2105.funn.service.user.UserService;
-import edu.ntnu.idatt2105.funn.validation.UserValidation;
+
+import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.JwtTokenSingleton;
+import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.Duration;
@@ -41,10 +41,6 @@ public class TokenController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenController.class);
 
-  // keyStr is hardcoded here for testing purpose
-  // in a real scenario, it should either be stored in a database or injected from the environment
-  public static final String JWT_TOKEN_SECRET = Dotenv.load().get("JWT_TOKEN_SECRET");
-
   private static final Duration JWT_TOKEN_VALIDITY = Duration.ofMinutes(
     Dotenv.load().get("JWT_TOKEN_VALIDITY") != null
       ? Long.parseLong(Dotenv.load().get("JWT_TOKEN_VALIDITY"))
@@ -65,8 +61,7 @@ public class TokenController {
   )
   @ResponseStatus(value = HttpStatus.CREATED)
   public String generateToken(@RequestBody AuthenticateDTO authenticate)
-    throws UserDoesNotExistsException, BadCredentialsException, ResponseStatusException, BadInputException {
-    if (!UserValidation.validateUsername(authenticate.getUsername())) throw new BadInputException();
+    throws UserDoesNotExistsException, BadCredentialsException, ResponseStatusException {
 
     LOGGER.info("Authenticating user: {}", authenticate.getUsername());
 
@@ -87,7 +82,7 @@ public class TokenController {
    */
   public String generateToken(final User user) {
     final Instant now = Instant.now();
-    final Algorithm hmac512 = Algorithm.HMAC512(JWT_TOKEN_SECRET);
+    final Algorithm hmac512 = Algorithm.HMAC512(JwtTokenSingleton.getInstance().getJwtTokenSecret());
 
     return JWT
       .create()

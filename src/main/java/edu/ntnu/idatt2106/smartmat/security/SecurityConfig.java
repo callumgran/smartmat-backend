@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2105.funn.security;
+package edu.ntnu.idatt2106.smartmat.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,9 +19,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Configures spring security
+ * Sets up the authentication filter and the exception handler
+ * Based on the SecurityConfig from the IDATT2105 project.
  *
  * @author Carl G, Thomas S., Callum G.
- * @version 1.3 - 26.3.2023
+ * @version 1.0 - 17.04.2023
  */
 @Configuration
 @EnableWebSecurity
