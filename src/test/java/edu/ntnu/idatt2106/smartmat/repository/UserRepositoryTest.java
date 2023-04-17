@@ -29,14 +29,7 @@ public class UserRepositoryTest {
 
   @Test
   public void testFindByUsername() {
-    User user = new User(
-      "username",
-      "email",
-      "firstName",
-      "lastName",
-      "password",
-      Role.USER
-    );
+    User user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
     entityManager.persist(user);
     entityManager.flush();
 
@@ -47,21 +40,12 @@ public class UserRepositoryTest {
 
   @Test
   public void testFindByUserNameThatDoesNotExist() {
-    assertFalse(
-      userRepository.findByUsername("username").isPresent()
-    );
+    assertFalse(userRepository.findByUsername("username").isPresent());
   }
 
   @Test
   public void testFindByEmail() {
-    User user = new User(
-      "username",
-      "email",
-      "firstName",
-      "lastName",
-      "password",
-      Role.USER
-    );
+    User user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
     entityManager.persist(user);
     entityManager.flush();
 
@@ -72,8 +56,6 @@ public class UserRepositoryTest {
 
   @Test
   public void testFindByEmailThatDoesNotExist() {
-    assertFalse(
-      userRepository.findByEmail("email").isPresent()
-    );
+    assertFalse(userRepository.findByEmail("email").isPresent());
   }
 }

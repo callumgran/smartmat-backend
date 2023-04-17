@@ -1,5 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.integration;
 
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,15 +58,7 @@ public class UserServiceIntegrationTest {
   @Before
   public void setUp() {
     // Positive tests setup
-    existingUser =
-      new User(
-        "username",
-        "email",
-        "firstName",
-        "lastName",
-        "password",
-        Role.USER
-      );
+    existingUser = new User("username", "email", "firstName", "lastName", "password", Role.USER);
 
     when(userRepository.findByUsername(existingUser.getUsername()))
       .thenReturn(Optional.of(existingUser));
@@ -80,14 +74,7 @@ public class UserServiceIntegrationTest {
     when(userRepository.findAll()).thenReturn(List.of(existingUser));
 
     nonExistingUser =
-      new User(
-        "newUsername",
-        "newEmail",
-        "newFirstName",
-        "newLastName",
-        "newPassword",
-        Role.USER
-      );
+      new User("newUsername", "newEmail", "newFirstName", "newLastName", "newPassword", Role.USER);
 
     when(userRepository.findByUsername(nonExistingUser.getUsername())).thenReturn(Optional.empty());
 
@@ -119,36 +106,27 @@ public class UserServiceIntegrationTest {
 
   @Test
   public void testSaveUserBadUsername() {
-    try {
-      userService.saveUser(existingUser);
-      fail();
-    } catch (Exception e) {
-      assertEquals(UsernameAlreadyExistsException.class, e.getClass());
-    }
+    assertThrows(UsernameAlreadyExistsException.class, () -> userService.saveUser(existingUser));
   }
 
   @Test
   public void testUsernameExists() {
-    boolean exists = userService.usernameExists(existingUser.getUsername());
-    assertTrue(exists);
+    assertTrue(userService.usernameExists(existingUser.getUsername()));
   }
 
   @Test
   public void testUsernameExistsBadUsername() {
-    boolean exists = userService.usernameExists(nonExistingUser.getUsername());
-    assertFalse(exists);
+    assertFalse(userService.usernameExists(nonExistingUser.getUsername()));
   }
 
   @Test
   public void testEmailExists() {
-    boolean exists = userService.emailExists(existingUser.getEmail());
-    assertTrue(exists);
+    assertTrue(userService.emailExists(existingUser.getEmail()));
   }
 
   @Test
   public void testEmailExistsBadEmail() {
-    boolean exists = userService.emailExists(nonExistingUser.getEmail());
-    assertFalse(exists);
+    assertFalse(userService.emailExists(nonExistingUser.getEmail()));
   }
 
   @Test
@@ -171,12 +149,10 @@ public class UserServiceIntegrationTest {
 
   @Test
   public void testGetUserByUsernameBadUsername() {
-    try {
-      userService.getUserByUsername(nonExistingUser.getUsername());
-      fail();
-    } catch (Exception e) {
-      assertEquals(e.getClass(), UserDoesNotExistsException.class);
-    }
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () -> userService.getUserByUsername(nonExistingUser.getUsername())
+    );
   }
 
   @Test
@@ -199,59 +175,41 @@ public class UserServiceIntegrationTest {
 
   @Test
   public void testGetUserByEmailBadEmail() {
-    try {
-      userService.getUserByEmail(nonExistingUser.getEmail());
-      fail();
-    } catch (Exception e) {
-      assertEquals(e.getClass(), UserDoesNotExistsException.class);
-    }
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () -> userService.getUserByEmail(nonExistingUser.getEmail())
+    );
   }
 
   @Test
   public void testDeleteUser() {
-    try {
-      userService.deleteUser(existingUser);
-    } catch (Exception e) {
-      fail();
-    }
+    assertDoesNotThrow(() -> userService.deleteUser(existingUser));
   }
 
   @Test
   public void testDeleteUserByUsername() {
-    try {
-      userService.deleteUserByUsername(existingUser.getUsername());
-    } catch (Exception e) {
-      fail();
-    }
+    assertDoesNotThrow(() -> userService.deleteUserByUsername(existingUser.getUsername()));
   }
 
   @Test
   public void testDeleteUserByUsernameBadUsername() {
-    try {
-      userService.deleteUserByUsername(nonExistingUser.getUsername());
-      fail();
-    } catch (Exception e) {
-      assertEquals(e.getClass(), UserDoesNotExistsException.class);
-    }
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () -> userService.deleteUserByUsername(nonExistingUser.getUsername())
+    );
   }
 
   @Test
   public void testDeleteUserByEmail() {
-    try {
-      userService.deleteUserByEmail(existingUser.getEmail());
-    } catch (Exception e) {
-      fail();
-    }
+    assertDoesNotThrow(() -> userService.deleteUserByEmail(existingUser.getEmail()));
   }
 
   @Test
   public void testDeleteUserByEmailBadEmail() {
-    try {
-      userService.deleteUserByEmail(nonExistingUser.getEmail());
-      fail();
-    } catch (Exception e) {
-      assertEquals(e.getClass(), UserDoesNotExistsException.class);
-    }
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () -> userService.deleteUserByEmail(nonExistingUser.getEmail())
+    );
   }
 
   @Test
@@ -275,32 +233,18 @@ public class UserServiceIntegrationTest {
   @Test
   public void testUpdateUserBadUsername() {
     assertFalse(userService.usernameExists(nonExistingUser.getUsername()));
-    try {
-      userService.updateUser(nonExistingUser);
-      fail();
-    } catch (Exception e) {
-      assertEquals(UserDoesNotExistsException.class, e.getClass());
-    }
+    assertThrows(UserDoesNotExistsException.class, () -> userService.updateUser(nonExistingUser));
   }
 
   @Test
   public void testGetAllUsers() {
-    try {
-      userService.getAllUsers();
-    } catch (Exception e) {
-      fail();
-    }
+    assertDoesNotThrow(() -> userService.getAllUsers());
   }
 
   @Test
   public void testGetAllUsersEmpty() {
     when(userRepository.findAll()).thenReturn(new ArrayList<User>());
 
-    try {
-      userService.getAllUsers();
-      fail();
-    } catch (Exception e) {
-      assertEquals(e.getClass(), DatabaseException.class);
-    }
+    assertThrows(DatabaseException.class, () -> userService.getAllUsers());
   }
 }
