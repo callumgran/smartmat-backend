@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Interface for the user service.
+ * Based on the user-service interface from the IDATT2105 project.
  * @author Callum G.
  * @version 1.0 - 17.4.2023
  */

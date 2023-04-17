@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Repository for user operations on the database.
+ * Based on the user-repository interface from the IDATT2105 project.
  * @author Callum G.
  * @version 1.0 - 17.4.2023
  */

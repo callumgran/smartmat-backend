@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 /**
  * Service class for user operations on the user repository.
  * This class is responsible for all business logic related to users.
+ * Based on the user-service class from the IDATT2105 project.
  * @author Callum G.
  * @version 1.0 - 17.04.2023
  */
