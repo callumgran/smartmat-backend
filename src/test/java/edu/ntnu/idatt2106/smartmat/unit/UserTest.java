@@ -8,6 +8,10 @@ import edu.ntnu.idatt2106.smartmat.model.user.User;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit test for the user model.
+ * Based on the user-model-test class from the IDATT2105 project.
+ */
 public class UserTest {
 
   @Nested
