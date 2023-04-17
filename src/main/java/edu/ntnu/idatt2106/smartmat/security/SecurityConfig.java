@@ -83,6 +83,10 @@ public class SecurityConfig {
     writer.print("{\"detail\": \"" + message + "\"}");
   }
 
+  /**
+   * Configures CORS
+   * @return CorsConfigurationSource - cors configuration
+   */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     final CorsConfiguration config = new CorsConfiguration();

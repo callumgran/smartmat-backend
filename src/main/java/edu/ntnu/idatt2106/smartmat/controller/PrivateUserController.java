@@ -5,7 +5,6 @@ import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +46,12 @@ public class PrivateUserController {
     description = "Get the authenticated user",
     tags = { "user" }
   )
-  public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal Auth auth)
+  public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal String username)
     throws UserDoesNotExistsException {
-    LOGGER.info("GET request for user: {}", auth.getUsername());
+    LOGGER.info("GET request for user: {}", username);
 
     UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
-      userService.getUserByUsername(auth.getUsername())
+      userService.getUserByUsername(username)
     );
 
     LOGGER.info("Mapped to UserDTO: {}", userDTO);
@@ -82,13 +81,17 @@ public class PrivateUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> updateUser(
-    @AuthenticationPrincipal Auth auth,
-    @PathVariable String username,
+    @AuthenticationPrincipal String username,
+    @PathVariable String usernamePath,
     @RequestBody UserPatchDTO userUpdateDTO
   ) throws UserDoesNotExistsException, BadCredentialsException {
-    LOGGER.info("PATCH request for user: {}", username);
+    if (!username.equals(usernamePath)) {
+      throw new BadCredentialsException("You are not authorized to update this user");
+    }
 
-    User userToUpdate = userService.getUserByUsername(username);
+    LOGGER.info("PATCH request for user: {}", usernamePath);
+
+    User userToUpdate = userService.getUserByUsername(usernamePath);
 
     User updatedUser = userService.partialUpdate(
       userToUpdate,
