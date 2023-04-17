@@ -17,15 +17,7 @@ public class UserTest {
 
     @Test
     public void testUserConstructor() {
-      user =
-        new User(
-          "username",
-          "email",
-          "firstName",
-          "lastName",
-          "password",
-          Role.USER
-        );
+      user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
 
       assertEquals("username", user.getUsername());
       assertEquals("password", user.getPassword());
@@ -38,15 +30,7 @@ public class UserTest {
     @Test
     public void testUserConstructorWithNulls() {
       try {
-        user =
-          new User(
-            "username",
-            "password",
-            null,
-            null,
-            null,
-            Role.USER
-          );
+        user = new User("username", "password", null, null, null, Role.USER);
         fail();
       } catch (NullPointerException e) {
         assertEquals(NullPointerException.class, e.getClass());
@@ -144,4 +128,3 @@ public class UserTest {
     }
   }
 }
-
