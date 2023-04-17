@@ -2,7 +2,6 @@ package edu.ntnu.idatt2106.smartmat.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-
 import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
@@ -62,7 +61,6 @@ public class TokenController {
   @ResponseStatus(value = HttpStatus.CREATED)
   public String generateToken(@RequestBody AuthenticateDTO authenticate)
     throws UserDoesNotExistsException, BadCredentialsException, ResponseStatusException {
-
     LOGGER.info("Authenticating user: {}", authenticate.getUsername());
 
     if (userService.authenticateUser(authenticate.getUsername(), authenticate.getPassword())) {
@@ -82,7 +80,9 @@ public class TokenController {
    */
   public String generateToken(final User user) {
     final Instant now = Instant.now();
-    final Algorithm hmac512 = Algorithm.HMAC512(JwtTokenSingleton.getInstance().getJwtTokenSecret());
+    final Algorithm hmac512 = Algorithm.HMAC512(
+      JwtTokenSingleton.getInstance().getJwtTokenSecret()
+    );
 
     return JWT
       .create()

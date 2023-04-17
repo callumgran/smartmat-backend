@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,7 +98,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
    */
   public String[] validateJwtTokenAndGetUsername(final String token) {
     try {
-      final Algorithm hmac512 = Algorithm.HMAC512(JwtTokenSingleton.getInstance().getJwtTokenSecret());
+      final Algorithm hmac512 = Algorithm.HMAC512(
+        JwtTokenSingleton.getInstance().getJwtTokenSecret()
+      );
       final JWTVerifier verifier = JWT.require(hmac512).build();
       String[] vals = new String[2];
       vals[0] = verifier.verify(token).getSubject();

@@ -1,17 +1,13 @@
-package edu.ntnu.idatt2105.funn.controller.user;
+package edu.ntnu.idatt2106.smartmat.controller;
 
-import edu.ntnu.idatt2105.funn.dto.user.RegisterDTO;
-import edu.ntnu.idatt2105.funn.dto.user.UserDTO;
-import edu.ntnu.idatt2105.funn.exceptions.DatabaseException;
-import edu.ntnu.idatt2105.funn.exceptions.user.EmailAlreadyExistsException;
-import edu.ntnu.idatt2105.funn.exceptions.user.UserDoesNotExistsException;
-import edu.ntnu.idatt2105.funn.exceptions.user.UsernameAlreadyExistsException;
-import edu.ntnu.idatt2105.funn.exceptions.validation.BadInputException;
-import edu.ntnu.idatt2105.funn.mapper.user.RegisterMapper;
-import edu.ntnu.idatt2105.funn.mapper.user.UserMapper;
-import edu.ntnu.idatt2105.funn.model.user.User;
-import edu.ntnu.idatt2105.funn.service.user.UserService;
-import edu.ntnu.idatt2105.funn.validation.UserValidation;
+import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
+import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,8 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for public user endpoints.
+ * Based on the PublicUserController from the IDATT2105 project.
  * @author Thomas S, Callum Gran
- * @version 1.1 - 22.03.2023
+ * @version 1.0 - 17.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/public/users")
@@ -40,7 +37,7 @@ public class PublicUserController {
 
   private final UserService userService;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PrivateUserController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PublicUserController.class);
 
   /**
    * Get a user by username.
@@ -55,9 +52,7 @@ public class PublicUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> getUser(@PathVariable String username)
-    throws BadInputException, UserDoesNotExistsException {
-    if (!UserValidation.validateUsername(username)) throw new BadInputException("Invalid username");
-
+    throws UserDoesNotExistsException {
     LOGGER.info("GET request for user: {}", username);
     User user = userService.getUserByUsername(username);
 
@@ -83,17 +78,7 @@ public class PublicUserController {
   )
   @Operation(summary = "Create a new user", description = "Create a new user", tags = { "user" })
   public ResponseEntity<String> createUser(@RequestBody RegisterDTO registerUser)
-    throws BadInputException, UsernameAlreadyExistsException, EmailAlreadyExistsException, DatabaseException {
-    if (
-      !UserValidation.validateRegistrationForm(
-        registerUser.getUsername(),
-        registerUser.getEmail(),
-        registerUser.getFirstName(),
-        registerUser.getLastName(),
-        registerUser.getPassword()
-      )
-    ) throw new BadInputException();
-
+    throws UsernameAlreadyExistsException, EmailAlreadyExistsException, DatabaseException {
     LOGGER.info("POST request for user: {}", registerUser);
 
     User user = RegisterMapper.INSTANCE.registerDTOtoUser(registerUser);

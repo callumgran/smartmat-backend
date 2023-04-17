@@ -1,17 +1,11 @@
-package edu.ntnu.idatt2105.funn.controller.user;
+package edu.ntnu.idatt2106.smartmat.controller;
 
-import edu.ntnu.idatt2105.funn.dto.user.UserDTO;
-import edu.ntnu.idatt2105.funn.dto.user.UserPatchDTO;
-import edu.ntnu.idatt2105.funn.exceptions.PermissionDeniedException;
-import edu.ntnu.idatt2105.funn.exceptions.user.UserDoesNotExistsException;
-import edu.ntnu.idatt2105.funn.exceptions.validation.BadInputException;
-import edu.ntnu.idatt2105.funn.mapper.user.UserMapper;
-import edu.ntnu.idatt2105.funn.model.user.Role;
-import edu.ntnu.idatt2105.funn.model.user.User;
-import edu.ntnu.idatt2105.funn.security.Auth;
-import edu.ntnu.idatt2105.funn.service.user.UserService;
-import edu.ntnu.idatt2105.funn.validation.AuthValidation;
-import edu.ntnu.idatt2105.funn.validation.UserValidation;
+import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
+import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.Auth;
+import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,8 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for private user endpoints.
+ * Based on the PrivateUserController from the IDATT2105 project.
  * @author Thomas S, Callum Gran, Nicolai H. B.
- * @version 1.2 - 24.03.2023
+ * @version 1.0 - 17.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/users")
@@ -52,9 +47,7 @@ public class PrivateUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal Auth auth)
-    throws PermissionDeniedException, UserDoesNotExistsException {
-    if (!AuthValidation.validateAuth(auth)) throw new PermissionDeniedException("Invalid token.");
-
+    throws UserDoesNotExistsException {
     LOGGER.info("GET request for user: {}", auth.getUsername());
 
     UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
@@ -91,22 +84,7 @@ public class PrivateUserController {
     @AuthenticationPrincipal Auth auth,
     @PathVariable String username,
     @RequestBody UserPatchDTO userUpdateDTO
-  )
-    throws PermissionDeniedException, UserDoesNotExistsException, BadCredentialsException, BadInputException {
-    if (
-      !UserValidation.validatePartialUserUpdate(
-        userUpdateDTO.getEmail(),
-        userUpdateDTO.getFirstName(),
-        userUpdateDTO.getLastName(),
-        userUpdateDTO.getOldPassword(),
-        userUpdateDTO.getNewPassword()
-      )
-    ) throw new BadInputException("Invalid input for user update.");
-
-    if (
-      !AuthValidation.hasRoleOrIsUser(auth, Role.ADMIN, username)
-    ) throw new PermissionDeniedException("Not authorized to update this user.");
-
+  ) throws UserDoesNotExistsException, BadCredentialsException {
     LOGGER.info("PATCH request for user: {}", username);
 
     User userToUpdate = userService.getUserByUsername(username);

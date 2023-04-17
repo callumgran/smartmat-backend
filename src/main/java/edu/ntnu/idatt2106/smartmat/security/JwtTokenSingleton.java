@@ -8,31 +8,30 @@ import io.github.cdimascio.dotenv.Dotenv;
  * @version 1.0 - 17.04.2023
  */
 public class JwtTokenSingleton {
-    
-    private static JwtTokenSingleton instance = null;
 
-    private final String jwtTokenSecret;
+  private static JwtTokenSingleton instance = null;
 
-    private JwtTokenSingleton() {
-        jwtTokenSecret = Dotenv.load().get("JWT_TOKEN_SECRET");
-    }
+  private final String jwtTokenSecret;
 
-    /**
-     * Get the instance of the singleton.
-     * @return The instance of the singleton.
-     */
-    public static synchronized JwtTokenSingleton getInstance() {
-        if (instance == null)
-            instance = new JwtTokenSingleton();
+  private JwtTokenSingleton() {
+    jwtTokenSecret = Dotenv.load().get("JWT_TOKEN_SECRET");
+  }
 
-        return instance;
-    }
+  /**
+   * Get the instance of the singleton.
+   * @return The instance of the singleton.
+   */
+  public static synchronized JwtTokenSingleton getInstance() {
+    if (instance == null) instance = new JwtTokenSingleton();
 
-    /**
-     * Get the JWT token secret.
-     * @return The JWT token secret.
-     */
-    public String getJwtTokenSecret() {
-        return jwtTokenSecret;
-    }
+    return instance;
+  }
+
+  /**
+   * Get the JWT token secret.
+   * @return The JWT token secret.
+   */
+  public String getJwtTokenSecret() {
+    return jwtTokenSecret;
+  }
 }
