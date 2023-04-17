@@ -356,9 +356,15 @@ public class UserServiceIntegrationTest {
 
   @Test
   public void testAuthenticate() {
-    assertDoesNotThrow(() ->
-      userService.authenticateUser(existingUser.getUsername(), existingUser.getPassword())
-    );
+    try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
+      mocked
+        .when(() -> PasswordService.checkPassword(existingUser.getPassword(), "password"))
+        .thenReturn(true);
+
+      assertDoesNotThrow(() ->
+        userService.authenticateUser(existingUser.getUsername(), "password")
+      );
+    }
   }
 
   @Test
