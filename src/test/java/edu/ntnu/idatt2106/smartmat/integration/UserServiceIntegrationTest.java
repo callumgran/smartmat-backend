@@ -361,8 +361,7 @@ public class UserServiceIntegrationTest {
         .when(() -> PasswordService.checkPassword(existingUser.getPassword(), "password"))
         .thenReturn(true);
 
-      assertDoesNotThrow(() ->
-        userService.authenticateUser(existingUser.getUsername(), "password")
+      assertDoesNotThrow(() -> userService.authenticateUser(existingUser.getUsername(), "password")
       );
     }
   }
