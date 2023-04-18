@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.endpoint.user;
 
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
 import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
+import edu.ntnu.idatt2106.smartmat.endpoint.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
@@ -127,11 +128,11 @@ public class PublicUserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               "{" +
-              "  \"username\": \"bad\"," +
+              "  \"username\": \"badusername\"," +
               "  \"password\": \"Password1\"," +
               "  \"email\": \"bad@bad.com\"," +
-              "  \"firstName\": \"bad\"," +
-              "  \"lastName\": \"bad\"" +
+              "  \"firstName\": \"Bad\"," +
+              "  \"lastName\": \"Bad\"" +
               "}"
             )
         )

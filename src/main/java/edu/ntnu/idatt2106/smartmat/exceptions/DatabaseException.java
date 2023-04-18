@@ -25,7 +25,7 @@ public class DatabaseException extends Exception {
 
   /**
    * Constructor for DatabaseException.
-   * Has a default message.
+   * Has a default message: 'En feil oppstod under kommunikasjon med databasen.'.
    */
   public DatabaseException() {
     super("En feil oppstod under kommunikasjon med databasen.");

@@ -2,11 +2,16 @@ package edu.ntnu.idatt2106.smartmat.controller;
 
 import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
 import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
+import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
+import edu.ntnu.idatt2106.smartmat.validation.user.UserValidation;
 import io.micrometer.common.lang.NonNull;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +54,10 @@ public class PrivateUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> getUser(@NonNull @AuthenticationPrincipal Auth user)
-    throws UserDoesNotExistsException {
+    throws PermissionDeniedException, UserDoesNotExistsException {
+    if (!AuthValidation.validateAuth(user)) throw new PermissionDeniedException(
+      "Brukeren er ikke autentisert."
+    );
     LOGGER.info("GET request for user: {}", user.getUsername());
 
     UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
@@ -86,10 +94,21 @@ public class PrivateUserController {
     @NonNull @AuthenticationPrincipal Auth auth,
     @NonNull @PathVariable String username,
     @NonNull @RequestBody UserPatchDTO userUpdateDTO
-  ) throws UserDoesNotExistsException, BadCredentialsException {
-    if (!username.equals(auth.getUsername())) {
-      throw new BadCredentialsException("Du har ikke tilgang til å endre denne brukeren.");
-    }
+  )
+    throws PermissionDeniedException, UserDoesNotExistsException, BadCredentialsException, BadInputException {
+    if (
+      !AuthValidation.hasRoleOrIsUser(auth, Role.ADMIN, username)
+    ) throw new PermissionDeniedException("Brukeren har ikke tilgang til å oppdatere brukeren.");
+
+    if (
+      !UserValidation.validatePartialUserUpdate(
+        userUpdateDTO.getEmail(),
+        userUpdateDTO.getFirstName(),
+        userUpdateDTO.getLastName(),
+        userUpdateDTO.getOldPassword(),
+        userUpdateDTO.getOldPassword()
+      )
+    ) throw new BadInputException("Dårlig input, sjekk over feltene.");
 
     LOGGER.info("PATCH request for user: {}", username);
 

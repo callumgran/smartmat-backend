@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.endpoint.user;
 
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.createAuthenticationToken;
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.PrivateUserController;
+import edu.ntnu.idatt2106.smartmat.endpoint.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
@@ -49,15 +50,15 @@ public class PrivateUserControllerTest {
   public void setUp() throws Exception {
     user = testUserFactory(TestUserEnum.GOOD);
 
-    when(userService.getUserByUsername("test")).thenReturn(user);
+    when(userService.getUserByUsername("testusername")).thenReturn(user);
 
     userDoesNotExist = testUserFactory(TestUserEnum.NEW);
 
-    when(userService.getUserByUsername("new")).thenThrow(UserDoesNotExistsException.class);
+    when(userService.getUserByUsername("newusername")).thenThrow(UserDoesNotExistsException.class);
 
     admin = testUserFactory(TestUserEnum.ADMIN);
 
-    when(userService.getUserByUsername("admin")).thenReturn(admin);
+    when(userService.getUserByUsername("adminusername")).thenReturn(admin);
   }
 
   @Test
@@ -95,9 +96,9 @@ public class PrivateUserControllerTest {
     try {
       mvc
         .perform(
-          patch("/api/v1/private/users/test")
+          patch("/api/v1/private/users/testusername")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"firstName\": \"newFirstName\"}")
+            .content("{\"firstName\": \"New Name\"}")
             .with(authentication(createAuthenticationToken(user)))
         )
         .andExpect(status().isOk());
@@ -111,9 +112,9 @@ public class PrivateUserControllerTest {
     try {
       mvc
         .perform(
-          patch("/api/v1/private/users/new")
+          patch("/api/v1/private/users/newusername")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"firstName\": \"newFirstName\"}")
+            .content("{\"firstName\": \"New Name\"}")
             .with(authentication(createAuthenticationToken(userDoesNotExist)))
         )
         .andExpect(status().isNotFound());
@@ -127,12 +128,28 @@ public class PrivateUserControllerTest {
     try {
       mvc
         .perform(
-          patch("/api/v1/private/users/test")
+          patch("/api/v1/private/users/testusername")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"firstName\": \"newFirstName\"}")
+            .content("{\"firstName\": \"New Name\"}")
             .with(authentication(createAuthenticationToken(userDoesNotExist)))
         )
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isForbidden());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testUpdateUserThatIsNotUserButIsAdmin() {
+    try {
+      mvc
+        .perform(
+          patch("/api/v1/private/users/testusername")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"firstName\": \"New Name\"}")
+            .with(authentication(createAuthenticationToken(admin)))
+        )
+        .andExpect(status().isOk());
     } catch (Exception e) {
       fail();
     }

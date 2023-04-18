@@ -17,9 +17,9 @@ public class EmailAlreadyExistsException extends Exception {
 
   /**
    * Constructor for EmailAlreadyExistsException.
-   * Has a default message.
+   * Has a default message: 'En bruker med denne eposten finnes allerede.'.
    */
   public EmailAlreadyExistsException() {
-    super("Email finnes allerede.");
+    super("En bruker med denne eposten finnes allerede.");
   }
 }

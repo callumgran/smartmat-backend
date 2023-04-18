@@ -17,7 +17,7 @@ public class UsernameAlreadyExistsException extends Exception {
 
   /**
    * Constructor for UsernameAlreadyExistsException.
-   * Has a default message.
+   * Has a default message: 'En bruker med dette brukernavnet finnes allerede.'.
    */
   public UsernameAlreadyExistsException() {
     super("En bruker med dette brukernavnet finnes allerede.");

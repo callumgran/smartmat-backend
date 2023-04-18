@@ -6,10 +6,12 @@ import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import edu.ntnu.idatt2106.smartmat.validation.user.UserValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -55,6 +57,10 @@ public class PublicUserController {
   )
   public ResponseEntity<UserDTO> getUser(@PathVariable String username)
     throws UserDoesNotExistsException {
+    if (!UserValidation.validateUsername(username)) throw new UserDoesNotExistsException(
+      "Bruker finnes ikke."
+    );
+
     LOGGER.info("GET request for user: {}", username);
     User user = userService.getUserByUsername(username);
 
@@ -69,6 +75,7 @@ public class PublicUserController {
    * Create a new user.
    * @param registerUser The user to create.
    * @return The created user.
+   * @throws BadInputException If the input is invalid.
    * @throws UsernameAlreadyExistsException If the username already exists.
    * @throws EmailAlreadyExistsException If the email already exists.
    * @throws DatabaseException If the database fails.
@@ -80,7 +87,16 @@ public class PublicUserController {
   )
   @Operation(summary = "Create a new user", description = "Create a new user", tags = { "user" })
   public ResponseEntity<String> createUser(@RequestBody RegisterDTO registerUser)
-    throws UsernameAlreadyExistsException, EmailAlreadyExistsException, DatabaseException {
+    throws BadInputException, UsernameAlreadyExistsException, EmailAlreadyExistsException, DatabaseException {
+    if (
+      !UserValidation.validateRegistrationForm(
+        registerUser.getUsername(),
+        registerUser.getEmail(),
+        registerUser.getFirstName(),
+        registerUser.getLastName(),
+        registerUser.getPassword()
+      )
+    ) throw new BadInputException("Ugyldig input. Se over feltene og prøv igjen.");
     LOGGER.info("POST request for user: {}", registerUser);
 
     User user = RegisterMapper.INSTANCE.registerDTOtoUser(registerUser);
