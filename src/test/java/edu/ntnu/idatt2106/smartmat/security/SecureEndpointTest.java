@@ -32,8 +32,8 @@ public class SecureEndpointTest {
   @MockBean
   private UserService userService;
 
-  @WithMockUser(username = "user")
   @Test
+  @WithMockUser(username = "user")
   public void testSecureEndpointWithUserIsAuthorized() {
     User user = User
       .builder()

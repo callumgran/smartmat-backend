@@ -51,8 +51,8 @@ public class OpenEndpointTest {
     }
   }
 
-  @WithMockUser(username = "user")
   @Test
+  @WithMockUser(username = "user")
   public void testOpenEndpointWithUserIsAuthorized() {
     try {
       mvc
