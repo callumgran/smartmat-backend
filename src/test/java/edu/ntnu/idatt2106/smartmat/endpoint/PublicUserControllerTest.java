@@ -60,21 +60,21 @@
 //     }
 //   }
 
-  // Wait for global exception handler
-  // @Test
-  // public void testGetUserThatDoesNotExist() throws Exception {
-  //   when(userService.getUserByUsername("test")).thenThrow(new UserDoesNotExistsException());
+// Wait for global exception handler
+// @Test
+// public void testGetUserThatDoesNotExist() throws Exception {
+//   when(userService.getUserByUsername("test")).thenThrow(new UserDoesNotExistsException());
 
-  //   try {
-  //     mvc
-  //       .perform(
-  //         MockMvcRequestBuilders.get("/api/v1/public/users/test").accept(MediaType.APPLICATION_JSON)
-  //       )
-  //       .andExpect(status().isNotFound());
-  //   } catch (Exception e) {
-  //     fail();
-  //   }
-  // }
+//   try {
+//     mvc
+//       .perform(
+//         MockMvcRequestBuilders.get("/api/v1/public/users/test").accept(MediaType.APPLICATION_JSON)
+//       )
+//       .andExpect(status().isNotFound());
+//   } catch (Exception e) {
+//     fail();
+//   }
+// }
 
 //   @Test
 //   public void testCreateUser() throws Exception {
