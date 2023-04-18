@@ -88,7 +88,7 @@ public class TokenController {
       .create()
       .withSubject(user.getUsername())
       .withIssuer("idatt2105_project_funn")
-      .withClaim("role", user.getRole().toString())
+      // .withClaim("role", user.getRole().toString())
       .withIssuedAt(now)
       .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
       .sign(hmac512);
