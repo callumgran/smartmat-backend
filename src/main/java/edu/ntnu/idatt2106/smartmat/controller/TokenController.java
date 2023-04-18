@@ -70,7 +70,7 @@ public class TokenController {
     }
 
     LOGGER.info("Wrong credentials: {}", authenticate.getUsername());
-    throw new BadCredentialsException("Access denied, wrong credentials...");
+    throw new BadCredentialsException("Feil brukernavn eller passord...");
   }
 
   /**

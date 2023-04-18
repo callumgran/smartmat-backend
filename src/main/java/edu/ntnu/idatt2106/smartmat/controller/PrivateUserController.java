@@ -52,7 +52,6 @@ public class PrivateUserController {
     throws UserDoesNotExistsException {
     LOGGER.info("GET request for user: {}", user.getUsername());
 
-    System.out.println("Username: " + user.getUsername());
     UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
       userService.getUserByUsername(user.getUsername())
     );
@@ -89,7 +88,7 @@ public class PrivateUserController {
     @NonNull @RequestBody UserPatchDTO userUpdateDTO
   ) throws UserDoesNotExistsException, BadCredentialsException {
     if (!username.equals(auth.getUsername())) {
-      throw new BadCredentialsException("You are not authorized to update this user");
+      throw new BadCredentialsException("Du har ikke tilgang til å endre denne brukeren.");
     }
 
     LOGGER.info("PATCH request for user: {}", username);
