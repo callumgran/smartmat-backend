@@ -85,11 +85,11 @@ public class PublicUserController {
 
     User user = RegisterMapper.INSTANCE.registerDTOtoUser(registerUser);
 
-    LOGGER.info("Mapped registerDTO to user: {}", user);
+    LOGGER.info("Mapped registerDTO to user: {}", user.toString());
 
     user = userService.saveUser(user);
 
-    LOGGER.info("User saved: {}", user);
+    LOGGER.info("User saved: {}", user.toString());
 
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }

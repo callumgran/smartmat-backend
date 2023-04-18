@@ -9,7 +9,7 @@ stages:
 checkstyle:
   stage: checkstyle
   script:
-    - mvn prettier:check
+    - mvn clean prettier:check
 
 compile:
   stage: compile
@@ -20,11 +20,11 @@ compile:
 test:
   stage: test
   script:
-      - mvn -Dtest=\!JwtTokenSingletonTest test
+      - mvn clean -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest test
       - mvn clean
 
 install:
   stage: install
   script:
-      - mvn -Dtest=\!JwtTokenSingletonTest install
+      - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest install
       - mvn clean

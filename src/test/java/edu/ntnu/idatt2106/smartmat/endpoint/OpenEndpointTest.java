@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.security;
+package edu.ntnu.idatt2106.smartmat.endpoint;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
 import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
