@@ -2,7 +2,7 @@ run:
 	make mvn args="spring-boot:run -Dspring-boot.run.fork=false"
 
 compose:
-	docker-compose -f docker/docker-compose.yml --env-file .env -p spring
+	docker-compose -f docker/docker-compose.yml --env-file .env -p spring $(args)
 
 mvn:
 	mvn $(args)
