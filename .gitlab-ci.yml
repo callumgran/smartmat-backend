@@ -15,13 +15,16 @@ compile:
   stage: compile
   script:
       - mvn compile
+      - mvn clean
 
 test:
   stage: test
   script:
-      - mvn clean -Dtest=\!JwtTokenSingletonTest test
+      - mvn clean -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest test
+      - mvn clean
 
 install:
   stage: install
   script:
-      - mvn clean -Dtest=\!JwtTokenSingletonTest install
+      - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest install
+      - mvn clean
