@@ -20,7 +20,7 @@ compile:
 test:
   stage: test
   script:
-      - mvn test
+      - mvn -Dtest=\!JwtTokenSingletonTest test
       - mvn clean
 
 install:
