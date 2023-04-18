@@ -63,7 +63,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // Note that we have added userId as subject to the token when it is generated
     // Note also that the token comes in this format 'Bearer token'
     String jwtToken = authHeader.substring(7);
-    final String username = validateJwtTokenAndGetUsername(jwtToken);
+    final String[] vals = validateJwtTokenAndGetUsername(jwtToken);
+    final String username = vals[0];
+    final Role role = Role.valueOf(vals[1]);
 
     if (username == null) {
       // validation failed or token expired
@@ -71,7 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    final String grantedRole = Role.ADMIN.name();
+    final String grantedRole = role.name();
 
     LOGGER.info("User {} is authenticated with role {}", username, grantedRole);
     //Add user details to the authentication context
@@ -79,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       .getContext()
       .setAuthentication(
         new UsernamePasswordAuthenticationToken(
-          username,
+          new Auth(username, role),
           null,
           List.of(new SimpleGrantedAuthority(grantedRole))
         )
@@ -94,13 +96,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
    * @param token The token to validate.
    * @return The username of the user.
    */
-  public String validateJwtTokenAndGetUsername(final String token) {
+  public String[] validateJwtTokenAndGetUsername(final String token) {
     try {
       final Algorithm hmac512 = Algorithm.HMAC512(
         JwtTokenSingleton.getInstance().getJwtTokenSecret()
       );
       final JWTVerifier verifier = JWT.require(hmac512).build();
-      return verifier.verify(token).getSubject();
+      String[] vals = new String[2];
+      vals[0] = verifier.verify(token).getSubject();
+      vals[1] = verifier.verify(token).getClaim("role").asString();
+      return vals;
     } catch (final JWTVerificationException verificationEx) {
       LOGGER.warn("token is invalid: {}", verificationEx.getMessage());
       return null;

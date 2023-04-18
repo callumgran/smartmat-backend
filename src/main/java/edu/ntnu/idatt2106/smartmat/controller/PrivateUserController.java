@@ -5,7 +5,9 @@ import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import io.micrometer.common.lang.NonNull;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -46,11 +48,14 @@ public class PrivateUserController {
     description = "Get the authenticated user",
     tags = { "user" }
   )
-  public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal String username)
+  public ResponseEntity<UserDTO> getUser(@NonNull @AuthenticationPrincipal Auth user)
     throws UserDoesNotExistsException {
-    LOGGER.info("GET request for user: {}", username);
+    LOGGER.info("GET request for user: {}", user.getUsername());
 
-    UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(userService.getUserByUsername(username));
+    System.out.println("Username: " + user.getUsername());
+    UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(
+      userService.getUserByUsername(user.getUsername())
+    );
 
     LOGGER.info("Mapped to UserDTO: {}", userDTO);
 
@@ -79,17 +84,17 @@ public class PrivateUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> updateUser(
-    @AuthenticationPrincipal String username,
-    @PathVariable String usernamePath,
-    @RequestBody UserPatchDTO userUpdateDTO
+    @NonNull @AuthenticationPrincipal Auth auth,
+    @NonNull @PathVariable String username,
+    @NonNull @RequestBody UserPatchDTO userUpdateDTO
   ) throws UserDoesNotExistsException, BadCredentialsException {
-    if (!username.equals(usernamePath)) {
+    if (!username.equals(auth.getUsername())) {
       throw new BadCredentialsException("You are not authorized to update this user");
     }
 
-    LOGGER.info("PATCH request for user: {}", usernamePath);
+    LOGGER.info("PATCH request for user: {}", username);
 
-    User userToUpdate = userService.getUserByUsername(usernamePath);
+    User userToUpdate = userService.getUserByUsername(username);
 
     User updatedUser = userService.partialUpdate(
       userToUpdate,

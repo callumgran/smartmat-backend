@@ -1,16 +1,20 @@
 package edu.ntnu.idatt2106.smartmat.endpoint;
 
+import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
+import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +39,29 @@ public class PublicUserControllerTest {
   @MockBean
   private UserService userService;
 
+  @MockBean
+  private RegisterMapper mapper;
+
+  private User user;
+
+  private User badUser;
+
+  @Before
+  public void setUp() {
+    user = testUserFactory(TestUserEnum.GOOD);
+    badUser = testUserFactory(TestUserEnum.BAD);
+
+    try {
+      when(userService.getUserByUsername(user.getUsername())).thenReturn(user);
+      when(userService.getUserByUsername(badUser.getUsername()))
+        .thenThrow(UserDoesNotExistsException.class);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   @Test
   public void testGetUserThatExists() throws Exception {
-    User user = User
-      .builder()
-      .username("test")
-      .password("test")
-      .email("test@test.com")
-      .role(Role.USER)
-      .firstName("test")
-      .lastName("test")
-      .build();
-
-    when(userService.getUserByUsername("test")).thenReturn(user);
-
     try {
       mvc
         .perform(
@@ -62,12 +75,10 @@ public class PublicUserControllerTest {
 
   @Test
   public void testGetUserThatDoesNotExist() throws Exception {
-    when(userService.getUserByUsername("test")).thenThrow(new UserDoesNotExistsException());
-
     try {
       mvc
         .perform(
-          MockMvcRequestBuilders.get("/api/v1/public/users/test").accept(MediaType.APPLICATION_JSON)
+          MockMvcRequestBuilders.get("/api/v1/public/users/bad").accept(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isNotFound());
     } catch (Exception e) {
@@ -77,18 +88,9 @@ public class PublicUserControllerTest {
 
   @Test
   public void testCreateUser() throws Exception {
-    User user = User
-      .builder()
-      .username("test")
-      .password("test")
-      .email("test@test")
-      .role(Role.USER)
-      .firstName("test")
-      .lastName("test")
-      .build();
-
-    when(userService.saveUser(user)).thenReturn(user);
-
+    System.out.println("USER: " + user.getEmail());
+    when(mapper.registerDTOtoUser(any(RegisterDTO.class))).thenReturn(user);
+    when(userService.saveUser(any(User.class))).thenReturn(user);
     try {
       mvc
         .perform(
@@ -101,10 +103,8 @@ public class PublicUserControllerTest {
               "  \"username\": \"test\"," +
               "  \"password\": \"Password1\"," +
               "  \"email\": \"test@test.com\"," +
-              "  \"role\": \"USER\"," +
               "  \"firstName\": \"test\"," +
-              "  \"lastName\": \"test\"," +
-              "  \"listings\": []" +
+              "  \"lastName\": \"test\"" +
               "}"
             )
         )
@@ -116,18 +116,8 @@ public class PublicUserControllerTest {
 
   @Test
   public void testCreateUserThatAlreadyExists() throws Exception {
-    User user = User
-      .builder()
-      .username("test")
-      .password("test")
-      .email("test@test")
-      .role(Role.USER)
-      .firstName("test")
-      .lastName("test")
-      .build();
-
-    when(userService.saveUser(user)).thenThrow(new UsernameAlreadyExistsException());
-
+    when(mapper.registerDTOtoUser(any(RegisterDTO.class))).thenReturn(badUser);
+    when(userService.saveUser(any(User.class))).thenThrow(UsernameAlreadyExistsException.class);
     try {
       mvc
         .perform(
@@ -137,16 +127,15 @@ public class PublicUserControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               "{" +
-              "  \"username\": \"test\"," +
-              "  \"password\": \"test\"," +
-              "  \"email\": \"test@test.com\"," +
-              "  \"role\": \"USER\"," +
-              "  \"firstName\": \"test\"," +
-              "  \"lastName\": \"test\"," +
+              "  \"username\": \"bad\"," +
+              "  \"password\": \"Password1\"," +
+              "  \"email\": \"bad@bad.com\"," +
+              "  \"firstName\": \"bad\"," +
+              "  \"lastName\": \"bad\"" +
               "}"
             )
         )
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isConflict());
     } catch (Exception e) {
       fail();
     }
