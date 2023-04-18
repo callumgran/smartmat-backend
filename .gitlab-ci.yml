@@ -26,5 +26,5 @@ test:
 install:
   stage: install
   script:
-      - mvn install
+      - mvn -Dtest=\!JwtTokenSingletonTest install
       - mvn clean
