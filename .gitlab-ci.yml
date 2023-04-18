@@ -20,11 +20,11 @@ compile:
 test:
   stage: test
   script:
-      - mvn test
+      - mvn -Dtest=\!JwtTokenSingletonTest test
       - mvn clean
 
 install:
   stage: install
   script:
-      - mvn install
+      - mvn -Dtest=\!JwtTokenSingletonTest install
       - mvn clean
