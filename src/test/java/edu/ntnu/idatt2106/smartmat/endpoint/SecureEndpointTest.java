@@ -1,12 +1,12 @@
 package edu.ntnu.idatt2106.smartmat.endpoint;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.createAuthenticationToken;
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.PrivateUserController;
 import edu.ntnu.idatt2106.smartmat.model.user.Role;
@@ -49,7 +49,11 @@ public class SecureEndpointTest {
     try {
       when(userService.getUserByUsername("user")).thenReturn(user);
       mvc
-        .perform(get("/api/v1/private/users/me").with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD)))).contentType(MediaType.APPLICATION_JSON))
+        .perform(
+          get("/api/v1/private/users/me")
+            .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD))))
+            .contentType(MediaType.APPLICATION_JSON)
+        )
         .andExpect(status().isOk());
     } catch (Exception e) {
       fail(e.getMessage());
