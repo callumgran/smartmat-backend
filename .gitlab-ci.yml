@@ -9,22 +9,19 @@ stages:
 checkstyle:
   stage: checkstyle
   script:
-    - mvn prettier:check
+    - mvn clean prettier:check
 
 compile:
   stage: compile
   script:
       - mvn compile
-      - mvn clean
 
 test:
   stage: test
   script:
-      - mvn -Dtest=\!JwtTokenSingletonTest test
-      - mvn clean
+      - mvn clean -Dtest=\!JwtTokenSingletonTest test
 
 install:
   stage: install
   script:
-      - mvn -Dtest=\!JwtTokenSingletonTest install
-      - mvn clean
+      - mvn clean -Dtest=\!JwtTokenSingletonTest install
