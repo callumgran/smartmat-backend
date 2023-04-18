@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.endpoint.user;
 
 import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import edu.ntnu.idatt2106.smartmat.controller.TokenController;
 import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
+import edu.ntnu.idatt2106.smartmat.endpoint.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;

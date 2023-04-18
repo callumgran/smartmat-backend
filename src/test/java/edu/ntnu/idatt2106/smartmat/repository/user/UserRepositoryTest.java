@@ -1,11 +1,10 @@
-package edu.ntnu.idatt2106.smartmat.repository;
+package edu.ntnu.idatt2106.smartmat.repository.user;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

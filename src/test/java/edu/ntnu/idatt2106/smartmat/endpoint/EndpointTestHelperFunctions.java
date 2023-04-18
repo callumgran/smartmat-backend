@@ -17,7 +17,7 @@ public class EndpointTestHelperFunctions {
    * @param user The user to create the token from.
    * @return The created token.
    */
-  protected static UsernamePasswordAuthenticationToken createAuthenticationToken(User user) {
+  public static UsernamePasswordAuthenticationToken createAuthenticationToken(User user) {
     return new UsernamePasswordAuthenticationToken(
       new Auth(user.getUsername(), user.getRole()),
       null,
@@ -25,27 +25,48 @@ public class EndpointTestHelperFunctions {
     );
   }
 
-  protected static User testUserFactory(TestUserEnum userType) {
+  public static User testUserFactory(TestUserEnum userType) {
     switch (userType) {
       case GOOD:
-        return new User("test", "test@test.com", "test", "test", "test", Role.USER);
+        return new User(
+          "testusername",
+          "test@test.com",
+          "Test",
+          "Test",
+          "Testpassword1",
+          Role.USER
+        );
       case BAD:
-        return new User("bad", "bad@bad.com", "bad", "bad", "bad", Role.USER);
+        return new User("badusername", "bad@bad.com", "Bad", "Bad", "Badpassword1", Role.USER);
       case ADMIN:
-        return new User("admin", "admin@admin.com", "admin", "admin", "admin", Role.ADMIN);
+        return new User(
+          "adminusername",
+          "admin@admin.com",
+          "Admin",
+          "admin",
+          "Adminpassword1",
+          Role.ADMIN
+        );
       case BAD_EMAIL:
-        return new User("badEmail", "badEmail", "badEmail", "badEmail", "badEmail", Role.USER);
+        return new User(
+          "bademail",
+          "badEmail",
+          "Bademail",
+          "Bademail",
+          "Bademailpassword1",
+          Role.USER
+        );
       case BAD_PASSWORD:
         return new User(
-          "badPassword",
-          "bad@bad.com",
-          "badPassword",
-          "badPassword",
-          "badPassword",
+          "badpassword",
+          "badpassword@badpassword.com",
+          "Badpassword",
+          "Badpassword",
+          "badpass",
           Role.USER
         );
       case NEW:
-        return new User("new", "new@new.com", "new", "new", "new", Role.USER);
+        return new User("newusername", "new@new.com", "New", "New", "Newpassword1", Role.USER);
       default:
         return null;
     }

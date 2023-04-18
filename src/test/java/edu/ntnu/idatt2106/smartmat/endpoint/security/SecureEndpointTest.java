@@ -1,23 +1,25 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.endpoint.security;
 
+import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.createAuthenticationToken;
+import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
+import edu.ntnu.idatt2106.smartmat.controller.PrivateUserController;
+import edu.ntnu.idatt2106.smartmat.endpoint.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,8 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
  * Class used to test the security of endpoints that require authentication.
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest({ PublicUserController.class, SecurityConfig.class })
-public class OpenEndpointTest {
+@WebMvcTest({ PrivateUserController.class, SecurityConfig.class })
+public class SecureEndpointTest {
 
   @Autowired
   private MockMvc mvc;
@@ -34,8 +36,8 @@ public class OpenEndpointTest {
   @MockBean
   private UserService userService;
 
-  @Before
-  public void setUp() {
+  @Test
+  public void testSecureEndpointWithUserIsAuthorized() {
     User user = User
       .builder()
       .username("user")
@@ -47,17 +49,12 @@ public class OpenEndpointTest {
       .build();
     try {
       when(userService.getUserByUsername("user")).thenReturn(user);
-    } catch (Exception e) {
-      fail(e.getMessage());
-    }
-  }
-
-  @Test
-  @WithMockUser(username = "user")
-  public void testOpenEndpointWithUserIsAuthorized() {
-    try {
       mvc
-        .perform(get("/api/v1/public/users/user").contentType(MediaType.APPLICATION_JSON))
+        .perform(
+          get("/api/v1/private/users/me")
+            .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD))))
+            .contentType(MediaType.APPLICATION_JSON)
+        )
         .andExpect(status().isOk());
     } catch (Exception e) {
       fail(e.getMessage());
@@ -65,11 +62,11 @@ public class OpenEndpointTest {
   }
 
   @Test
-  public void testOpenEndpointWithoutUserIsAuthorized() {
+  public void testSecureEndpointWithoutUserIsUnauthorized() {
     try {
       mvc
-        .perform(get("/api/v1/public/users/user").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
+        .perform(get("/api/v1/private/users/me").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
     } catch (Exception e) {
       fail(e.getMessage());
     }

@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.unit;
+package edu.ntnu.idatt2106.smartmat.unit.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.exceptions;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import org.hibernate.ObjectNotFoundException;
@@ -152,7 +153,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * @param request The request that caused the exception
    * @return A response entity with the exception message
    */
-  @ExceptionHandler(value = { NullPointerException.class, IllegalArgumentException.class })
+  @ExceptionHandler(
+    value = { NullPointerException.class, IllegalArgumentException.class, BadInputException.class }
+  )
   public ResponseEntity<ExceptionResponse> handleNullPointerException(
     Exception ex,
     WebRequest request
@@ -167,7 +170,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * @param request The request that caused the exception
    * @return A response entity with the exception message
    */
-  @ExceptionHandler(value = { AccessDeniedException.class })
+  @ExceptionHandler(value = { PermissionDeniedException.class, AccessDeniedException.class })
   public ResponseEntity<ExceptionResponse> handlePermissionDeniedException(
     Exception ex,
     WebRequest request

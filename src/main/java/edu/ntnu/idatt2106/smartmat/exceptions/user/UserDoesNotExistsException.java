@@ -17,9 +17,9 @@ public class UserDoesNotExistsException extends Exception {
 
   /**
    * Constructor for UserDoesNotExistsException.
-   * Has a default message.
+   * Has a default message: 'Bruker finnes ikke.'.
    */
   public UserDoesNotExistsException() {
-    super("User finnes ikke.");
+    super("Bruker finnes ikke.");
   }
 }

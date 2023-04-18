@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.unit;
+package edu.ntnu.idatt2106.smartmat.unit.mapper;
 
 import static org.junit.Assert.assertEquals;
 
