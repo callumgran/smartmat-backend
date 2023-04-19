@@ -3,7 +3,7 @@ package edu.ntnu.idatt2106.smartmat.validation;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import org.junit.Before;
@@ -23,9 +23,9 @@ public class AuthValidationTest {
 
   @Before
   public void setUp() {
-    goodAuth = new Auth(goodUsername, Role.USER);
+    goodAuth = new Auth(goodUsername, UserRole.USER);
     badAuth = null;
-    adminAuth = new Auth(adminUsername, Role.ADMIN);
+    adminAuth = new Auth(adminUsername, UserRole.ADMIN);
   }
 
   @Test
@@ -40,27 +40,27 @@ public class AuthValidationTest {
 
   @Test
   public void testIsAdminReturnsTrueOnAdmin() {
-    assertTrue(AuthValidation.hasRole(adminAuth, Role.ADMIN));
+    assertTrue(AuthValidation.hasRole(adminAuth, UserRole.ADMIN));
   }
 
   @Test
   public void testIsAdminReturnsFalseOnUser() {
-    assertFalse(AuthValidation.hasRole(goodAuth, Role.ADMIN));
+    assertFalse(AuthValidation.hasRole(goodAuth, UserRole.ADMIN));
   }
 
   @Test
   public void testHasRoleOrIsUserReturnsTrueOnUser() {
-    assertTrue(AuthValidation.hasRoleOrIsUser(goodAuth, Role.ADMIN, goodUsername));
+    assertTrue(AuthValidation.hasRoleOrIsUser(goodAuth, UserRole.ADMIN, goodUsername));
   }
 
   @Test
   public void testHasRoleOrIsUserReturnsTrueOnAdmin() {
-    assertTrue(AuthValidation.hasRoleOrIsUser(adminAuth, Role.ADMIN, goodUsername));
+    assertTrue(AuthValidation.hasRoleOrIsUser(adminAuth, UserRole.ADMIN, goodUsername));
   }
 
   @Test
   public void testHasRoleOrIsUserReturnsFalseOnUser() {
-    assertFalse(AuthValidation.hasRoleOrIsUser(badAuth, Role.ADMIN, goodUsername));
+    assertFalse(AuthValidation.hasRoleOrIsUser(badAuth, UserRole.ADMIN, goodUsername));
   }
 
   @Test

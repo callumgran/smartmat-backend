@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String jwtToken = authHeader.substring(7);
     final String[] vals = validateJwtTokenAndGetUsername(jwtToken);
     final String username = vals[0];
-    final Role role = Role.valueOf(vals[1]);
+    final UserRole role = UserRole.valueOf(vals[1]);
 
     if (username == null) {
       // validation failed or token expired

@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.helperfunctions;
 
 /**
  * Enum for test users.
@@ -12,4 +12,5 @@ public enum TestUserEnum {
   BAD_EMAIL,
   BAD_PASSWORD,
   NEW,
+  UPDATE,
 }

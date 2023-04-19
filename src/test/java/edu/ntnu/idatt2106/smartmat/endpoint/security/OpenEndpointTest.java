@@ -1,7 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.endpoint.security;
 
-import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.createAuthenticationToken;
-import static edu.ntnu.idatt2106.smartmat.endpoint.EndpointTestHelperFunctions.testUserFactory;
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.createAuthenticationToken;
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
-import edu.ntnu.idatt2106.smartmat.endpoint.TestUserEnum;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class OpenEndpointTest {
       .lastName("user")
       .password("password")
       .email("user@user")
-      .role(Role.USER)
+      .role(UserRole.USER)
       .build();
     try {
       when(userService.getUserByUsername("test")).thenReturn(user);

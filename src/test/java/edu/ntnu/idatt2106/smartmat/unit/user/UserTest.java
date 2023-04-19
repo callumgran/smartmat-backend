@@ -1,10 +1,12 @@
 package edu.ntnu.idatt2106.smartmat.unit.user;
 
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
+import java.util.HashSet;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -21,24 +23,31 @@ public class UserTest {
 
     @Test
     public void testUserConstructor() {
-      user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
+      user =
+        new User(
+          "username",
+          "email",
+          "firstName",
+          "lastName",
+          "password",
+          UserRole.USER,
+          new HashSet<>()
+        );
 
       assertEquals("username", user.getUsername());
       assertEquals("password", user.getPassword());
       assertEquals("email", user.getEmail());
       assertEquals("firstName", user.getFirstName());
       assertEquals("lastName", user.getLastName());
-      assertEquals(Role.USER, user.getRole());
+      assertEquals(UserRole.USER, user.getRole());
     }
 
     @Test
     public void testUserConstructorWithNulls() {
-      try {
-        user = new User("username", "password", null, null, null, Role.USER);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(
+        NullPointerException.class,
+        () -> new User("username", null, null, null, "password", UserRole.USER, new HashSet<>())
+      );
     }
   }
 
@@ -55,80 +64,56 @@ public class UserTest {
       user.setEmail("email");
       user.setFirstName("firstName");
       user.setLastName("lastName");
-      user.setRole(Role.USER);
+      user.setRole(UserRole.USER);
 
       assertEquals("username", user.getUsername());
       assertEquals("password", user.getPassword());
       assertEquals("email", user.getEmail());
       assertEquals("firstName", user.getFirstName());
       assertEquals("lastName", user.getLastName());
-      assertEquals(Role.USER, user.getRole());
+      assertEquals(UserRole.USER, user.getRole());
     }
 
     @Test
     public void testUserSetEmailWithNull() {
       user = new User();
-      try {
-        user.setEmail(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setEmail(null));
     }
 
     @Test
     public void testUserSetUsernameWithNull() {
       user = new User();
-      try {
-        user.setUsername(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setUsername(null));
     }
 
     @Test
     public void testUserSetPasswordWithNull() {
       user = new User();
-      try {
-        user.setPassword(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setPassword(null));
     }
 
     @Test
     public void testUserSetFirstNameWithNull() {
       user = new User();
-      try {
-        user.setFirstName(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setFirstName(null));
     }
 
     @Test
     public void testUserSetLastNameWithNull() {
       user = new User();
-      try {
-        user.setLastName(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setLastName(null));
     }
 
     @Test
     public void testUserSetRoleWithNull() {
       user = new User();
-      try {
-        user.setRole(null);
-        fail();
-      } catch (NullPointerException e) {
-        assertEquals(NullPointerException.class, e.getClass());
-      }
+      assertThrows(NullPointerException.class, () -> user.setRole(null));
+    }
+
+    @Test
+    public void testUserSetMembersWithNull() {
+      user = new User();
+      assertDoesNotThrow(() -> user.setHouseholds(null));
     }
   }
 }

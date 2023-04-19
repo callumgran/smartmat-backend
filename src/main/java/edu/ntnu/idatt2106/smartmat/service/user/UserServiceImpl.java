@@ -6,7 +6,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
-import java.util.List;
+import java.util.Collection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,8 +177,8 @@ public class UserServiceImpl implements UserService {
    * @return a list of all users.
    * @throws DatabaseException if an error occurred while getting the users.
    */
-  public List<User> getAllUsers() throws DatabaseException {
-    List<User> users = userRepository.findAll();
+  public Collection<User> getAllUsers() throws DatabaseException {
+    Collection<User> users = userRepository.findAll();
 
     if (users.isEmpty()) throw new DatabaseException("No users found in the database.");
 

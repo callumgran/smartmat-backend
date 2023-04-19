@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ public class UserMapperTest {
       user.setFirstName("firstName");
       user.setLastName("lastName");
       user.setPassword("password");
-      user.setRole(Role.USER);
+      user.setRole(UserRole.USER);
 
       UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
 

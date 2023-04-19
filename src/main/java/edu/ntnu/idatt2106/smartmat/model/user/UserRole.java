@@ -5,7 +5,13 @@ package edu.ntnu.idatt2106.smartmat.model.user;
  * @author Callum G.
  * @version 1.0 - 17.4.2023
  */
-public enum Role {
+public enum UserRole {
+  /**
+   * A regular user.
+   */
   USER,
+  /**
+   * An administrator.
+   */
   ADMIN,
 }

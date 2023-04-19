@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.security;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +20,5 @@ public class Auth {
 
   private String username;
 
-  private Role role;
+  private UserRole role;
 }

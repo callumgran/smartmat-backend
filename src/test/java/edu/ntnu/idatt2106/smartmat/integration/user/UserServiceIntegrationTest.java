@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.integration.user;
 
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.when;
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
 import edu.ntnu.idatt2106.smartmat.service.user.PasswordService;
@@ -64,7 +65,7 @@ public class UserServiceIntegrationTest {
   @Before
   public void setUp() {
     // Positive tests setup
-    existingUser = new User("username", "email", "firstName", "lastName", "password", Role.USER);
+    existingUser = testUserFactory(TestUserEnum.GOOD);
 
     when(userRepository.findByUsername(existingUser.getUsername()))
       .thenReturn(Optional.of(existingUser));
@@ -79,8 +80,7 @@ public class UserServiceIntegrationTest {
 
     when(userRepository.findAll()).thenReturn(List.of(existingUser));
 
-    nonExistingUser =
-      new User("newUsername", "newEmail", "newFirstName", "newLastName", "newPassword", Role.USER);
+    nonExistingUser = testUserFactory(TestUserEnum.NEW);
 
     when(userRepository.findByUsername(nonExistingUser.getUsername())).thenReturn(Optional.empty());
 
@@ -91,8 +91,7 @@ public class UserServiceIntegrationTest {
     doNothing().when(userRepository).delete(nonExistingUser);
 
     // Update user
-    updateUser = new User("username", "email", "firstName", "lastName", "password", Role.USER);
-
+    updateUser = testUserFactory(TestUserEnum.UPDATE);
     when(userRepository.findByUsername(updateUser.getUsername()))
       .thenReturn(Optional.of(updateUser));
 
@@ -322,12 +321,15 @@ public class UserServiceIntegrationTest {
     User newUser;
     String newEmail = "newEmail";
     String newFirstName = "newFirstName";
+    String newPassword = "newPassword1";
 
     try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
       mocked
-        .when(() -> PasswordService.checkPassword(updateUser.getPassword(), "password"))
+        .when(() ->
+          PasswordService.checkPassword(updateUser.getPassword(), updateUser.getPassword())
+        )
         .thenReturn(true);
-      mocked.when(() -> PasswordService.hashPassword("newPassword")).thenReturn("newPassword");
+      mocked.when(() -> PasswordService.hashPassword("newPassword1")).thenReturn("newPassword1");
 
       try {
         newUser =
@@ -336,8 +338,8 @@ public class UserServiceIntegrationTest {
             newEmail,
             newFirstName,
             null,
-            "password",
-            "newPassword"
+            updateUser.getPassword(),
+            newPassword
           );
       } catch (Exception e) {
         e.printStackTrace();
@@ -351,17 +353,20 @@ public class UserServiceIntegrationTest {
     assertEquals(newFirstName, newUser.getFirstName());
     assertEquals(updateUser.getLastName(), newUser.getLastName());
     assertEquals(updateUser.getRole(), newUser.getRole());
-    assertEquals("newPassword", newUser.getPassword());
+    assertEquals(newPassword, newUser.getPassword());
   }
 
   @Test
   public void testAuthenticate() {
     try (MockedStatic<?> mocked = mockStatic(PasswordService.class)) {
       mocked
-        .when(() -> PasswordService.checkPassword(existingUser.getPassword(), "password"))
+        .when(() ->
+          PasswordService.checkPassword(existingUser.getPassword(), existingUser.getPassword())
+        )
         .thenReturn(true);
 
-      assertDoesNotThrow(() -> userService.authenticateUser(existingUser.getUsername(), "password")
+      assertDoesNotThrow(() ->
+        userService.authenticateUser(existingUser.getUsername(), existingUser.getPassword())
       );
     }
   }
