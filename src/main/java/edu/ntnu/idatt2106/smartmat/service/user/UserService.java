@@ -5,7 +5,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import java.util.List;
+import java.util.Collection;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +45,7 @@ public interface UserService {
     String newPassword
   ) throws UserDoesNotExistsException, BadCredentialsException, NullPointerException;
 
-  public List<User> getAllUsers() throws DatabaseException;
+  public Collection<User> getAllUsers() throws DatabaseException;
 
   public boolean authenticateUser(String username, String password)
     throws UserDoesNotExistsException, BadCredentialsException;

@@ -1,0 +1,49 @@
+package edu.ntnu.idatt2106.smartmat.model.household;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.Collection;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Class representing a household in the system.
+ * A household is a collection of users that share SmartMat shopping lists
+ * and food-stores.
+ * @author Callum G.
+ * @version 1.0
+ * @date 18.4.2023
+ */
+@Setter
+@Getter
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
+@Entity
+@Table(name = "`household`")
+public class Household {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "`household_id`", length = 36, nullable = false, updatable = false)
+  private UUID id;
+
+  @Column(name = "`name`", length = 64, nullable = false)
+  @NonNull
+  private String name;
+
+  @OneToMany(mappedBy = "household")
+  private Collection<HouseholdMember> members;
+}

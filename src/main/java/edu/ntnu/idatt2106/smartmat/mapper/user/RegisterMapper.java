@@ -19,7 +19,7 @@ public interface RegisterMapper {
 
   /**
    * Maps a registration DTO to a user.
-   * Sets the role to Role.USER by default.
+   * Sets the role to UserRole.USER by default.
    * @param registerDTO A user registration in the form of a DTO
    * @return A user object with the USER role
    */

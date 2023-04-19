@@ -1,8 +1,9 @@
-package edu.ntnu.idatt2106.smartmat.endpoint;
+package edu.ntnu.idatt2106.smartmat.helperfunctions;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
+import java.util.HashSet;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
  * @author Callum G.
  * @version 1.0 - 18.04.2023
  */
-public class EndpointTestHelperFunctions {
+public class TestUserHelperFunctions {
 
   /**
    * Creates a UsernamePasswordAuthenticationToken from a user.
@@ -34,10 +35,19 @@ public class EndpointTestHelperFunctions {
           "Test",
           "Test",
           "Testpassword1",
-          Role.USER
+          UserRole.USER,
+          new HashSet<>()
         );
       case BAD:
-        return new User("badusername", "bad@bad.com", "Bad", "Bad", "Badpassword1", Role.USER);
+        return new User(
+          "badusername",
+          "bad@bad.com",
+          "Bad",
+          "Bad",
+          "Badpassword1",
+          UserRole.USER,
+          new HashSet<>()
+        );
       case ADMIN:
         return new User(
           "adminusername",
@@ -45,7 +55,8 @@ public class EndpointTestHelperFunctions {
           "Admin",
           "admin",
           "Adminpassword1",
-          Role.ADMIN
+          UserRole.ADMIN,
+          new HashSet<>()
         );
       case BAD_EMAIL:
         return new User(
@@ -54,7 +65,8 @@ public class EndpointTestHelperFunctions {
           "Bademail",
           "Bademail",
           "Bademailpassword1",
-          Role.USER
+          UserRole.USER,
+          new HashSet<>()
         );
       case BAD_PASSWORD:
         return new User(
@@ -63,10 +75,29 @@ public class EndpointTestHelperFunctions {
           "Badpassword",
           "Badpassword",
           "badpass",
-          Role.USER
+          UserRole.USER,
+          new HashSet<>()
         );
       case NEW:
-        return new User("newusername", "new@new.com", "New", "New", "Newpassword1", Role.USER);
+        return new User(
+          "newusername",
+          "new@new.com",
+          "New",
+          "New",
+          "Newpassword1",
+          UserRole.USER,
+          new HashSet<>()
+        );
+      case UPDATE:
+        return new User(
+          "updateusername",
+          "update@update.com",
+          "Update",
+          "Update",
+          "Updatepassword1",
+          UserRole.USER,
+          new HashSet<>()
+        );
       default:
         return null;
     }

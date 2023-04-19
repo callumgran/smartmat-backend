@@ -1,9 +1,10 @@
 package edu.ntnu.idatt2106.smartmat.repository.user;
 
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,7 @@ public class UserRepositoryTest {
 
   @Test
   public void testFindByUsername() {
-    User user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
+    User user = testUserFactory(TestUserEnum.GOOD);
     entityManager.persist(user);
     entityManager.flush();
 
@@ -44,7 +45,7 @@ public class UserRepositoryTest {
 
   @Test
   public void testFindByEmail() {
-    User user = new User("username", "email", "firstName", "lastName", "password", Role.USER);
+    User user = testUserFactory(TestUserEnum.GOOD);
     entityManager.persist(user);
     entityManager.flush();
 

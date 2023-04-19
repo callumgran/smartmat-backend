@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.validation.user;
 
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.validation.BaseValidation;
 
@@ -30,7 +30,7 @@ public class AuthValidation extends BaseValidation {
    * @param role The role to check for.
    * @return True if the Auth object is valid and has the correct role, false otherwise.
    */
-  public static boolean hasRole(Auth auth, Role role) {
+  public static boolean hasRole(Auth auth, UserRole role) {
     if (validateAuth(auth)) return auth.getRole() == role;
 
     return false;
@@ -43,7 +43,7 @@ public class AuthValidation extends BaseValidation {
    * @param username The username to check for.
    * @return True if the Auth object is valid and has the correct role or is the correct user, false otherwise.
    */
-  public static boolean hasRoleOrIsUser(Auth auth, Role role, String username) {
+  public static boolean hasRoleOrIsUser(Auth auth, UserRole role, String username) {
     if (validateAuth(auth)) return auth.getRole() == role || auth.getUsername().equals(username);
 
     return false;

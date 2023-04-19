@@ -6,8 +6,8 @@ import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
@@ -97,7 +97,7 @@ public class PrivateUserController {
   )
     throws PermissionDeniedException, UserDoesNotExistsException, BadCredentialsException, BadInputException {
     if (
-      !AuthValidation.hasRoleOrIsUser(auth, Role.ADMIN, username)
+      !AuthValidation.hasRoleOrIsUser(auth, UserRole.ADMIN, username)
     ) throw new PermissionDeniedException("Brukeren har ikke tilgang til å oppdatere brukeren.");
 
     if (

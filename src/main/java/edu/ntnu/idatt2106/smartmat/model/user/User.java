@@ -1,10 +1,12 @@
 package edu.ntnu.idatt2106.smartmat.model.user;
 
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +60,10 @@ public class User implements UserDetails {
   @Enumerated(EnumType.STRING)
   @Column(name = "`role`", nullable = false)
   @NonNull
-  private Role role;
+  private UserRole role;
+
+  @OneToMany(mappedBy = "user")
+  private Collection<HouseholdMember> households;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
 import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
-import edu.ntnu.idatt2106.smartmat.model.user.Role;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import org.junit.Test;
 import org.junit.jupiter.api.Nested;
 
@@ -31,7 +31,7 @@ public class RegisterMapperTest {
       assertEquals(registration.getEmail(), user.getEmail());
       assertEquals(registration.getFirstName(), user.getFirstName());
       assertEquals(registration.getLastName(), user.getLastName());
-      assertEquals(Role.USER, user.getRole());
+      assertEquals(UserRole.USER, user.getRole());
     }
   }
 }
