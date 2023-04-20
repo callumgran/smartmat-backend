@@ -18,8 +18,10 @@ import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.1 - 20.04.2023
+ * @version 1.2 - 20.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -200,5 +202,38 @@ public class HouseholdController {
 
     LOGGER.info("Deleted household with id: {}", id);
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Method to get all households for a user.
+   * @param username The username of the user.
+   * @param auth The authentication object.
+   * @return 200 OK if the user was found and the households.
+   * @throws NullPointerException If any value are null.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @GetMapping(value = "/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Get all households for a user",
+    description = "Get all households for a user, if the user does not exist, an error is thrown. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<List<HouseholdDTO>> getHouseholdsForUser(
+    @PathVariable String username,
+    @AuthenticationPrincipal Auth auth
+  ) throws PermissionDeniedException, NullPointerException, UserDoesNotExistsException {
+    if (
+      !AuthValidation.hasRoleOrIsUser(auth, UserRole.ADMIN, username)
+    ) throw new PermissionDeniedException("Brukeren har ikke tilgang til å se denne brukeren.");
+
+    LOGGER.info("Getting households for user with username: {}", username);
+    List<HouseholdDTO> householdDTOS = householdService
+      .getHouseholdsByUser(username)
+      .stream()
+      .map(HouseholdMapper.INSTANCE::householdToHouseholdDTO)
+      .collect(Collectors.toList());
+
+    LOGGER.info("Mapped households for user with username: {} to householdDTOs", username);
+    return ResponseEntity.ok(householdDTOS);
   }
 }

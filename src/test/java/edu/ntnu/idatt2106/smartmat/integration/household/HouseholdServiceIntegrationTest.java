@@ -469,4 +469,21 @@ public class HouseholdServiceIntegrationTest {
       () -> householdService.deleteAllHouseholdMembers(corruptedHousehold.getId())
     );
   }
+
+  @Test
+  public void getHouseholdsByUser() {
+    when(householdRepository.findAllByUsername(member.getUser().getUsername()))
+      .thenReturn(Optional.of(Set.of(existingHousehold, newHousehold)));
+    Collection<Household> tmp = null;
+    try {
+      tmp = householdService.getHouseholdsByUser(member.getUser().getUsername());
+    } catch (Exception e) {
+      fail();
+      return;
+    }
+
+    assertEquals(2, tmp.size());
+    assertTrue(tmp.contains(existingHousehold));
+    assertTrue(tmp.contains(newHousehold));
+  }
 }
