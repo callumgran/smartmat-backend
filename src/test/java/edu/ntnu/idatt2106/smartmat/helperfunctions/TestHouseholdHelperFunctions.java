@@ -50,10 +50,14 @@ public class TestHouseholdHelperFunctions {
     household.setMembers(new HashSet<HouseholdMember>());
     for (int i = 0; i < numberOfMembers; i++) {
       User user = testUserFactory(TestUserEnum.GOOD);
+      user.setUsername(user.getUsername() + i);
+      user.setEmail(user.getEmail() + i);
       HouseholdMember member = new HouseholdMember();
       member.setHousehold(household);
       member.setUser(user);
-      if (i == 0) member.setHouseholdRole(HouseholdRole.OWNER); else member.setHouseholdRole(
+      if (i == 0) member.setHouseholdRole(HouseholdRole.OWNER); else if (
+        i < 5
+      ) member.setHouseholdRole(HouseholdRole.PRIVILEGED_MEMBER); else member.setHouseholdRole(
         HouseholdRole.MEMBER
       );
       household.getMembers().add(member);
