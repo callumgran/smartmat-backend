@@ -1,11 +1,12 @@
 package edu.ntnu.idatt2106.smartmat.unit.mapper;
 
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
+import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +17,7 @@ public class UserMapperTest {
 
     @Test
     public void testUserToUserDTO() {
-      User user = new User();
-      user.setUsername("username");
-      user.setEmail("email");
-      user.setFirstName("firstName");
-      user.setLastName("lastName");
-      user.setPassword("password");
-      user.setRole(UserRole.USER);
+      User user = testUserFactory(TestUserEnum.GOOD);
 
       UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
 

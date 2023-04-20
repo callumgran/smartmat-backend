@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import edu.ntnu.idatt2106.smartmat.controller.user.PublicUserController;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import org.junit.Before;
@@ -39,17 +38,9 @@ public class OpenEndpointTest {
 
   @Before
   public void setUp() {
-    User user = User
-      .builder()
-      .username("user")
-      .firstName("user")
-      .lastName("user")
-      .password("password")
-      .email("user@user")
-      .role(UserRole.USER)
-      .build();
+    User user = testUserFactory(TestUserEnum.GOOD);
     try {
-      when(userService.getUserByUsername("test")).thenReturn(user);
+      when(userService.getUserByUsername("testusername")).thenReturn(user);
     } catch (Exception e) {
       fail(e.getMessage());
     }
@@ -60,7 +51,7 @@ public class OpenEndpointTest {
     try {
       mvc
         .perform(
-          get("/api/v1/public/users/test")
+          get("/api/v1/public/users/testusername")
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD))))
             .contentType(MediaType.APPLICATION_JSON)
         )
@@ -74,7 +65,7 @@ public class OpenEndpointTest {
   public void testOpenEndpointWithoutUserIsAuthorized() {
     try {
       mvc
-        .perform(get("/api/v1/public/users/user").contentType(MediaType.APPLICATION_JSON))
+        .perform(get("/api/v1/public/users/testusername").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
     } catch (Exception e) {
       fail(e.getMessage());

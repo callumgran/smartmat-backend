@@ -37,5 +37,6 @@ public class UserDTO {
   @NonNull
   private UserRole role;
 
-  private List<HouseholdMemberDTO> householdMembers;
+  @NonNull
+  private List<HouseholdMemberDTO> households;
 }
