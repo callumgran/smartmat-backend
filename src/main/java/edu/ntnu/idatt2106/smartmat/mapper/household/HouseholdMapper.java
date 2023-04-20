@@ -6,6 +6,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundExcepti
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +38,9 @@ public abstract class HouseholdMapper {
    */
   @Named("membersToMemberDTOs")
   public Set<HouseholdMemberDTO> memberToMemberDTO(Set<HouseholdMember> members) {
+    if (members == null) {
+      return new HashSet<>();
+    }
     return members
       .stream()
       .map(householdMemberMapper::householdMemberToHouseholdMemberDTO)
@@ -51,6 +55,9 @@ public abstract class HouseholdMapper {
   @Named("memberDTOsToMembers")
   public Set<HouseholdMember> memberDTOToMember(Set<HouseholdMemberDTO> memberDTOs)
     throws HouseholdNotFoundException, UserDoesNotExistsException {
+    if (memberDTOs == null) {
+      return new HashSet<>();
+    }
     ThrowingFunction<HouseholdMemberDTO, HouseholdMember> function =
       householdMemberMapper::householdMemberDTOToHouseholdMember;
     return memberDTOs.stream().map(function).collect(Collectors.toSet());

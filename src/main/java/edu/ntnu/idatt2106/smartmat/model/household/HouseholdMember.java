@@ -23,8 +23,7 @@ import lombok.Setter;
  * Class linking a user to a household.
  * A household member is a user that is a member of a household.
  * @author Callum G.
- * @version 1.0
- * @date 18.4.2023
+ * @version 1.0 - 18.4.2023
  */
 @Setter
 @Getter
