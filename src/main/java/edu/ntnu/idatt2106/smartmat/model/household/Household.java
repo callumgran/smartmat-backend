@@ -38,7 +38,7 @@ public class Household {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "`household_id`", length = 36, nullable = false, updatable = false)
+  @Column(name = "`household_id`", length = 16, nullable = false, updatable = false)
   private UUID id;
 
   @Column(name = "`name`", length = 64, nullable = false)

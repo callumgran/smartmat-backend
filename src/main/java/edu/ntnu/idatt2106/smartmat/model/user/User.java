@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.model.user;
 
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,7 +63,7 @@ public class User implements UserDetails {
   @NonNull
   private UserRole role;
 
-  @OneToMany(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @OneToMany(mappedBy = "user")
   private Set<HouseholdMember> households;
 
   @Override
