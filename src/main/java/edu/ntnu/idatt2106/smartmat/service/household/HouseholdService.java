@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 /**
  * Interface for the household service.
  * @author Callum G.
- * @version 1.0 - 18.4.2023
+ * @version 1.2 - 20.4.2023
  */
 @Service
 public interface HouseholdService {
@@ -63,4 +63,7 @@ public interface HouseholdService {
 
   void deleteAllHouseholdMembers(@NonNull UUID id)
     throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException;
+
+  Collection<Household> getHouseholdsByUser(@NonNull String username)
+    throws NullPointerException, UserDoesNotExistsException;
 }

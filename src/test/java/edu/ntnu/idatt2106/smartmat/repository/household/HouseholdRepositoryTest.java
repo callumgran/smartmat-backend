@@ -158,4 +158,21 @@ public class HouseholdRepositoryTest {
     }
     assertEquals(0, householdRepository.findHouseholdMembersById(household.getId()).get().size());
   }
+
+  @Test
+  public void findAllByUsername() {
+    Collection<Household> households = null;
+    try {
+      households =
+        householdRepository
+          .findAllByUsername(
+            ((HouseholdMember) household.getMembers().toArray()[0]).getUser().getUsername()
+          )
+          .orElseThrow(RuntimeException::new);
+    } catch (RuntimeException e) {
+      fail(e.getMessage());
+      return;
+    }
+    assertEquals(1, households.size());
+  }
 }

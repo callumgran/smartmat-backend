@@ -252,4 +252,20 @@ public class HouseholdControllerTest {
       fail(e.getMessage());
     }
   }
+
+  @Test
+  public void testGetHouseholdsByUser() {
+    try {
+      when(householdService.getHouseholdsByUser(user.getUsername())).thenReturn(Set.of(household));
+      mvc
+        .perform(
+          get(BASE_URL + "/user/" + user.getUsername())
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isOk());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
 }

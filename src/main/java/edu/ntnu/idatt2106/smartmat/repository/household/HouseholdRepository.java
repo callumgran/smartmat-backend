@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 /**
  * Repository for household operations on the database.
  * @author Callum G.
- * @version 1.1 - 20.4.2023
+ * @version 1.2 - 20.4.2023
  */
 @Repository
 public interface HouseholdRepository extends JpaRepository<Household, UUID> {
@@ -70,4 +70,13 @@ public interface HouseholdRepository extends JpaRepository<Household, UUID> {
   @Modifying
   @Query("DELETE FROM HouseholdMember hm WHERE hm.household.id = ?1")
   void deleteHouseholdMembersById(@NonNull UUID id);
+
+  /**
+   * Get all households for a given user.
+   * @param username The username of the user.
+   * @return A collection of households.
+   * @throws NullPointerException If the given username is null.
+   */
+  @Query("SELECT hm.household FROM HouseholdMember hm WHERE hm.user.username = ?1")
+  Optional<Collection<Household>> findAllByUsername(@NonNull String username);
 }

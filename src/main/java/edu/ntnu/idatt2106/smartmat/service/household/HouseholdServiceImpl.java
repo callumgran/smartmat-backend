@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  * Implementation of the household service.
  * This class is responsible for all business logic related to households.
  * @author Callum G.
- * @version 1.1 - 20.4.2023
+ * @version 1.2 - 20.4.2023
  */
 @Service
 @RequiredArgsConstructor
@@ -252,5 +252,19 @@ public class HouseholdServiceImpl implements HouseholdService {
     throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
     if (!householdExists(id)) throw new HouseholdNotFoundException();
     householdRepository.deleteHouseholdMembersById(id);
+  }
+
+  /**
+   * Method to get all households for a user.
+   * @param username The username of the respective user.
+   * @return The households of the user.
+   * @throws NullPointerException if the username is null.
+   * @throws UserDoesNotExistsException if the user is not found.
+   */
+  @Override
+  public Collection<Household> getHouseholdsByUser(@NonNull String username)
+    throws NullPointerException, UserDoesNotExistsException {
+    if (!userService.usernameExists(username)) throw new UserDoesNotExistsException();
+    return householdRepository.findAllByUsername(username).orElseThrow(NullPointerException::new);
   }
 }
