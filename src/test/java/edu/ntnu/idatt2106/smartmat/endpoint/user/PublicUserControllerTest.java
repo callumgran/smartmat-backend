@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
+import edu.ntnu.idatt2106.smartmat.controller.user.PublicUserController;
 import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;

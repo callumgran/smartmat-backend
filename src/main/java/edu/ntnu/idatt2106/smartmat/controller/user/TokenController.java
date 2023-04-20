@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.controller;
+package edu.ntnu.idatt2106.smartmat.controller.user;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -87,7 +87,7 @@ public class TokenController {
     return JWT
       .create()
       .withSubject(user.getUsername())
-      .withIssuer("idatt2105_project_funn")
+      .withIssuer("idatt2106_project_smartmat")
       .withClaim("role", user.getRole().name())
       .withIssuedAt(now)
       .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))

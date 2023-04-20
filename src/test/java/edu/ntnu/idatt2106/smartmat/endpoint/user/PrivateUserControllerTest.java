@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import edu.ntnu.idatt2106.smartmat.controller.PrivateUserController;
+import edu.ntnu.idatt2106.smartmat.controller.user.PrivateUserController;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;

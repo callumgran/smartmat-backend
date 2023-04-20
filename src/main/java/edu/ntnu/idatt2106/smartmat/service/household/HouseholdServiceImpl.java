@@ -42,7 +42,7 @@ public class HouseholdServiceImpl implements HouseholdService {
    * @throws HouseholdNotFoundException if the household is not found.
    */
   @Override
-  public Household getHouseHoldById(@NonNull UUID id)
+  public Household getHouseholdById(@NonNull UUID id)
     throws NullPointerException, HouseholdNotFoundException {
     return householdRepository.findById(id).orElseThrow(HouseholdNotFoundException::new);
   }
@@ -73,7 +73,7 @@ public class HouseholdServiceImpl implements HouseholdService {
   @Override
   public Household updateHouseholdName(@NonNull UUID id, @NonNull String name)
     throws NullPointerException, HouseholdNotFoundException {
-    Household household = getHouseHoldById(id);
+    Household household = getHouseholdById(id);
     household.setName(name);
     return householdRepository.save(household);
   }

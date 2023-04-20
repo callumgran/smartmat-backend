@@ -46,7 +46,7 @@ public class TestHouseholdHelperFunctions {
   private static Household createHousehold(String householdName, int numberOfMembers) {
     Household household = new Household();
     household.setId(UUID.randomUUID());
-    household.setName("testHousehold");
+    household.setName("TestHousehold");
     household.setMembers(new HashSet<HouseholdMember>());
     for (int i = 0; i < numberOfMembers; i++) {
       User user = testUserFactory(TestUserEnum.GOOD);

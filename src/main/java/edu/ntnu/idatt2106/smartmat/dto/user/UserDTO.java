@@ -1,6 +1,8 @@
 package edu.ntnu.idatt2106.smartmat.dto.user;
 
+import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,4 +36,6 @@ public class UserDTO {
 
   @NonNull
   private UserRole role;
+
+  private List<HouseholdMemberDTO> householdMembers;
 }

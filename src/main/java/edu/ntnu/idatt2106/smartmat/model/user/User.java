@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,7 +64,7 @@ public class User implements UserDetails {
   private UserRole role;
 
   @OneToMany(mappedBy = "user")
-  private Collection<HouseholdMember> households;
+  private Set<HouseholdMember> households;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

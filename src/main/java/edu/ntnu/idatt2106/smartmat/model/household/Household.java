@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,5 +45,5 @@ public class Household {
   private String name;
 
   @OneToMany(mappedBy = "household")
-  private Collection<HouseholdMember> members;
+  private Set<HouseholdMember> members;
 }

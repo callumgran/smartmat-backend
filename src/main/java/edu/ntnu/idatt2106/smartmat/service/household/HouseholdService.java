@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public interface HouseholdService {
   boolean householdExists(@NonNull UUID id) throws NullPointerException;
 
-  Household getHouseHoldById(@NonNull UUID id)
+  Household getHouseholdById(@NonNull UUID id)
     throws NullPointerException, HouseholdNotFoundException;
 
   Household saveHousehold(@NonNull Household household)

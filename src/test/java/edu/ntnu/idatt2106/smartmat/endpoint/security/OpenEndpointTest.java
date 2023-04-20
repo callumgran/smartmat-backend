@@ -8,7 +8,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import edu.ntnu.idatt2106.smartmat.controller.PublicUserController;
+import edu.ntnu.idatt2106.smartmat.controller.user.PublicUserController;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
