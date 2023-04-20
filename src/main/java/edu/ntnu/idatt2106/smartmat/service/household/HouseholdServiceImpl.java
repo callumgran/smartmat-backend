@@ -2,8 +2,13 @@ package edu.ntnu.idatt2106.smartmat.service.household;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdRepository;
+import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import java.util.Collection;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +19,7 @@ import org.springframework.stereotype.Service;
  * Implementation of the household service.
  * This class is responsible for all business logic related to households.
  * @author Callum G.
- * @version 1.0 - 18.4.2023
+ * @version 1.1 - 20.4.2023
  */
 @Service
 @RequiredArgsConstructor
@@ -22,6 +27,9 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   @Autowired
   private HouseholdRepository householdRepository;
+
+  @Autowired
+  private UserService userService;
 
   /**
    * Method to check if a household exists.
@@ -107,5 +115,142 @@ public class HouseholdServiceImpl implements HouseholdService {
     throws NullPointerException, HouseholdNotFoundException {
     if (!householdExists(id)) throw new HouseholdNotFoundException();
     householdRepository.deleteById(id);
+  }
+
+  /**
+   * Method to get the owner of a household.
+   * @param id The UUID of the respective household.
+   * @return The owner of the household.
+   * @throws NullPointerException if the id is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public HouseholdMember getHouseholdOwner(@NonNull UUID id)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return householdRepository
+      .findHouseholdOwnerById(id)
+      .orElseThrow(UserDoesNotExistsException::new)
+      .stream()
+      .findFirst()
+      .orElseThrow(UserDoesNotExistsException::new);
+  }
+
+  /**
+   * Method to get the members of a with a specific role.
+   * @param id The UUID of the respective household.
+   * @param role The role to filter by.
+   * @return The members of the household with the role.
+   * @throws NullPointerException if the household is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public Collection<HouseholdMember> getHouseholdMembersWithRole(
+    @NonNull UUID id,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return householdRepository
+      .findHouseholdMembersWithRoleById(id, role)
+      .orElseThrow(UserDoesNotExistsException::new);
+  }
+
+  /**
+   * Method to get the members of a household.
+   * @param id The UUID of the respective household.
+   * @return The members of the household.
+   * @throws NullPointerException if the household is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public Collection<HouseholdMember> getHouseholdMembers(@NonNull UUID id)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return householdRepository
+      .findHouseholdMembersById(id)
+      .orElseThrow(UserDoesNotExistsException::new);
+  }
+
+  /**
+   * Method to check if a user is the owner of a household.
+   * @param householdId The UUID of the respective household.
+   * @param userId The UUID of the respective user.
+   * @return True if the user is the owner, false otherwise.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public boolean isHouseholdOwner(@NonNull UUID id, @NonNull String username)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return getHouseholdOwner(id).getUser().getUsername().equals(username);
+  }
+
+  /**
+   * Method to check if a user is a member of a household.
+   * @param householdId The UUID of the respective household.
+   * @param userId The UUID of the respective user.
+   * @return True if the user is a member, false otherwise.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public boolean isHouseholdMember(@NonNull UUID id, @NonNull String username)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return getHouseholdMembers(id)
+      .stream()
+      .anyMatch(householdMember -> householdMember.getUser().getUsername().equals(username));
+  }
+
+  /**
+   * Method to check if a user is a member of a household with a specific role.
+   * @param householdId The UUID of the respective household.
+   * @param userId The UUID of the respective user.
+   * @param role The role to filter by.
+   * @return True if the user is a member with the role, false otherwise.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   */
+  @Override
+  public boolean isHouseholdMemberWithRole(
+    @NonNull UUID id,
+    @NonNull String username,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    return getHouseholdMembersWithRole(id, role)
+      .stream()
+      .anyMatch(householdMember -> householdMember.getUser().getUsername().equals(username));
+  }
+
+  /**
+   * Method to remove a user from a household.
+   * @param householdId The UUID of the respective household.
+   * @param username The username of the respective user.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the user is not found.
+   */
+  @Override
+  public void deleteHouseholdMember(@NonNull UUID id, @NonNull String username)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    if (!userService.usernameExists(username)) throw new UserDoesNotExistsException();
+    householdRepository.deleteHouseholdMemberByIdAndUsername(id, username);
+  }
+
+  /**
+   * Method to delete all members of a household.
+   * @param householdId The UUID of the respective household.
+   * @throws NullPointerException if the household is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the user is not found.
+   */
+  @Override
+  public void deleteAllHouseholdMembers(@NonNull UUID id)
+    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    householdRepository.deleteHouseholdMembersById(id);
   }
 }

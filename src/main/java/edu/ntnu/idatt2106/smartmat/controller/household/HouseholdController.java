@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.controller.household;
 import edu.ntnu.idatt2106.smartmat.dto.household.CreateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
@@ -11,9 +12,11 @@ import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.0 - 19.04.2023
+ * @version 1.1 - 20.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -52,6 +55,14 @@ public class HouseholdController {
   private final HouseholdService householdService;
 
   private final UserService userService;
+
+  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
+    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
+    return (
+      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
+      householdService.isHouseholdOwner(householdId, auth.getUsername())
+    );
+  }
 
   /**
    * Get a household by id.
@@ -136,8 +147,16 @@ public class HouseholdController {
   public ResponseEntity<HouseholdDTO> updateHouseholdName(
     @AuthenticationPrincipal Auth auth,
     @RequestBody UpdateHouseholdDTO updateDTO
-  ) throws HouseholdNotFoundException, UserDoesNotExistsException {
-    // TODO: Check if user is owner of household or is admin.
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    boolean ownerOrAdmin = isAdminOrHouseholdOwner(auth, UUID.fromString(updateDTO.getId()));
+
+    if (!ownerOrAdmin) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å endre navnet på denne husholdningen."
+      );
+    }
+
     LOGGER.info("Updating name of household with id: {}", updateDTO.getId());
 
     Household updated = householdService.updateHouseholdName(
@@ -168,8 +187,13 @@ public class HouseholdController {
   public ResponseEntity<String> deleteHousehold(
     @AuthenticationPrincipal Auth auth,
     @PathVariable UUID id
-  ) throws HouseholdNotFoundException, UserDoesNotExistsException {
-    // TODO: Check if user is owner of household or is admin.
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!isAdminOrHouseholdOwner(auth, id)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å slette denne husholdningen."
+      );
+    }
     LOGGER.info("Deleting household with id: {}", id);
 
     householdService.deleteHouseholdById(id);

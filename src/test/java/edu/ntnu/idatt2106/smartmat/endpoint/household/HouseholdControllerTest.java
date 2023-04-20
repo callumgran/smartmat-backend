@@ -90,6 +90,10 @@ public class HouseholdControllerTest {
 
       // Update user
       when(userService.updateUser(any(User.class))).thenReturn(user);
+
+      // Household exists
+      when(householdService.householdExists(household.getId())).thenReturn(true);
+      when(householdService.householdExists(newHousehold.getId())).thenReturn(false);
     } catch (Exception e) {
       fail(e.getMessage());
     }
@@ -153,6 +157,8 @@ public class HouseholdControllerTest {
       when(householdService.getHouseholdById(household.getId())).thenReturn(household);
       when(householdService.updateHouseholdName(household.getId(), "NewName"))
         .thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
       household.setName("NewName");
       mvc
         .perform(
@@ -168,9 +174,33 @@ public class HouseholdControllerTest {
   }
 
   @Test
+  public void testUpdateHouseholdNameNotOwner() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.updateHouseholdName(household.getId(), "NewName"))
+        .thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      household.setName("NewName");
+      mvc
+        .perform(
+          put(BASE_URL + "/" + household.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(String.format("{\"id\": \"%s\", \"name\": \"NewName\"}", household.getId()))
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isForbidden());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
   public void testUpdateHouseholdNameWithNonExistingHousehold() {
     try {
       when(householdService.updateHouseholdName(household.getId(), "NewName"))
+        .thenThrow(new HouseholdNotFoundException());
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
         .thenThrow(new HouseholdNotFoundException());
       mvc
         .perform(
@@ -189,6 +219,8 @@ public class HouseholdControllerTest {
   public void testDeleteHousehold() {
     try {
       doNothing().when(householdService).deleteHouseholdById(household.getId());
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
       mvc
         .perform(
           delete(String.format("%s/%s", BASE_URL, household.getId()))
@@ -207,6 +239,8 @@ public class HouseholdControllerTest {
       doThrow(new HouseholdNotFoundException())
         .when(householdService)
         .deleteHouseholdById(household.getId());
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenThrow(new HouseholdNotFoundException());
       mvc
         .perform(
           delete(String.format("%s/%s", BASE_URL, household.getId()))

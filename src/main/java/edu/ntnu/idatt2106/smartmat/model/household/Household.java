@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.model.household;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,8 +23,8 @@ import lombok.Setter;
  * A household is a collection of users that share SmartMat shopping lists
  * and food-stores.
  * @author Callum G.
- * @version 1.0
- * @date 18.4.2023
+ * @version 1.1
+ * @date 20.4.2023
  */
 @Setter
 @Getter
@@ -44,6 +45,6 @@ public class Household {
   @NonNull
   private String name;
 
-  @OneToMany(mappedBy = "household")
+  @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<HouseholdMember> members;
 }

@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.user;
 
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,8 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
  * Class representing a user in the system.
  * Implements UserDetails to allow Spring Security to use this class for authentication.
  * @author Callum G.
- * @version 1.0
- * @date 17.4.2023
+ * @version 1.1
+ * @date 20.4.2023
  */
 @Setter
 @Getter
@@ -63,7 +64,7 @@ public class User implements UserDetails {
   @NonNull
   private UserRole role;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<HouseholdMember> households;
 
   @Override

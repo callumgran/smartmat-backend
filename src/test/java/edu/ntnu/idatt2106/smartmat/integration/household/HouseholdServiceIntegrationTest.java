@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.integration.household;
 
 import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdHelperFunctions.testHouseholdFactory;
+import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
@@ -13,11 +14,17 @@ import static org.mockito.Mockito.when;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
+import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdRepository;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdServiceImpl;
+import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +55,9 @@ public class HouseholdServiceIntegrationTest {
   private HouseholdService householdService;
 
   @MockBean
+  private UserService userService;
+
+  @MockBean
   private HouseholdRepository householdRepository;
 
   private Household existingHousehold;
@@ -56,11 +66,32 @@ public class HouseholdServiceIntegrationTest {
 
   private Household newHousehold;
 
+  private HouseholdMember owner;
+
+  private HouseholdMember member;
+
+  private HouseholdMember privelegedMember;
+
   @Before
   public void setUp() {
     existingHousehold = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     corruptedHousehold = testHouseholdFactory(TestHouseholdEnum.BAD_HOUSEHOLD);
     newHousehold = testHouseholdFactory(TestHouseholdEnum.NEW_HOUSEHOLD);
+
+    owner = new HouseholdMember();
+    owner.setHousehold(existingHousehold);
+    owner.setUser(testUserFactory(TestUserEnum.GOOD));
+    owner.setHouseholdRole(HouseholdRole.OWNER);
+
+    member = new HouseholdMember();
+    member.setHousehold(existingHousehold);
+    member.setUser(testUserFactory(TestUserEnum.BAD));
+    member.setHouseholdRole(HouseholdRole.MEMBER);
+
+    privelegedMember = new HouseholdMember();
+    privelegedMember.setHousehold(existingHousehold);
+    privelegedMember.setUser(testUserFactory(TestUserEnum.UPDATE));
+    privelegedMember.setHouseholdRole(HouseholdRole.PRIVILEGED_MEMBER);
 
     when(householdRepository.existsById(existingHousehold.getId())).thenReturn(true);
     when(householdRepository.existsById(corruptedHousehold.getId())).thenReturn(false);
@@ -82,6 +113,8 @@ public class HouseholdServiceIntegrationTest {
     doNothing().when(householdRepository).deleteById(existingHousehold.getId());
     doNothing().when(householdRepository).deleteById(corruptedHousehold.getId());
     doNothing().when(householdRepository).deleteById(newHousehold.getId());
+
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(true);
   }
 
   @Test
@@ -190,6 +223,250 @@ public class HouseholdServiceIntegrationTest {
     assertThrows(
       NullPointerException.class,
       () -> householdService.deleteHouseholdById(newHousehold.getId())
+    );
+  }
+
+  @Test
+  public void getHouseholdOwnerExistingHousehold() {
+    when(householdRepository.findHouseholdOwnerById(existingHousehold.getId()))
+      .thenReturn(Optional.of(Set.of(owner)));
+    HouseholdMember tmp = null;
+    try {
+      tmp = householdService.getHouseholdOwner(existingHousehold.getId());
+    } catch (Exception e) {
+      fail();
+      return;
+    }
+
+    assertEquals(owner.getUser().getUsername(), tmp.getUser().getUsername());
+    assertEquals(owner.getHousehold().getId(), tmp.getHousehold().getId());
+    assertEquals(owner.getHouseholdRole(), tmp.getHouseholdRole());
+  }
+
+  @Test
+  public void getHouseholdOwnerCorruptedHousehold() {
+    when(householdRepository.findHouseholdOwnerById(corruptedHousehold.getId()))
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () -> householdService.getHouseholdOwner(corruptedHousehold.getId())
+    );
+  }
+
+  @Test
+  public void getHouseholdMembersExistingHousehold() {
+    when(householdRepository.findHouseholdMembersById(existingHousehold.getId()))
+      .thenReturn(Optional.of(Set.of(owner, member, privelegedMember)));
+    Collection<HouseholdMember> tmp = null;
+    try {
+      tmp = householdService.getHouseholdMembers(existingHousehold.getId());
+    } catch (Exception e) {
+      fail();
+      return;
+    }
+
+    assertEquals(3, tmp.size());
+    assertTrue(tmp.contains(owner));
+    assertTrue(tmp.contains(member));
+    assertTrue(tmp.contains(privelegedMember));
+  }
+
+  @Test
+  public void getHouseholdMembersCorruptedHousehold() {
+    when(householdRepository.findHouseholdMembersById(corruptedHousehold.getId()))
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () -> householdService.getHouseholdMembers(corruptedHousehold.getId())
+    );
+  }
+
+  @Test
+  public void getHouseholdMembersWithRoleExistingHousehold() {
+    when(
+      householdRepository.findHouseholdMembersWithRoleById(
+        existingHousehold.getId(),
+        HouseholdRole.MEMBER
+      )
+    )
+      .thenReturn(Optional.of(Set.of(member)));
+    Collection<HouseholdMember> tmp = null;
+    try {
+      tmp =
+        householdService.getHouseholdMembersWithRole(
+          existingHousehold.getId(),
+          HouseholdRole.MEMBER
+        );
+    } catch (Exception e) {
+      fail();
+      return;
+    }
+
+    assertEquals(1, tmp.size());
+    assertTrue(tmp.contains(member));
+  }
+
+  @Test
+  public void getHouseholdMembersWithRoleCorruptedHousehold() {
+    when(
+      householdRepository.findHouseholdMembersWithRoleById(
+        corruptedHousehold.getId(),
+        HouseholdRole.MEMBER
+      )
+    )
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.getHouseholdMembersWithRole(
+          corruptedHousehold.getId(),
+          HouseholdRole.MEMBER
+        )
+    );
+  }
+
+  @Test
+  public void isHouseholdOwnerExistingHousehold() {
+    when(householdRepository.findHouseholdOwnerById(existingHousehold.getId()))
+      .thenReturn(Optional.of(Set.of(owner)));
+    try {
+      assertTrue(
+        householdService.isHouseholdOwner(existingHousehold.getId(), owner.getUser().getUsername())
+      );
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void isHouseholdOwnerCorruptedHousehold() {
+    when(householdRepository.findHouseholdOwnerById(corruptedHousehold.getId()))
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.isHouseholdOwner(corruptedHousehold.getId(), owner.getUser().getUsername())
+    );
+  }
+
+  @Test
+  public void isHouseholdMemberExistingHousehold() {
+    when(householdRepository.findHouseholdMembersById(existingHousehold.getId()))
+      .thenReturn(Optional.of(Set.of(owner, member, privelegedMember)));
+    try {
+      assertTrue(
+        householdService.isHouseholdMember(
+          existingHousehold.getId(),
+          member.getUser().getUsername()
+        )
+      );
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void isHouseholdMemberCorruptedHousehold() {
+    when(householdRepository.findHouseholdMembersById(corruptedHousehold.getId()))
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.isHouseholdMember(
+          corruptedHousehold.getId(),
+          member.getUser().getUsername()
+        )
+    );
+  }
+
+  @Test
+  public void isHouseholdMemberWithRoleExistingHousehold() {
+    when(
+      householdRepository.findHouseholdMembersWithRoleById(
+        existingHousehold.getId(),
+        HouseholdRole.MEMBER
+      )
+    )
+      .thenReturn(Optional.of(Set.of(member)));
+    try {
+      assertTrue(
+        householdService.isHouseholdMemberWithRole(
+          existingHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+      );
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void isHouseholdMemberWithRoleCorruptedHousehold() {
+    when(
+      householdRepository.findHouseholdMembersWithRoleById(
+        corruptedHousehold.getId(),
+        HouseholdRole.MEMBER
+      )
+    )
+      .thenReturn(Optional.empty());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.isHouseholdMemberWithRole(
+          corruptedHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+    );
+  }
+
+  @Test
+  public void deleteHouseholdMemberExistingHousehold() {
+    doNothing()
+      .when(householdRepository)
+      .deleteHouseholdMemberByIdAndUsername(
+        existingHousehold.getId(),
+        member.getUser().getUsername()
+      );
+    assertDoesNotThrow(() ->
+      householdService.deleteHouseholdMember(
+        existingHousehold.getId(),
+        member.getUser().getUsername()
+      )
+    );
+  }
+
+  @Test
+  public void deleteHouseholdMemberCorruptedHousehold() {
+    doNothing()
+      .when(householdRepository)
+      .deleteHouseholdMemberByIdAndUsername(
+        corruptedHousehold.getId(),
+        member.getUser().getUsername()
+      );
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.deleteHouseholdMember(
+          corruptedHousehold.getId(),
+          member.getUser().getUsername()
+        )
+    );
+  }
+
+  @Test
+  public void deleteAllHouseholdMembersExistingHousehold() {
+    doNothing().when(householdRepository).deleteHouseholdMembersById(existingHousehold.getId());
+    assertDoesNotThrow(() -> householdService.deleteAllHouseholdMembers(existingHousehold.getId()));
+  }
+
+  @Test
+  public void deleteAllHouseholdMembersCorruptedHousehold() {
+    doNothing().when(householdRepository).deleteHouseholdMembersById(corruptedHousehold.getId());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () -> householdService.deleteAllHouseholdMembers(corruptedHousehold.getId())
     );
   }
 }
