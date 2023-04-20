@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.household;
 
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,13 +40,13 @@ import lombok.Setter;
 public class HouseholdMember {
 
   @Id
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   @JoinColumn(name = "`household_id`", nullable = false, referencedColumnName = "`household_id`")
   @NonNull
   private Household household;
 
   @Id
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   @JoinColumn(name = "`user`", nullable = false, referencedColumnName = "`username`")
   @NonNull
   private User user;

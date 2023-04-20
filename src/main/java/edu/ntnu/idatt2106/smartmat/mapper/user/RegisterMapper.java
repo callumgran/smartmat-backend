@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
  * Class used to map between User and RegisterDTO.
  * Based on the UserMapper from the IDATT2105 project.
  * @author Callum G.
- * @version 1.0 - 17.04.2023
+ * @version 1.1 - 19.04.2023
  */
 @Mapper(componentModel = "spring")
 public interface RegisterMapper {
@@ -23,6 +23,8 @@ public interface RegisterMapper {
    * @param registerDTO A user registration in the form of a DTO
    * @return A user object with the USER role
    */
-  @Mappings({ @Mapping(target = "role", constant = "USER") })
+  @Mappings(
+    { @Mapping(target = "role", constant = "USER"), @Mapping(target = "households", ignore = true) }
+  )
   User registerDTOtoUser(RegisterDTO registerDTO);
 }

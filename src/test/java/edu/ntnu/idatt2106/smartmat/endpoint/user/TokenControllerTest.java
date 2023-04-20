@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import edu.ntnu.idatt2106.smartmat.controller.TokenController;
+import edu.ntnu.idatt2106.smartmat.controller.user.TokenController;
 import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;

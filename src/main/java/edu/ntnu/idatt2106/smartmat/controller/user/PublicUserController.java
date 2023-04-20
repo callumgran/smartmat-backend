@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.controller;
+package edu.ntnu.idatt2106.smartmat.controller.user;
 
 import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
 import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;

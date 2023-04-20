@@ -130,7 +130,6 @@ public class UserServiceImpl implements UserService {
    */
   public User updateUser(@NonNull User user) throws UserDoesNotExistsException {
     if (!userRepository.existsById(user.getUsername())) throw new UserDoesNotExistsException();
-    user.setPassword(PasswordService.hashPassword(user.getPassword()));
 
     return userRepository.save(user);
   }

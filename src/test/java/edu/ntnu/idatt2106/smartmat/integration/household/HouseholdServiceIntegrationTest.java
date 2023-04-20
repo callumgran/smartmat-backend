@@ -127,7 +127,7 @@ public class HouseholdServiceIntegrationTest {
   public void getHouseholdExistingHousehold() {
     Household tmp = null;
     try {
-      tmp = householdService.getHouseHoldById(existingHousehold.getId());
+      tmp = householdService.getHouseholdById(existingHousehold.getId());
     } catch (HouseholdNotFoundException e) {
       fail();
       return;
@@ -142,7 +142,7 @@ public class HouseholdServiceIntegrationTest {
   public void getHouseholdCorruptedHousehold() {
     assertThrows(
       HouseholdNotFoundException.class,
-      () -> householdService.getHouseHoldById(corruptedHousehold.getId())
+      () -> householdService.getHouseholdById(corruptedHousehold.getId())
     );
   }
 
@@ -150,7 +150,7 @@ public class HouseholdServiceIntegrationTest {
   public void getHouseholdNewHousehold() {
     assertThrows(
       NullPointerException.class,
-      () -> householdService.getHouseHoldById(newHousehold.getId())
+      () -> householdService.getHouseholdById(newHousehold.getId())
     );
   }
 
