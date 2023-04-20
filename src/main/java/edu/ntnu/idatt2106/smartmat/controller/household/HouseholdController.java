@@ -78,10 +78,10 @@ public class HouseholdController {
     description = "Get a household by id, if the household does not exist, an error is thrown. Requires authentication.",
     tags = { "household" }
   )
-  public ResponseEntity<HouseholdDTO> getHousehold(@PathVariable UUID id)
+  public ResponseEntity<HouseholdDTO> getHousehold(@PathVariable String id)
     throws HouseholdNotFoundException {
     LOGGER.info("Getting household with id: {}", id);
-    Household household = householdService.getHouseholdById(id);
+    Household household = householdService.getHouseholdById(UUID.fromString(id));
 
     LOGGER.info("Got household with id: {}", id);
     HouseholdDTO householdDTO = HouseholdMapper.INSTANCE.householdToHouseholdDTO(household);
