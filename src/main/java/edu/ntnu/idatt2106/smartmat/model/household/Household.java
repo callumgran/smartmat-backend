@@ -23,8 +23,7 @@ import lombok.Setter;
  * A household is a collection of users that share SmartMat shopping lists
  * and food-stores.
  * @author Callum G.
- * @version 1.1
- * @date 20.4.2023
+ * @version 1.1 - 20.4.2023
  */
 @Setter
 @Getter

@@ -2,12 +2,14 @@ package edu.ntnu.idatt2106.smartmat.controller.household;
 
 import edu.ntnu.idatt2106.smartmat.dto.household.CreateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
+import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMemberMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
@@ -44,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.2 - 20.04.2023
+ * @version 1.3 - 20.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -235,5 +237,127 @@ public class HouseholdController {
 
     LOGGER.info("Mapped households for user with username: {} to householdDTOs", username);
     return ResponseEntity.ok(householdDTOS);
+  }
+
+  /**
+   * Method to add a user to a household.
+   * @param householdId The id of the household.
+   * @param username The username of the user to add.
+   * @return 200 OK if the user was added to the household.
+   * @throws NullPointerException If any value are null.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   */
+  @PostMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Add a user to a household",
+    description = "Add a user to a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<HouseholdMemberDTO> addUserToHousehold(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable String username
+  )
+    throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
+    if (!isAdminOrHouseholdOwner(auth, id)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å legge til brukere i denne husholdningen."
+      );
+    }
+
+    LOGGER.info("Adding user with username: {} to household with id: {}", username, id);
+    HouseholdMember householdMember = householdService.addHouseholdMember(
+      id,
+      username,
+      HouseholdRole.MEMBER
+    );
+
+    LOGGER.info("Added user with username: {} to household with id: {}", username, id);
+    HouseholdMemberDTO householdMemberDTORet = HouseholdMemberMapper.INSTANCE.householdMemberToHouseholdMemberDTO(
+      householdMember
+    );
+
+    LOGGER.info("Mapped householdMember to householdMemberDTO: {}", householdMemberDTORet);
+    return ResponseEntity.ok(householdMemberDTORet);
+  }
+
+  /**
+   * Method to remove a user from a household.
+   * @param householdId The id of the household.
+   * @param username The username of the user to remove.
+   * @return 204 No Content.
+   * @throws NullPointerException If any value are null.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   */
+  @DeleteMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Remove a user from a household",
+    description = "Remove a user from a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<String> removeUserFromHousehold(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable String username
+  )
+    throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
+    if (!isAdminOrHouseholdOwner(auth, id)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å fjerne brukere fra denne husholdningen."
+      );
+    }
+
+    LOGGER.info("Removing user with username: {} from household with id: {}", username, id);
+    householdService.deleteHouseholdMember(id, username);
+
+    LOGGER.info("Removed user with username: {} from household with id: {}", username, id);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Method to update the role of a user in a household.
+   * @param householdId The id of the household.
+   * @param username The username of the user to update.
+   * @param householdRole The new role of the user.
+   * @return 200 OK if the user was updated.
+   * @throws NullPointerException If any value are null.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   */
+  @PutMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Update the role of a user in a household",
+    description = "Update the role of a user in a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<HouseholdMemberDTO> updateUserInHousehold(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable String username,
+    @RequestBody HouseholdRole householdRole
+  )
+    throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
+    if (!isAdminOrHouseholdOwner(auth, id)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å oppdatere brukere i denne husholdningen."
+      );
+    }
+
+    LOGGER.info("Updating user with username: {} in household with id: {}", username, id);
+    HouseholdMember householdMember = householdService.updateHouseholdMember(
+      id,
+      username,
+      householdRole
+    );
+
+    LOGGER.info("Updated user with username: {} in household with id: {}", username, id);
+    HouseholdMemberDTO householdMemberDTORet = HouseholdMemberMapper.INSTANCE.householdMemberToHouseholdMemberDTO(
+      householdMember
+    );
+
+    LOGGER.info("Mapped householdMember to householdMemberDTO: {}", householdMemberDTORet);
+    return ResponseEntity.ok(householdMemberDTORet);
   }
 }

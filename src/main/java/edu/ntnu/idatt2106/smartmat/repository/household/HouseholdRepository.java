@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.repository.household;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Repository;
 /**
  * Repository for household operations on the database.
  * @author Callum G.
- * @version 1.2 - 20.4.2023
+ * @version 1.3 - 20.4.2023
  */
+@Transactional
 @Repository
 public interface HouseholdRepository extends JpaRepository<Household, UUID> {
   /**
@@ -79,4 +81,17 @@ public interface HouseholdRepository extends JpaRepository<Household, UUID> {
    */
   @Query("SELECT hm.household FROM HouseholdMember hm WHERE hm.user.username = ?1")
   Optional<Collection<Household>> findAllByUsername(@NonNull String username);
+
+  /**
+   * Find a householdmember by its household and user.
+   * @param id The id of the household.
+   * @param username The username of the user.
+   * @return The household member.
+   * @throws NullPointerException If the given id or username is null.
+   */
+  @Query("SELECT hm FROM HouseholdMember hm WHERE hm.household.id = ?1 AND hm.user.username = ?2")
+  Optional<HouseholdMember> findHouseholdMemberByIdAndUsername(
+    @NonNull UUID id,
+    @NonNull String username
+  );
 }
