@@ -62,8 +62,20 @@ public interface HouseholdService {
     throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException;
 
   void deleteAllHouseholdMembers(@NonNull UUID id)
-    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException;
+    throws NullPointerException, HouseholdNotFoundException;
 
   Collection<Household> getHouseholdsByUser(@NonNull String username)
     throws NullPointerException, UserDoesNotExistsException;
+
+  HouseholdMember addHouseholdMember(
+    @NonNull UUID id,
+    @NonNull String username,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException;
+
+  HouseholdMember updateHouseholdMember(
+    @NonNull UUID id,
+    @NonNull String username,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException;
 }

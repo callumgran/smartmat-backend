@@ -18,6 +18,7 @@ import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdMemberRepository;
 import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdRepository;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdServiceImpl;
@@ -59,6 +60,9 @@ public class HouseholdServiceIntegrationTest {
 
   @MockBean
   private HouseholdRepository householdRepository;
+
+  @MockBean
+  private HouseholdMemberRepository householdMemberRepository;
 
   private Household existingHousehold;
 

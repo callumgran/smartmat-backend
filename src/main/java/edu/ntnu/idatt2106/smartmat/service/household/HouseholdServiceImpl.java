@@ -6,6 +6,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdMemberRepository;
 import edu.ntnu.idatt2106.smartmat.repository.household.HouseholdRepository;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import java.util.Collection;
@@ -27,6 +28,9 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   @Autowired
   private HouseholdRepository householdRepository;
+
+  @Autowired
+  private HouseholdMemberRepository householdMemberRepository;
 
   @Autowired
   private UserService userService;
@@ -114,6 +118,7 @@ public class HouseholdServiceImpl implements HouseholdService {
   public void deleteHouseholdById(@NonNull UUID id)
     throws NullPointerException, HouseholdNotFoundException {
     if (!householdExists(id)) throw new HouseholdNotFoundException();
+    deleteAllHouseholdMembers(id);
     householdRepository.deleteById(id);
   }
 
@@ -245,11 +250,10 @@ public class HouseholdServiceImpl implements HouseholdService {
    * @param householdId The UUID of the respective household.
    * @throws NullPointerException if the household is null.
    * @throws HouseholdNotFoundException if the household is not found.
-   * @throws UserDoesNotExistsException if the user is not found.
    */
   @Override
   public void deleteAllHouseholdMembers(@NonNull UUID id)
-    throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    throws NullPointerException, HouseholdNotFoundException {
     if (!householdExists(id)) throw new HouseholdNotFoundException();
     householdRepository.deleteHouseholdMembersById(id);
   }
@@ -266,5 +270,53 @@ public class HouseholdServiceImpl implements HouseholdService {
     throws NullPointerException, UserDoesNotExistsException {
     if (!userService.usernameExists(username)) throw new UserDoesNotExistsException();
     return householdRepository.findAllByUsername(username).orElseThrow(NullPointerException::new);
+  }
+
+  /**
+   * Method to add a user to a household.
+   * @param householdId The UUID of the respective household.
+   * @param username The username of the respective user.
+   * @param role The role of the user in the household.
+   * @return The household member.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the user is not found.
+   */
+  @Override
+  public HouseholdMember addHouseholdMember(
+    @NonNull UUID id,
+    @NonNull String username,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    if (!userService.usernameExists(username)) throw new UserDoesNotExistsException();
+    return householdMemberRepository.save(
+      new HouseholdMember(getHouseholdById(id), userService.getUserByUsername(username), role)
+    );
+  }
+
+  /**
+   * Method to update a household member.
+   * @param householdId The UUID of the respective household.
+   * @param username The username of the respective user.
+   * @param role The new role of the user in the household.
+   * @return The household member.
+   * @throws NullPointerException if the household or user is null.
+   * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the user is not found.
+   */
+  @Override
+  public HouseholdMember updateHouseholdMember(
+    @NonNull UUID id,
+    @NonNull String username,
+    @NonNull HouseholdRole role
+  ) throws NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!householdExists(id)) throw new HouseholdNotFoundException();
+    if (!userService.usernameExists(username)) throw new UserDoesNotExistsException();
+    HouseholdMember householdMember = householdRepository
+      .findHouseholdMemberByIdAndUsername(id, username)
+      .get();
+    householdMember.setHouseholdRole(role);
+    return householdMemberRepository.save(householdMember);
   }
 }
