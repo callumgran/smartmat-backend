@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.exceptions;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
@@ -88,6 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       EmailAlreadyExistsException.class,
       UsernameAlreadyExistsException.class,
       HouseholdAlreadyExistsException.class,
+      MemberAlreadyExistsException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleConflict(Exception ex, WebRequest request) {
