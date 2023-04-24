@@ -4,6 +4,8 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsEx
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
@@ -89,6 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       EmailAlreadyExistsException.class,
       UsernameAlreadyExistsException.class,
       HouseholdAlreadyExistsException.class,
+      RecipeAlreadyExistsException.class,
       MemberAlreadyExistsException.class,
     }
   )
@@ -111,6 +114,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       MalformedURLException.class,
       HouseholdNotFoundException.class,
       IngredientNotFoundException.class,
+      RecipeNotFoundException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleSpecificObjectDoesNotExist(

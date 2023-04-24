@@ -3,6 +3,8 @@ package edu.ntnu.idatt2106.smartmat.mapper.ingredient;
 import edu.ntnu.idatt2106.smartmat.dto.ingredient.IngredientDTO;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -26,5 +28,6 @@ public interface IngredientMapper {
    * @param ingredientDTO The ingredientDTO to be mapped.
    * @return The mapped ingredient.
    */
+  @Mappings({ @Mapping(target = "recipes", ignore = true) })
   Ingredient ingredientDTOToIngredient(IngredientDTO ingredientDTO);
 }

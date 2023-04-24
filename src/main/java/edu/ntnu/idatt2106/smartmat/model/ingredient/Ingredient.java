@@ -1,6 +1,8 @@
 package edu.ntnu.idatt2106.smartmat.model.ingredient;
 
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import jakarta.persistence.*;
+import java.util.Set;
 import lombok.*;
 
 /**
@@ -26,4 +28,7 @@ public class Ingredient {
   @Column(name = "`ingredient_name`", length = 64, nullable = false)
   @NonNull
   private String name;
+
+  @OneToMany(mappedBy = "ingredient")
+  private Set<RecipeIngredient> recipes;
 }
