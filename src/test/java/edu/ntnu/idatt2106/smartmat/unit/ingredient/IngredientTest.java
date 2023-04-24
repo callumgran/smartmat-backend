@@ -11,11 +11,12 @@ import org.junit.Test;
  */
 public class IngredientTest {
 
+  private final long id = 1;
+  private final String name = "Carrot";
+
   @Test
   public void testIngredientConstructor() {
-    final long id = 1;
-    final String name = "Carrot";
-    Ingredient ingredient = new Ingredient(id, name);
+    Ingredient ingredient = new Ingredient(id, name, null);
 
     assertEquals(id, ingredient.getId());
     assertEquals(name, ingredient.getName());
@@ -24,7 +25,7 @@ public class IngredientTest {
   @Test
   public void testIngredientConstructorWithNulls() {
     try {
-      new Ingredient(1L, null);
+      new Ingredient(1L, null, null);
       fail();
     } catch (NullPointerException e) {
       assertEquals(NullPointerException.class, e.getClass());

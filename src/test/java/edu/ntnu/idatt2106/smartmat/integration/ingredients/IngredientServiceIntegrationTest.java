@@ -51,9 +51,9 @@ public class IngredientServiceIntegrationTest {
 
   @Before
   public void setUp() throws IngredientNotFoundException {
-    carrot = new Ingredient(1L, "Carrot");
-    carrot2 = new Ingredient(2L, "Carrot");
-    tomato = new Ingredient(3L, "Tomato");
+    carrot = new Ingredient(1L, "Carrot", null);
+    carrot2 = new Ingredient(2L, "Carrot", null);
+    tomato = new Ingredient(3L, "Tomato", null);
 
     when(ingredientRepository.findById(1L)).thenReturn(Optional.of(carrot));
     when(ingredientRepository.findById(2L)).thenReturn(Optional.of(carrot2));
