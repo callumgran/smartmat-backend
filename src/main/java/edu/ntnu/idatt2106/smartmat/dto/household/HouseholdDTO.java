@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.household;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,11 @@ import lombok.NonNull;
 public class HouseholdDTO {
 
   @NonNull
+  @NotBlank
   private String id;
 
   @NonNull
+  @NotBlank
   private String name;
 
   @NonNull
