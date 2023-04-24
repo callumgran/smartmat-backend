@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.3 - 20.04.2023
+ * @version 1.4 - 24.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -306,6 +306,14 @@ public class HouseholdController {
     if (!isAdminOrHouseholdOwner(auth, id)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å fjerne brukere fra denne husholdningen."
+      );
+    }
+    if (!householdService.isHouseholdMember(id, username)) {
+      throw new UserDoesNotExistsException("Brukeren er ikke medlem av denne husholdningen.");
+    }
+    if (householdService.isHouseholdOwner(id, username)) {
+      throw new PermissionDeniedException(
+        "Brukeren er eier av denne husholdningen og kan ikke fjernes."
       );
     }
 

@@ -268,4 +268,22 @@ public class HouseholdControllerTest {
       fail(e.getMessage());
     }
   }
+
+  @Test
+  public void testDeleteHouseholdOwner() {
+    try {
+      doNothing().when(householdService).deleteHouseholdById(household.getId());
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      mvc
+        .perform(
+          delete(String.format("%s/%s", BASE_URL, household.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNoContent());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
 }
