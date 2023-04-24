@@ -286,4 +286,32 @@ public class HouseholdControllerTest {
       fail(e.getMessage());
     }
   }
+
+  @Test
+  public void testAddUserThatAlreadyExists() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      when(householdService.isHouseholdMember(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      when(
+        householdService.addHouseholdMember(
+          household.getId(),
+          user.getUsername(),
+          HouseholdRole.MEMBER
+        )
+      )
+        .thenReturn(new HouseholdMember(household, user, HouseholdRole.MEMBER));
+      mvc
+        .perform(
+          post(String.format("%s/%s/user/%s", BASE_URL, household.getId(), user.getUsername()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isConflict());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
 }

@@ -7,6 +7,7 @@ import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMemberMapper;
@@ -245,6 +246,8 @@ public class HouseholdController {
    * @param username The username of the user to add.
    * @return 200 OK if the user was added to the household.
    * @throws NullPointerException If any value are null.
+   * @throws PermissionDeniedException If the user does not have permission to add a user to the household.
+   * @throws MemberAlreadyExistsException If the user is already a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
    */
@@ -259,12 +262,13 @@ public class HouseholdController {
     @PathVariable UUID id,
     @PathVariable String username
   )
-    throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
+    throws NullPointerException, PermissionDeniedException, MemberAlreadyExistsException, UserDoesNotExistsException, HouseholdNotFoundException {
     if (!isAdminOrHouseholdOwner(auth, id)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å legge til brukere i denne husholdningen."
       );
     }
+    if (householdService.isHouseholdMember(id, username)) throw new MemberAlreadyExistsException();
 
     LOGGER.info("Adding user with username: {} to household with id: {}", username, id);
     HouseholdMember householdMember = householdService.addHouseholdMember(
