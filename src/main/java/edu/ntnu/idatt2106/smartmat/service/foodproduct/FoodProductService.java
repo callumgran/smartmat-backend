@@ -5,12 +5,14 @@ import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 /**
  * Service interface for the FoodProduct entity.
  * @author Callum G.
  * @version 1.0 21.04.2023
  */
+@Service
 public interface FoodProductService {
   boolean existsById(@NonNull Long id) throws NullPointerException;
 

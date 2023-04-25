@@ -12,6 +12,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsExceptio
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
+import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeIngredientRepository;
 import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeServiceImpl;
@@ -50,6 +51,9 @@ public class RecipeServiceIntegrationTest {
 
   @MockBean
   private RecipeRepository recipeRepository;
+
+  @MockBean
+  private RecipeIngredientRepository recipeIngredientRepository;
 
   Recipe carrotCake;
   Recipe bananaCake;
@@ -107,6 +111,9 @@ public class RecipeServiceIntegrationTest {
     doNothing().when(recipeRepository).deleteById(carrotCakeId);
     doNothing().when(recipeRepository).deleteById(bananaCakeId);
     doNothing().when(recipeRepository).deleteById(chocolateCakeId);
+    doNothing().when(recipeIngredientRepository).deleteAllByRecipeId(carrotCakeId);
+    doNothing().when(recipeIngredientRepository).deleteAllByRecipeId(bananaCakeId);
+    doNothing().when(recipeIngredientRepository).deleteAllByRecipeId(chocolateCakeId);
 
     when(recipeRepository.findByNameContainingIgnoreCase("c"))
       .thenReturn(Optional.of(List.of(carrotCake)));

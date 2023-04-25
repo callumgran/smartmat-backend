@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.model.recipe;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -37,12 +36,12 @@ import lombok.Setter;
 public class RecipeIngredient {
 
   @Id
-  @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @ManyToOne(optional = false)
   @JoinColumn(name = "`recipe_id`", nullable = false, referencedColumnName = "`id`")
   private Recipe recipe;
 
   @Id
-  @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @ManyToOne(optional = false)
   @JoinColumn(name = "`ingredient`", nullable = false, referencedColumnName = "`ingredient_id`")
   private Ingredient ingredient;
 

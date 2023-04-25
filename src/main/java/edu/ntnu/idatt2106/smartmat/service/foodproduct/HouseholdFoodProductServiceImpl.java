@@ -7,14 +7,18 @@ import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.HouseholdFoodProductRepository;
 import java.util.UUID;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 /**
  * Service interface for the FoodProduct entity.
  * @author Callum G.
  * @version 1.0 21.04.2023
  */
+@Service
+@RequiredArgsConstructor
 public class HouseholdFoodProductServiceImpl implements HouseholdFoodProductService {
 
   @Autowired
