@@ -89,7 +89,6 @@ public class PublicUserControllerTest {
 
   @Test
   public void testCreateUser() throws Exception {
-    System.out.println("USER: " + user.getEmail());
     when(mapper.registerDTOtoUser(any(RegisterDTO.class))).thenReturn(user);
     when(userService.saveUser(any(User.class))).thenReturn(user);
     try {

@@ -1,0 +1,97 @@
+package edu.ntnu.idatt2106.smartmat.mapper.foodproduct;
+
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.HouseholdFoodProductDTO;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
+import java.util.UUID;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(componentModel = "spring")
+public interface HouseholdFoodProductMapper {
+  static HouseholdFoodProductMapper INSTANCE = Mappers.getMapper(HouseholdFoodProductMapper.class);
+
+  /**
+   * Maps a string to a UUID.
+   * @param id The string to map.
+   * @return The mapped UUID.
+   */
+  @Named("stringToUUID")
+  default UUID stringToUUID(String id) {
+    return UUID.fromString(id);
+  }
+
+  /**
+   * Maps a UUID to a string.
+   * @param id The UUID to map.
+   * @return The mapped string.
+   */
+  @Named("UUIDToString")
+  default String UUIDToString(UUID id) {
+    return id.toString();
+  }
+
+  /**
+   * Maps a food product DTO to a food product.
+   * @param foodProductDTO The food product DTO to map.
+   * @return The mapped food product.
+   */
+  @Named("foodProductDTOTofoodProduct")
+  default FoodProduct foodProductDTOTofoodProduct(FoodProductDTO foodProductDTO) {
+    return FoodProductMapper.INSTANCE.foodProductDTOToFoodProduct(foodProductDTO);
+  }
+
+  /**
+   * Maps a food product to a food product DTO.
+   * @param foodProduct The food product to map.
+   * @return The mapped food product DTO.
+   */
+  @Named("foodProductToFoodProductDTO")
+  default FoodProductDTO foodProductToFoodProductDTO(FoodProduct foodProduct) {
+    return FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(foodProduct);
+  }
+
+  /**
+   * Maps a food product DTO to a food product.
+   * @param householdFoodProduct The food product DTO to map.
+   * @return The mapped food product.
+   */
+  @Mappings(
+    {
+      @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID"),
+      @Mapping(target = "household", ignore = true),
+      @Mapping(
+        target = "foodProduct",
+        source = "foodProduct",
+        qualifiedByName = "foodProductDTOTofoodProduct"
+      ),
+    }
+  )
+  HouseholdFoodProduct householdFoodProductDTOToHouseholdFoodProduct(
+    HouseholdFoodProductDTO householdFoodProduct
+  );
+
+  /**
+   * Maps a food product to a food product DTO.
+   * @param householdFoodProduct The food product to map.
+   * @return The mapped food product DTO.
+   */
+  @Mappings(
+    {
+      @Mapping(target = "id", source = "id", qualifiedByName = "UUIDToString"),
+      @Mapping(target = "householdId", source = "household.id", qualifiedByName = "UUIDToString"),
+      @Mapping(
+        target = "foodProduct",
+        source = "foodProduct",
+        qualifiedByName = "foodProductToFoodProductDTO"
+      ),
+    }
+  )
+  HouseholdFoodProductDTO householdFoodProductToHouseholdFoodProductDTO(
+    HouseholdFoodProduct householdFoodProduct
+  );
+}

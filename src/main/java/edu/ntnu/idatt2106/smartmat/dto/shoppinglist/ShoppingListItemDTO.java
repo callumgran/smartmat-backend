@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.shoppinglist;
 
-import edu.ntnu.idatt2106.smartmat.dto.ingredient.IngredientDTO;
+import edu.ntnu.idatt2106.smartmat.dto.ingredient.BareIngredientDTO;
 import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
@@ -34,5 +34,5 @@ public class ShoppingListItemDTO {
   @NonNull
   private UUID shoppingList;
 
-  private IngredientDTO ingredient;
+  private BareIngredientDTO ingredient;
 }

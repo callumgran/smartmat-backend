@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.model.ingredient;
 
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import jakarta.persistence.*;
 import java.util.Set;
@@ -7,8 +8,8 @@ import lombok.*;
 
 /**
  * Class representing an ingredient in the system.
- * @author Tobias. O
- * @version 1.0 - 20.04.2023
+ * @author Tobias. O, Carl G.
+ * @version 1.1 - 20.04.2023
  */
 @Setter
 @Getter
@@ -23,11 +24,14 @@ public class Ingredient {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "`ingredient_id`", nullable = false, updatable = false)
-  private long id;
+  private Long id;
 
   @Column(name = "`ingredient_name`", length = 64, nullable = false)
   @NonNull
   private String name;
+
+  @OneToMany(mappedBy = "ingredient", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  private Set<FoodProduct> foodProducts;
 
   @OneToMany(mappedBy = "ingredient")
   private Set<RecipeIngredient> recipes;

@@ -27,7 +27,6 @@ import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

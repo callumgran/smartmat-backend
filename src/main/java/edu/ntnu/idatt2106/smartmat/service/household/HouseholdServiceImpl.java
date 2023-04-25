@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
  * Implementation of the household service.
  * This class is responsible for all business logic related to households.
  * @author Callum G.
- * @version 1.2 - 20.4.2023
+ * @version 1.3 - 20.4.2023
  */
 @Service
 @RequiredArgsConstructor

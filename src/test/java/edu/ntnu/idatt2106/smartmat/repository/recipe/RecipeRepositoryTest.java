@@ -1,5 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.repository.recipe;
 
+import static org.junit.Assert.assertEquals;
+
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
@@ -30,7 +32,7 @@ public class RecipeRepositoryTest {
 
   @Test
   public void testFindByNameContainingIgnoreCase() {
-    Ingredient ingredient = new Ingredient(0L, "Carrot", new HashSet<>());
+    Ingredient ingredient = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>());
     Recipe recipe = new Recipe(
       null,
       "Carrot Cake",
@@ -54,8 +56,8 @@ public class RecipeRepositoryTest {
       .get()
       .stream()
       .toList();
-    assert (recipes.size() == 1);
-    assert (recipes.get(0).getName().equals("Carrot Cake"));
-    assert (recipes.get(0).getIngredients().size() == 1);
+    assertEquals(recipes.size(), 1);
+    assertEquals(recipes.get(0).getName(), "Carrot Cake");
+    assertEquals(recipes.get(0).getIngredients().size(), 1);
   }
 }

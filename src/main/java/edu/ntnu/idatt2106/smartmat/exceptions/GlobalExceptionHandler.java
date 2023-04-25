@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.exceptions;
 
+import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsException;
@@ -126,6 +127,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       RecipeNotFoundException.class,
       ShoppingListNotFoundException.class,
       ShoppingListItemNotFoundException.class,
+      FoodProductNotFoundException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleSpecificObjectDoesNotExist(
