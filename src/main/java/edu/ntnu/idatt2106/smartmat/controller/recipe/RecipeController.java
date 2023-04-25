@@ -134,7 +134,10 @@ public class RecipeController {
 
     LOGGER.info("POST request for recipe: {}", recipeDTO);
     Recipe recipe = RecipeMapper.INSTANCE.recipeCreateDTOToRecipe(recipeDTO);
+
+    LOGGER.info("Mapped recipeDTO to recipe: {}", recipe);
     recipe = recipeService.saveRecipe(recipe);
+
     RecipeDTO createdRecipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe);
 
     LOGGER.info("Created recipe: {}", createdRecipeDTO);

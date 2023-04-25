@@ -6,14 +6,18 @@ import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.FoodProductRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 /**
  * Service interface for the FoodProduct entity.
  * @author Callum G.
  * @version 1.0 21.04.2023
  */
+@Service
+@RequiredArgsConstructor
 public class FoodProductServiceImpl implements FoodProductService {
 
   @Autowired
