@@ -16,7 +16,7 @@ public class HouseholdAlreadyExistsException extends Exception {
   }
 
   /**
-   * Constructor for the exception.
+   * Constructor for HouseholdAlreadyExistsException.
    * Has a default message: "Husstanden eksisterer allerede."
    */
   public HouseholdAlreadyExistsException() {

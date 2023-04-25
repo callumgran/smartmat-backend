@@ -1,5 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.household;
 
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,4 +48,10 @@ public class Household {
 
   @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<HouseholdMember> members;
+
+  @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  private Set<ShoppingList> shoppingLists;
+
+  @OneToMany(mappedBy = "household")
+  private Set<CustomFoodItem> customFoodItems;
 }
