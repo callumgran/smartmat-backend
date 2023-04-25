@@ -20,8 +20,8 @@ import lombok.Setter;
 /**
  * Class linking an ingredient to a recipe.
  * Ingredients is a part of a recipe, and a recipe needs ingredients.
- * @author Simen G.
- * @version 1.0 - 20.4.2023
+ * @author Simen G, Nicolai H. Brand.
+ * @version 1.0 - 25.4.2023
  */
 @Setter
 @Getter
@@ -39,13 +39,11 @@ public class RecipeIngredient {
   @Id
   @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   @JoinColumn(name = "`recipe_id`", nullable = false, referencedColumnName = "`id`")
-  @NonNull
   private Recipe recipe;
 
   @Id
   @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   @JoinColumn(name = "`ingredient`", nullable = false, referencedColumnName = "`ingredient_id`")
-  @NonNull
   private Ingredient ingredient;
 
   @Column(name = "`amount`", nullable = false)
