@@ -25,6 +25,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import java.util.Set;
 import java.util.UUID;
@@ -54,6 +55,9 @@ public class HouseholdControllerTest {
 
   @MockBean
   private HouseholdService householdService;
+
+  @MockBean
+  private ShoppingListService shoppingListService;
 
   @MockBean
   private UserService userService;

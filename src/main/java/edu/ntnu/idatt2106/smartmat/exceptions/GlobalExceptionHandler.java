@@ -6,6 +6,9 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsExcep
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
@@ -57,7 +60,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     HttpStatusCode statusCode,
     WebRequest request
   ) {
-    ExceptionResponse response = new ExceptionResponse(ex.getClass().getSimpleName());
+    ex.printStackTrace();
+    StringBuilder message = new StringBuilder("En uventet feil har oppstått. Meldingen er: ")
+      .append(ex.getClass().getSimpleName())
+      .append(": ")
+      .append(ex.getMessage());
+    ExceptionResponse response = new ExceptionResponse(message.toString());
     return super.handleExceptionInternal(ex, response, headers, statusCode, request);
   }
 
@@ -72,7 +80,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     Exception ex,
     HttpStatus status
   ) {
-    LOGGER.error("{}: {}", ex.getClass().getSimpleName(), ex.getMessage());
+    LOGGER.error("{}: {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
     ExceptionResponse response = new ExceptionResponse(ex.getMessage());
     return new ResponseEntity<>(response, new HttpHeaders(), status);
   }
@@ -93,6 +101,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       HouseholdAlreadyExistsException.class,
       RecipeAlreadyExistsException.class,
       MemberAlreadyExistsException.class,
+      ShoppingListAlreadyExistsException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleConflict(Exception ex, WebRequest request) {
@@ -115,6 +124,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       HouseholdNotFoundException.class,
       IngredientNotFoundException.class,
       RecipeNotFoundException.class,
+      ShoppingListNotFoundException.class,
+      ShoppingListItemNotFoundException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleSpecificObjectDoesNotExist(
@@ -207,7 +218,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     WebRequest request
   ) {
     return getResponseEntityWithExceptionResponse(
-      new Exception(new Throwable(ex.getClass().getSimpleName() + ": " + ex.getMessage())),
+      new Exception(ex.getClass().getSimpleName() + ": " + ex.getMessage()),
       HttpStatus.INTERNAL_SERVER_ERROR
     );
   }
