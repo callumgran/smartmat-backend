@@ -1,7 +1,9 @@
 package edu.ntnu.idatt2106.smartmat.dto.ingredient;
 
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.IngredientFoodProductDTO;
+import edu.ntnu.idatt2106.smartmat.dto.unit.UnitDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +22,15 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class IngredientDTO {
 
+  @NotNull
   @NotBlank
   private Long id;
 
   @NotBlank
   @NonNull
   private String name;
+
+  private UnitDTO unit;
 
   @NotBlank
   @NonNull
