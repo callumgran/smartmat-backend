@@ -38,7 +38,7 @@ public class IngredientController {
    * @return the ingredient.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<IngredientDTO> getIngredient(@PathVariable long id)
+  public ResponseEntity<IngredientDTO> getIngredient(@PathVariable long id)
     throws IngredientNotFoundException, NullPointerException {
     LOGGER.info("GET request for ingredient: {}", id);
 

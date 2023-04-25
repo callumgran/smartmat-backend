@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.ingredient;
 
+import edu.ntnu.idatt2106.smartmat.dto.unit.UnitDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,8 @@ import lombok.NonNull;
 
 /**
  * Class representing an ingredientDTO for food product.
- * @author Callum G.
- * @version 1.0 - 21.04.2023
+ * @author Callum G., Carl G.
+ * @version 1.1 - 25.04.2023
  */
 @Data
 @Builder
@@ -24,4 +25,6 @@ public class BareIngredientDTO {
   @NotBlank
   @NonNull
   private String name;
+
+  private UnitDTO unit;
 }
