@@ -4,11 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
+import edu.ntnu.idatt2106.smartmat.filtering.FilterRequest;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
+import edu.ntnu.idatt2106.smartmat.filtering.SortDirection;
+import edu.ntnu.idatt2106.smartmat.filtering.SortRequest;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.repository.ingredient.IngredientRepository;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
@@ -22,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -152,5 +161,49 @@ public class IngredientServiceIntegrationTest {
     assertEquals(2, ingredients.size());
     assertEquals(carrot.getName(), ingredients.get(0).getName());
     assertEquals(carrot2.getName(), ingredients.get(1).getName());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testEmptySearchRequestReturnsEmptyList() {
+    SearchRequest searchRequest = SearchRequest.builder().filterRequests(List.of()).build();
+    when(ingredientRepository.findAll(any(SearchSpecification.class), any(Pageable.class)))
+      .thenReturn(Page.empty());
+    Page<Ingredient> ingredients = ingredientService.getIngredientsBySearch(searchRequest);
+    assertEquals(0, ingredients.getTotalElements());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testSortRequestReturnsListInOrder() {
+    SearchRequest searchRequest = SearchRequest
+      .builder()
+      .sortRequests(
+        List.of(SortRequest.builder().keyWord("name").sortDirection(SortDirection.ASC).build())
+      )
+      .build();
+    Page<Ingredient> ingredients = new PageImpl<>(List.of(carrot, carrot2));
+    when(ingredientRepository.findAll(any(SearchSpecification.class), any(Pageable.class)))
+      .thenReturn(ingredients);
+    Page<Ingredient> ingredientsPage = ingredientService.getIngredientsBySearch(searchRequest);
+    assertEquals(2, ingredientsPage.getTotalElements());
+    assertEquals(carrot, ingredientsPage.getContent().get(0));
+    assertEquals(carrot2, ingredientsPage.getContent().get(1));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testFilterIngredientsByNameCanBePartialMatch() {
+    SearchRequest searchRequest = SearchRequest
+      .builder()
+      .filterRequests(List.of(FilterRequest.builder().keyWord("name").value("Car").build()))
+      .build();
+    Page<Ingredient> ingredients = new PageImpl<>(List.of(carrot, carrot2));
+    when(ingredientRepository.findAll(any(SearchSpecification.class), any(Pageable.class)))
+      .thenReturn(ingredients);
+    Page<Ingredient> ingredientsPage = ingredientService.getIngredientsBySearch(searchRequest);
+    assertEquals(2, ingredientsPage.getTotalElements());
+    assertEquals(carrot, ingredientsPage.getContent().get(0));
+    assertEquals(carrot2, ingredientsPage.getContent().get(1));
   }
 }

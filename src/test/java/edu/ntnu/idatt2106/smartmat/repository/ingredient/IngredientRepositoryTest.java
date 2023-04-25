@@ -2,6 +2,11 @@ package edu.ntnu.idatt2106.smartmat.repository.ingredient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import edu.ntnu.idatt2106.smartmat.filtering.FieldType;
+import edu.ntnu.idatt2106.smartmat.filtering.FilterRequest;
+import edu.ntnu.idatt2106.smartmat.filtering.Operator;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import java.util.List;
 import org.junit.Test;
@@ -40,5 +45,43 @@ public class IngredientRepositoryTest {
     assertEquals(found.size(), 2);
     assertEquals(found.get(0).getName(), "Carrot");
     assertEquals(found.get(1).getName(), "Carrot");
+  }
+
+  @Test
+  public void testFindByPartialNameInSearchRequest() {
+    Ingredient carrot = Ingredient.builder().name("Carrot").build();
+    Ingredient carrot2 = Ingredient.builder().name("Carrot").build();
+    Ingredient onion = Ingredient.builder().name("Onion").build();
+
+    entityManager.persist(carrot);
+    entityManager.persist(carrot2);
+    entityManager.persist(onion);
+    entityManager.flush();
+
+    SearchRequest searchRequest = SearchRequest
+      .builder()
+      .filterRequests(
+        List.of(
+          FilterRequest
+            .builder()
+            .keyWord("name")
+            .value("arro")
+            .fieldType(FieldType.STRING)
+            .operator(Operator.LIKE)
+            .build()
+        )
+      )
+      .build();
+    List<Ingredient> found = ingredientRepository
+      .findAll(
+        new SearchSpecification<Ingredient>(searchRequest),
+        SearchSpecification.getPageable(searchRequest)
+      )
+      .get()
+      .toList();
+
+    assertEquals(2, found.size());
+    assertEquals(carrot, found.get(0));
+    assertEquals(carrot2, found.get(1));
   }
 }

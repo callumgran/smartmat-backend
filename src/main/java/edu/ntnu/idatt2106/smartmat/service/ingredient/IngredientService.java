@@ -2,8 +2,10 @@ package edu.ntnu.idatt2106.smartmat.service.ingredient;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -27,4 +29,7 @@ public interface IngredientService {
   void deleteIngredientById(@NonNull long id) throws IngredientNotFoundException;
 
   public Collection<Ingredient> getAllIngredients() throws DatabaseException;
+
+  Page<Ingredient> getIngredientsBySearch(@NonNull SearchRequest searchRequest)
+    throws NullPointerException;
 }
