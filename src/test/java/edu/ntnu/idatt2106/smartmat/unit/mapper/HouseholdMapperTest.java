@@ -95,6 +95,7 @@ public class HouseholdMapperTest {
         .id(household.getId().toString())
         .name(household.getName())
         .members(new HashSet<>())
+        .foodProducts(new HashSet<>())
         .build();
 
     HouseholdMemberDTO householdMemberDTO = HouseholdMemberDTO
@@ -120,6 +121,7 @@ public class HouseholdMapperTest {
     assertEquals(household.getId().toString(), householdDTO.getId());
     assertEquals(household.getName(), householdDTO.getName());
     assertEquals(household.getMembers().size(), householdDTO.getMembers().size());
+    assertEquals(household.getFoodProducts().size(), householdDTO.getFoodProducts().size());
   }
 
   @Test

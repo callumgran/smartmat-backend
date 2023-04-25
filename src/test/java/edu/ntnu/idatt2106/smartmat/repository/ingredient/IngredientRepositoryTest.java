@@ -12,8 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Unit test for the user repository.
- * Based on the user-repository-test class from the IDATT2105 project.
+ * Unit test for the ingredient repository.
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest

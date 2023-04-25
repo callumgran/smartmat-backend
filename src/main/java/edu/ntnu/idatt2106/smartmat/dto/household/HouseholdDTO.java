@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.dto.household;
 
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.CustomFoodItemDTO;
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.HouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ListingShoppingListDTO;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
@@ -32,6 +33,8 @@ public class HouseholdDTO {
 
   @NonNull
   private Set<HouseholdMemberDTO> members;
+
+  private Set<HouseholdFoodProductDTO> foodProducts;
 
   private Set<ListingShoppingListDTO> shoppingLists;
 

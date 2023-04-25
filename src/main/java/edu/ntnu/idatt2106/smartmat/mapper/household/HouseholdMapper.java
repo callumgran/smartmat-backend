@@ -1,14 +1,17 @@
 package edu.ntnu.idatt2106.smartmat.mapper.household;
 
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.CustomFoodItemDTO;
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.HouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ListingShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.CustomFoodItemMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.HouseholdFoodProductMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
@@ -26,8 +29,8 @@ import org.springframework.util.function.ThrowingFunction;
 
 /**
  * Class used to map between User and RegisterDTO.
- * @author Callum G.
- * @version 1.0 - 19.04.2023
+ * @author Callum G, Thomas S.
+ * @version 1.1 - 24.04.2023
  */
 @RequiredArgsConstructor
 @Mapper(componentModel = "spring")
@@ -57,7 +60,7 @@ public abstract class HouseholdMapper {
 
   /**
    * Maps a household member to a household member DTO.
-   * @param member The household member to map.
+   * @param memberDTOs The household member to map.
    * @return The mapped household member DTO.
    */
   @Named("memberDTOsToMembers")
@@ -144,6 +147,42 @@ public abstract class HouseholdMapper {
   }
 
   /**
+   * Maps a list of food product DTOs to a list of food products.
+   * @param householdFoodProductDTOs The food product DTOs to map.
+   * @return The mapped food products.
+   */
+  @Named("foodProductDTOsToFoodProducts")
+  public Set<HouseholdFoodProduct> foodProductDTOsToFoodProducts(
+    Set<HouseholdFoodProductDTO> householdFoodProductDTOs
+  ) {
+    if (householdFoodProductDTOs == null) {
+      return new HashSet<>();
+    }
+    return householdFoodProductDTOs
+      .stream()
+      .map(HouseholdFoodProductMapper.INSTANCE::householdFoodProductDTOToHouseholdFoodProduct)
+      .collect(Collectors.toSet());
+  }
+
+  /**
+   * Maps a list of food products to a list of food product DTOs.
+   * @param foodProducts The food products to map.
+   * @return The mapped food product DTOs.
+   */
+  @Named("foodProductsToFoodProductDTOs")
+  public Set<HouseholdFoodProductDTO> foodProductsToFoodProductDTOs(
+    Set<HouseholdFoodProduct> foodProducts
+  ) {
+    if (foodProducts == null) {
+      return new HashSet<>();
+    }
+    return foodProducts
+      .stream()
+      .map(HouseholdFoodProductMapper.INSTANCE::householdFoodProductToHouseholdFoodProductDTO)
+      .collect(Collectors.toSet());
+  }
+
+  /**
    * Maps a household to a household DTO.
    * @param household The household to map.
    * @return The mapped household DTO.
@@ -152,6 +191,11 @@ public abstract class HouseholdMapper {
     {
       @Mapping(target = "members", source = "members", qualifiedByName = "membersToMemberDTOs"),
       @Mapping(target = "id", source = "id", qualifiedByName = "UUIDToString"),
+      @Mapping(
+        target = "foodProducts",
+        source = "foodProducts",
+        qualifiedByName = "foodProductsToFoodProductDTOs"
+      ),
       @Mapping(
         target = "shoppingLists",
         source = "shoppingLists",
@@ -175,6 +219,11 @@ public abstract class HouseholdMapper {
     {
       @Mapping(target = "members", source = "members", qualifiedByName = "memberDTOsToMembers"),
       @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID"),
+      @Mapping(
+        target = "foodProducts",
+        source = "foodProducts",
+        qualifiedByName = "foodProductDTOsToFoodProducts"
+      ),
       @Mapping(
         target = "shoppingLists",
         source = "shoppingLists",

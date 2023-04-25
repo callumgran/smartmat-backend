@@ -53,7 +53,7 @@ public class TestUserHelperFunctions {
           "adminusername",
           "admin@admin.com",
           "Admin",
-          "admin",
+          "Admin",
           "Adminpassword1",
           UserRole.ADMIN,
           new HashSet<>()
