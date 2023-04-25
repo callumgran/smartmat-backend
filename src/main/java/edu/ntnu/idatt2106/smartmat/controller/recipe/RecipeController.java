@@ -28,6 +28,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for recipe.
+ *
+ * @author Simen J. G, Nicolai H. Brand.
+ * @version 1.1 25.03.2020
+ */
 @RestController
 @RequestMapping(value = "/api/v1/private/recipes")
 @RequiredArgsConstructor
@@ -57,7 +63,6 @@ public class RecipeController {
 
   /**
    * Method for searching recipes.
-   * @param searchRequest The search request.
    * @return A collection of recipes.
    */
   @GetMapping(value = "/search/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,12 +85,13 @@ public class RecipeController {
   }
 
   /**
-   * Method for searching recipes.
-   * @param searchRequest The search request.
+   * Method for getting a recipe by id.
+   * @param id The id of the recipe.
    * @return A collection of recipes.
    * @throws RecipeNotFoundException If the recipe is not found.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "Get recipe", description = "Get recipes by id.", tags = { "recipe" })
   public ResponseEntity<RecipeDTO> getRecipeById(@PathVariable String id)
     throws RecipeNotFoundException {
     LOGGER.info("GET request for recipe by id: {}", id);
@@ -185,6 +191,11 @@ public class RecipeController {
    * @throws RecipeNotFoundException If the recipe does not exist.
    */
   @DeleteMapping(value = "/{id}")
+  @Operation(
+    summary = "Delete a recipe",
+    description = "Delete a recipe with the given id.",
+    tags = { "recipe" }
+  )
   public ResponseEntity<Void> deleteRecipe(
     @PathVariable String id,
     @AuthenticationPrincipal Auth auth
@@ -211,7 +222,7 @@ public class RecipeController {
   @Operation(
     summary = "Search recipes",
     description = "Search recipes by name, ingredients and tags, and return a collection of recipes. Returns an empty collection if no recipes are found. Requires valid JWT token in header.",
-    tags = { "recipes" }
+    tags = { "recipe" }
   )
   public ResponseEntity<Collection<RecipeDTO>> searchRecipes(
     @RequestBody SearchRequest searchRequest
