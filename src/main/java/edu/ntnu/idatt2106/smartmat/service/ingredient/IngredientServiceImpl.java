@@ -2,12 +2,15 @@ package edu.ntnu.idatt2106.smartmat.service.ingredient;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
+import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.repository.ingredient.IngredientRepository;
 import java.util.Collection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 /**
@@ -109,5 +112,19 @@ public class IngredientServiceImpl implements IngredientService {
     );
 
     return ingredients;
+  }
+
+  /**
+   * Method to get ingredients by search request.
+   * @param searchRequest the search request. With sort, pagesize, page and filters.
+   * @return a page of ingredients.
+   */
+  @Override
+  public Page<Ingredient> getIngredientsBySearch(SearchRequest searchRequest)
+    throws NullPointerException {
+    return ingredientRepository.findAll(
+      new SearchSpecification<Ingredient>(searchRequest),
+      SearchSpecification.getPageable(searchRequest)
+    );
   }
 }
