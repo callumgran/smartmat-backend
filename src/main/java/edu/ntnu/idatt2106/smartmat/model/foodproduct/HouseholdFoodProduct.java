@@ -15,8 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -28,7 +26,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
@@ -43,12 +40,10 @@ public class HouseholdFoodProduct {
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "`food_product`", nullable = false, referencedColumnName = "`id`")
-  @NonNull
   private FoodProduct foodProduct;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "`household_id`", nullable = false, referencedColumnName = "`household_id`")
-  @NonNull
   private Household household;
 
   @Column(name = "`expiration_date`")

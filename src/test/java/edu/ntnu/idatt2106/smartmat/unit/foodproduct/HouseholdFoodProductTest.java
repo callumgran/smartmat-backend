@@ -38,14 +38,6 @@ public class HouseholdFoodProductTest {
   }
 
   @Test
-  public void testConstructorWithNulls() {
-    assertThrows(
-      NullPointerException.class,
-      () -> new HouseholdFoodProduct(null, null, null, null, 0.1)
-    );
-  }
-
-  @Test
   public void testSetters() {
     householdFoodProduct = new HouseholdFoodProduct();
     final Household household = new Household();
@@ -67,17 +59,5 @@ public class HouseholdFoodProductTest {
   public void testSetExpirationDateWithNull() {
     householdFoodProduct = new HouseholdFoodProduct();
     assertDoesNotThrow(() -> householdFoodProduct.setExpirationDate(null));
-  }
-
-  @Test
-  public void testSetHouseholdWithNulls() {
-    householdFoodProduct = new HouseholdFoodProduct();
-    assertThrows(NullPointerException.class, () -> householdFoodProduct.setHousehold(null));
-  }
-
-  @Test
-  public void testSetFoodProductWithNulls() {
-    householdFoodProduct = new HouseholdFoodProduct();
-    assertThrows(NullPointerException.class, () -> householdFoodProduct.setFoodProduct(null));
   }
 }

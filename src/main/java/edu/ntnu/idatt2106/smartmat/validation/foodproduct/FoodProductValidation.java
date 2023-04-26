@@ -59,14 +59,14 @@ public class FoodProductValidation extends BaseValidation {
   public static boolean validateCreateFoodProduct(
     String ean,
     String name,
-    double amount,
+    Double amount,
     boolean looseWeight,
     Long ingredientId
   ) {
     return (
       (validateEan(ean) || looseWeight) &&
       validateName(name) &&
-      isLargerThan(amount, 0) &&
+      isLargerThan(amount, 0.0D) &&
       isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
     );
   }
@@ -85,7 +85,7 @@ public class FoodProductValidation extends BaseValidation {
     Long id,
     String ean,
     String name,
-    double amount,
+    Double amount,
     boolean looseWeight,
     Long ingredientId
   ) {
@@ -93,7 +93,7 @@ public class FoodProductValidation extends BaseValidation {
       isLargerThanOrEqual(id, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       (validateEan(ean) || looseWeight) &&
       validateName(name) &&
-      isLargerThan(amount, 0) &&
+      isLargerThan(amount, 0.0D) &&
       isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
     );
   }
@@ -106,7 +106,7 @@ public class FoodProductValidation extends BaseValidation {
    * @return true if the name and amount are valid, false otherwise
    */
   public static boolean validateCreateCustomFoodProduct(String name, double amount) {
-    return (validateName(name) && isLargerThan(amount, 0));
+    return (validateName(name) && isLargerThan(amount, 0.0D));
   }
 
   /**
@@ -119,12 +119,12 @@ public class FoodProductValidation extends BaseValidation {
    */
   public static boolean validateCreateShoppingListItem(
     String name,
-    double amount,
+    Double amount,
     Long ingredientId
   ) {
     return (
       validateName(name) &&
-      isLargerThan(amount, 0) &&
+      isLargerThan(amount, 0.0D) &&
       isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
     );
   }
@@ -140,12 +140,12 @@ public class FoodProductValidation extends BaseValidation {
   public static boolean validateCreateHouseholdFoodProduct(
     Long foodProductId,
     String expirationDate,
-    double amountLeft
+    Double amountLeft
   ) {
     return (
       isLargerThanOrEqual(foodProductId, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       isAfter(LocalDate.parse(expirationDate), LocalDate.now().minusDays(7)) &&
-      isLargerThan(amountLeft, 0)
+      isLargerThan(amountLeft, 0.0D)
     );
   }
 
@@ -159,12 +159,12 @@ public class FoodProductValidation extends BaseValidation {
   public static boolean validateUpdateHouseholdFoodProduct(
     Long foodProductId,
     String expirationDate,
-    double amountLeft
+    Double amountLeft
   ) {
     return (
       isLargerThanOrEqual(foodProductId, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       isAfter(LocalDate.parse(expirationDate), LocalDate.now().minusDays(7)) &&
-      isLargerThan(amountLeft, 0)
+      isLargerThan(amountLeft, 0.0D)
     );
   }
 }
