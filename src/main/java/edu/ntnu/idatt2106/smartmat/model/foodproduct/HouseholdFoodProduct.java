@@ -51,7 +51,7 @@ public class HouseholdFoodProduct {
   @NonNull
   private Household household;
 
-  @Column(name = "`expiration_date")
+  @Column(name = "`expiration_date`")
   private LocalDate expirationDate;
 
   @Column(name = "`amount_left`")
