@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.service.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
-import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import java.util.UUID;
 import lombok.NonNull;
@@ -14,12 +13,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface CustomFoodItemService {
-  public boolean existsByIdInShoppingList(@NonNull UUID shoppingList, @NonNull UUID id);
+  public boolean existsById(@NonNull UUID id) throws NullPointerException;
 
   public CustomFoodItem saveCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
-    throws NullPointerException, ShoppingListNotFoundException;
+    throws NullPointerException, ShoppingListItemNotFoundException;
 
-  public void deleteCustomFoodItemInShoppingList(@NonNull UUID shoppingListId, @NonNull UUID id)
+  public CustomFoodItem updateCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
+    throws NullPointerException, ShoppingListItemNotFoundException;
+
+  public void deleteCustomFoodItem(@NonNull UUID id)
     throws NullPointerException, ShoppingListItemNotFoundException;
 
   public CustomFoodItem getItemById(@NonNull UUID itemId)

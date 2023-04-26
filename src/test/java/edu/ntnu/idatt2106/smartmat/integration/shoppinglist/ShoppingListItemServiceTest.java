@@ -14,8 +14,6 @@ import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.ShoppingListItemRepository;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListItemService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListItemServiceImpl;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,19 +63,8 @@ public class ShoppingListItemServiceTest {
 
   @Test
   public void testShoppingListItemExists() {
-    when(
-      shoppingListItemRepository.findByIdInShoppingList(
-        shoppingListItem.getId(),
-        shoppingList.getId()
-      )
-    )
-      .thenReturn(Optional.of(java.util.Set.of(shoppingListItem)));
-    assertTrue(
-      shoppingListItemService.existsByIdInShoppingList(
-        shoppingList.getId(),
-        shoppingListItem.getId()
-      )
-    );
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(true);
+    assertTrue(shoppingListItemService.existsById(shoppingListItem.getId()));
   }
 
   @Test
@@ -91,43 +78,27 @@ public class ShoppingListItemServiceTest {
   public void testCreatingExistingShoppingListItem() {
     when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(true);
     when(shoppingListItemRepository.save(shoppingListItem)).thenReturn(shoppingListItem);
-    assertDoesNotThrow(() -> shoppingListItemService.saveShoppingListItem(shoppingListItem));
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> shoppingListItemService.saveShoppingListItem(shoppingListItem)
+    );
   }
 
   @Test
   public void testDeleteExistingShoppingListItem() {
-    when(
-      shoppingListItemRepository.findByIdInShoppingList(
-        shoppingListItem.getId(),
-        shoppingList.getId()
-      )
-    )
-      .thenReturn(Optional.of(Set.of(shoppingListItem)));
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(true);
     doNothing().when(shoppingListItemRepository).deleteById(shoppingListItem.getId());
     assertDoesNotThrow(() ->
-      shoppingListItemService.deleteShoppingListItemInShoppingList(
-        shoppingList.getId(),
-        shoppingListItem.getId()
-      )
+      shoppingListItemService.deleteShoppingListItem(shoppingListItem.getId())
     );
   }
 
   @Test
   public void testDeleteNonExistingShoppingListItem() {
-    when(
-      shoppingListItemRepository.findByIdInShoppingList(
-        shoppingListItem.getId(),
-        shoppingList.getId()
-      )
-    )
-      .thenReturn(Optional.empty());
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(false);
     assertThrows(
       ShoppingListItemNotFoundException.class,
-      () ->
-        shoppingListItemService.deleteShoppingListItemInShoppingList(
-          shoppingList.getId(),
-          shoppingListItem.getId()
-        )
+      () -> shoppingListItemService.deleteShoppingListItem(shoppingListItem.getId())
     );
   }
 }
