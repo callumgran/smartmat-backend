@@ -10,8 +10,8 @@ import lombok.NonNull;
 
 /**
  * Data transfer object for creating a Recipe.
- * @author Callum G.
- * @version 1.0 - 24.04.2023
+ * @author Callum G., Carl G.
+ * @version 1.1 - 26.04.2023
  */
 @Data
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public class RecipeCreateDTO {
 
   @NotBlank
   @NonNull
-  private List<RecipeIngredientDTO> ingredients;
+  private List<CreateUpdateRecipeIngredientDTO> ingredients;
 
   @NotBlank
   @NonNull
