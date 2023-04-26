@@ -191,7 +191,7 @@ public class ShoppingListItemController {
    * @throws HouseholdNotFoundException if the household is not found.
    * @throws PermissionDeniedException if the user does not have permission to delete an item from the shopping list.
    */
-  @DeleteMapping(value = "/{id}")
+  @DeleteMapping(value = "/household/{householdId}/item/{id}")
   @Operation(
     summary = "Delete an item from a shopping list",
     description = "Delete an item from a shopping list. Requires authentication and be privileged member of the household or admin. First checks if a shopping list item exists. If it is, it deletes the shopping list item. Otherwise, it deletes the custom food item if possible.",
@@ -199,10 +199,11 @@ public class ShoppingListItemController {
   )
   public ResponseEntity<Void> deleteItemFromShoppingList(
     @AuthenticationPrincipal Auth auth,
+    @PathVariable("householdId") UUID householdId,
     @PathVariable("id") UUID id
   )
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
-    if (!isAdminOrPrivilegedHouseholdMember(auth, id)) {
+    if (!isAdminOrPrivilegedHouseholdMember(auth, householdId)) {
       throw new PermissionDeniedException(
         "You do not have permission to delete an item from this shopping list."
       );
@@ -255,7 +256,7 @@ public class ShoppingListItemController {
       shoppingListItem,
       shoppingListItem.isChecked()
     );
-    shoppingListItemService.saveShoppingListItem(shoppingListItem);
+    shoppingListItemService.updateShoppingListItem(shoppingListItem);
 
     return ResponseEntity.ok(
       ShoppingListItemMapper.INSTANCE.shoppingListItemsToShoppingListItemDTO(shoppingListItem)
