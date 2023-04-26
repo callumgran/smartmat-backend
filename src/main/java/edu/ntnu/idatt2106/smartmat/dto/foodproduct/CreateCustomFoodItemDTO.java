@@ -10,17 +10,15 @@ import lombok.NonNull;
 
 /**
  * Data transfer object for custom food items.
- * @author Carl G.
- * @version 1.0 - 24.04.2023.
+ * Use to create custom food items.
+ * @author Callum G.
+ * @version 1.0 - 26.04.2023.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomFoodItemDTO {
-
-  @NotBlank
-  private UUID id;
+public class CreateCustomFoodItemDTO {
 
   @NotBlank
   @NonNull
@@ -30,9 +28,6 @@ public class CustomFoodItemDTO {
   private int amount;
 
   @NotBlank
-  private boolean checked;
-
-  private UUID shoppingList;
-
-  private UUID household;
+  @NonNull
+  private UUID shoppingListId;
 }

@@ -13,8 +13,6 @@ import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.CustomFoodItemRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemServiceImpl;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,13 +62,8 @@ public class CustomFoodItemServiceTest {
 
   @Test
   public void testCustomFoodItemExists() {
-    when(
-      customFoodItemRepository.findByIdInShoppingList(customFoodItem.getId(), shoppingList.getId())
-    )
-      .thenReturn(Optional.of(java.util.Set.of(customFoodItem)));
-    assertTrue(
-      customFoodItemService.existsByIdInShoppingList(shoppingList.getId(), customFoodItem.getId())
-    );
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
+    assertTrue(customFoodItemService.existsById(customFoodItem.getId()));
   }
 
   @Test
@@ -84,37 +77,25 @@ public class CustomFoodItemServiceTest {
   public void testCreatingExistingCustomFoodItem() {
     when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
     when(customFoodItemRepository.save(customFoodItem)).thenReturn(customFoodItem);
-    assertDoesNotThrow(() -> customFoodItemService.saveCustomFoodItem(customFoodItem));
-  }
-
-  @Test
-  public void testDeleteExistingCustomFoodItem() {
-    when(
-      customFoodItemRepository.findByIdInShoppingList(customFoodItem.getId(), shoppingList.getId())
-    )
-      .thenReturn(Optional.of(Set.of(customFoodItem)));
-    doNothing().when(customFoodItemRepository).deleteById(customFoodItem.getId());
-    assertDoesNotThrow(() ->
-      customFoodItemService.deleteCustomFoodItemInShoppingList(
-        shoppingList.getId(),
-        customFoodItem.getId()
-      )
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> customFoodItemService.saveCustomFoodItem(customFoodItem)
     );
   }
 
   @Test
+  public void testDeleteExistingCustomFoodItem() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
+    doNothing().when(customFoodItemRepository).deleteById(customFoodItem.getId());
+    assertDoesNotThrow(() -> customFoodItemService.deleteCustomFoodItem(customFoodItem.getId()));
+  }
+
+  @Test
   public void testDeleteNonExistingCustomFoodItem() {
-    when(
-      customFoodItemRepository.findByIdInShoppingList(customFoodItem.getId(), shoppingList.getId())
-    )
-      .thenReturn(Optional.empty());
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(false);
     assertThrows(
       ShoppingListItemNotFoundException.class,
-      () ->
-        customFoodItemService.deleteCustomFoodItemInShoppingList(
-          shoppingList.getId(),
-          customFoodItem.getId()
-        )
+      () -> customFoodItemService.deleteCustomFoodItem(customFoodItem.getId())
     );
   }
 }

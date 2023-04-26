@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.service.shoppinglist;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
-import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import java.util.UUID;
 import lombok.NonNull;
@@ -9,17 +8,20 @@ import org.springframework.stereotype.Service;
 
 /**
  * Interface for the shopping list item service.
- * @author Carl G.
- * @version 1.0 - 24.04.2023.
+ * @author Carl G. & Callum G.
+ * @version 1.1 - 26.04.2023.
  */
 @Service
 public interface ShoppingListItemService {
-  public boolean existsByIdInShoppingList(@NonNull UUID shoppingList, @NonNull UUID id);
+  public boolean existsById(@NonNull UUID id) throws NullPointerException;
 
   public ShoppingListItem saveShoppingListItem(@NonNull ShoppingListItem shoppingListItem)
-    throws NullPointerException, ShoppingListNotFoundException;
+    throws NullPointerException, IllegalArgumentException;
 
-  public void deleteShoppingListItemInShoppingList(@NonNull UUID shoppingListId, @NonNull UUID id)
+  public ShoppingListItem updateShoppingListItem(@NonNull ShoppingListItem shoppingListItem)
+    throws NullPointerException, ShoppingListItemNotFoundException;
+
+  public void deleteShoppingListItem(@NonNull UUID id)
     throws NullPointerException, ShoppingListItemNotFoundException;
 
   public ShoppingListItem getItemById(@NonNull UUID itemId)

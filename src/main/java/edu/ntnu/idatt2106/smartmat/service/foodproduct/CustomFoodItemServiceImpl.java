@@ -4,7 +4,6 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFo
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.CustomFoodItemRepository;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
@@ -26,17 +25,13 @@ public class CustomFoodItemServiceImpl implements CustomFoodItemService {
   private CustomFoodItemRepository customFoodItemRepository;
 
   /**
-   * Method to check if a custom food item exists in a shopping list.
-   * @param shoppingListId the shopping list id.
-   * @param id the custom food item id.
-   * @return true if custom food items exists in a shopping list, false otherwise.
+   * Method to check if a custom food item exists.
+   * @param id the id of the custom food item.
+   * @return true if it exists, false if not.
+   * @throws NullPointerException if any values are null.
    */
-  public boolean existsByIdInShoppingList(@NonNull UUID shoppingListId, @NonNull UUID id) {
-    Optional<Collection<CustomFoodItem>> customFoodItems = customFoodItemRepository.findByIdInShoppingList(
-      id,
-      shoppingListId
-    );
-    return customFoodItems.isPresent() ? customFoodItems.get().size() > 0 : false;
+  public boolean existsById(@NonNull UUID id) throws NullPointerException {
+    return customFoodItemRepository.existsById(id);
   }
 
   /**
@@ -44,27 +39,43 @@ public class CustomFoodItemServiceImpl implements CustomFoodItemService {
    * @param customFoodItem custom food item.
    * @return the saved custom food item.
    * @throws NullPointerException if any values are null.
+   * @throws IllegalArgumentException if the custom food item already exists.
+   */
+  public CustomFoodItem saveCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
+    throws NullPointerException, IllegalArgumentException {
+    if (customFoodItem.getId() != null && existsById(customFoodItem.getId())) {
+      throw new IllegalArgumentException("Matvare finnes allerede i handlelisten.");
+    }
+    return customFoodItemRepository.save(customFoodItem);
+  }
+
+  /**
+   * Method for updating custom food items.
+   * @param customFoodItem custom food item.
+   * @return the updated custom food item.
+   * @throws NullPointerException if any values are null.
    * @throws ShoppingListNotFoundException if shopping list does not exist.
    */
-
-  public CustomFoodItem saveCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
-    throws NullPointerException, ShoppingListNotFoundException {
+  public CustomFoodItem updateCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
+    throws NullPointerException, ShoppingListItemNotFoundException {
+    if (!existsById(customFoodItem.getId())) {
+      throw new ShoppingListItemNotFoundException("Klarte ikke å finne varen.");
+    }
     return customFoodItemRepository.save(customFoodItem);
   }
 
   /**
    * Method for deleting custom food items in a shopping list.
-   * @param shoppingListId the shopping list id.
    * @param id the custom food item id.
    * @throws NullPointerException if any values are null.
    * @throws ShoppingListItemNotFoundException if shopping list does not exist.
    */
   @Override
-  public void deleteCustomFoodItemInShoppingList(@NonNull UUID shoppingListId, @NonNull UUID id)
+  public void deleteCustomFoodItem(@NonNull UUID id)
     throws NullPointerException, ShoppingListItemNotFoundException {
-    if (!existsByIdInShoppingList(shoppingListId, id)) throw new ShoppingListItemNotFoundException(
-      "Klarte ikke å slette matvaren fordi den ikke eksiterer."
-    );
+    if (!existsById(id)) {
+      throw new ShoppingListItemNotFoundException("Klarte ikke å finne matvaren.");
+    }
     customFoodItemRepository.deleteById(id);
   }
 
