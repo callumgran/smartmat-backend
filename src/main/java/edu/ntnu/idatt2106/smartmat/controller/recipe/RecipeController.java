@@ -3,20 +3,25 @@ package edu.ntnu.idatt2106.smartmat.controller.recipe;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeCreateDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
+import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.recipe.RecipeMapper;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
+import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +32,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.zalando.fauxpas.FauxPas;
+import org.zalando.fauxpas.ThrowingFunction;
 
 /**
  * Controller for recipe.
  *
- * @author Simen J. G, Nicolai H. Brand.
- * @version 1.1 25.03.2020
+ * @author Simen J. G, Nicolai H. Brand., Carl G.
+ * @version 1.2 26.03.2020
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/recipes")
@@ -40,6 +47,7 @@ import org.springframework.web.bind.annotation.*;
 public class RecipeController {
 
   private final RecipeService recipeService;
+  private final IngredientService ingredientService;
   private static final Logger LOGGER = LoggerFactory.getLogger(RecipeController.class);
 
   /**
@@ -127,18 +135,35 @@ public class RecipeController {
   public ResponseEntity<RecipeDTO> createRecipe(
     @RequestBody RecipeCreateDTO recipeDTO,
     @AuthenticationPrincipal Auth auth
-  ) throws PermissionDeniedException, RecipeAlreadyExistsException {
+  ) throws PermissionDeniedException, RecipeAlreadyExistsException, IngredientNotFoundException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til å opprette oppskrifter"
     );
 
     LOGGER.info("POST request for recipe: {}", recipeDTO);
-    Recipe recipe = RecipeMapper.INSTANCE.recipeCreateDTOToRecipe(recipeDTO);
+    final Recipe recipe = RecipeMapper.INSTANCE.recipeCreateDTOToRecipe(recipeDTO);
+
+    Set<RecipeIngredient> ingredients = recipeDTO
+      .getIngredients()
+      .stream()
+      .map(
+        FauxPas.throwingFunction(i ->
+          new RecipeIngredient(
+            recipe,
+            ingredientService.getIngredientById(i.getIngredient()),
+            i.getAmount()
+          )
+        )
+      )
+      .collect(Collectors.toSet());
+
+    LOGGER.info("Using ingredients in recipe: {}", ingredients);
+    recipe.setIngredients(ingredients);
 
     LOGGER.info("Mapped recipeDTO to recipe: {}", recipe);
-    recipe = recipeService.saveRecipe(recipe);
+    Recipe savedRecipe = recipeService.saveRecipe(recipe);
 
-    RecipeDTO createdRecipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe);
+    RecipeDTO createdRecipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(savedRecipe);
 
     LOGGER.info("Created recipe: {}", createdRecipeDTO);
 
@@ -167,19 +192,30 @@ public class RecipeController {
   )
   public ResponseEntity<RecipeDTO> updateRecipe(
     @PathVariable String id,
-    @RequestBody RecipeDTO recipeDTO,
+    @RequestBody RecipeCreateDTO recipeDTO,
     @AuthenticationPrincipal Auth auth
   ) throws PermissionDeniedException, RecipeNotFoundException, NullPointerException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til å oppdatere oppskrifter"
     );
 
-    recipeDTO.setId(id);
     LOGGER.info("PUT request for recipe id: {} with data: {}", id, recipeDTO);
-    Recipe recipe = RecipeMapper.INSTANCE.recipeDTOToRecipe(recipeDTO);
-    recipe = recipeService.updateRecipe(UUID.fromString(id), recipe);
+    final Recipe recipe = RecipeMapper.INSTANCE.recipeCreateDTOToRecipe(recipeDTO);
 
-    RecipeDTO updatedRecipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe);
+    ThrowingFunction<Long, Ingredient, IngredientNotFoundException> getIngredient = FauxPas.throwingFunction(i ->
+      ingredientService.getIngredientById(i)
+    );
+    Set<RecipeIngredient> ingredients = recipeDTO
+      .getIngredients()
+      .stream()
+      .map(i -> new RecipeIngredient(recipe, getIngredient.apply(i.getIngredient()), i.getAmount()))
+      .collect(Collectors.toSet());
+    LOGGER.info("Using ingredients in recipe: {}", ingredients);
+    recipe.setIngredients(ingredients);
+
+    Recipe savedRecipe = recipeService.updateRecipe(UUID.fromString(id), recipe);
+
+    RecipeDTO updatedRecipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(savedRecipe);
 
     LOGGER.info("Updated recipe: {}", updatedRecipeDTO);
 

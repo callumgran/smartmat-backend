@@ -15,11 +15,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.recipe.RecipeController;
+import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
+import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,14 +47,19 @@ public class RecipeControllerTest {
   @MockBean
   private RecipeService recipeService;
 
+  @MockBean
+  private IngredientService ingredientService;
+
   private static final String BASE_URL = "/api/v1/private/recipes";
 
   private static final UUID badUUID = UUID.randomUUID();
 
   private Recipe recipe;
 
+  private Ingredient ingredient;
+
   @Before
-  public void setUp() {
+  public void setUp() throws IngredientNotFoundException {
     recipe =
       new Recipe(
         UUID.randomUUID(),
@@ -63,7 +71,10 @@ public class RecipeControllerTest {
         RecipeDifficulty.EASY
       );
 
+    ingredient = Ingredient.builder().id(1L).name("Ingredient").build();
+
     when(recipeService.findAllRecipes()).thenReturn(Set.of(recipe));
+    when(ingredientService.getIngredientById(ingredient.getId())).thenReturn(ingredient);
 
     when(recipeService.findRecipeById(recipe.getId())).thenReturn(recipe);
     when(recipeService.findRecipeById(badUUID)).thenThrow(new RecipeNotFoundException());
@@ -158,6 +169,97 @@ public class RecipeControllerTest {
               "  \"name\": \"name\",\n" +
               "  \"description\": \"description\",\n" +
               "  \"ingredients\": [],\n" +
+              "  \"instructions\": \"instructions\",\n" +
+              "  \"estimatedMinutes\": 50,\n" +
+              "  \"recipeDifficulty\": \"EASY\"\n" +
+              "}"
+            )
+            .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
+        )
+        .andExpect(status().isOk());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testCreateRecipeWithIngredients() {
+    try {
+      mvc
+        .perform(
+          post(BASE_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+              "{\n" +
+              "  \"name\": \"name\",\n" +
+              "  \"description\": \"description\",\n" +
+              "  \"ingredients\": [{" +
+              "    \"ingredient\": " +
+              ingredient.getId() +
+              "," +
+              "    \"amount\": 1" +
+              "}],\n" +
+              "  \"instructions\": \"instructions\",\n" +
+              "  \"estimatedMinutes\": 1,\n" +
+              "  \"recipeDifficulty\": \"EASY\"\n" +
+              "}"
+            )
+            .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
+        )
+        .andExpect(status().isCreated());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testCreateRecipeWithUnknownIngredient() {
+    long ingredientId = 9999;
+    try {
+      when(ingredientService.getIngredientById(ingredientId))
+        .thenThrow(new IngredientNotFoundException());
+      mvc
+        .perform(
+          post(BASE_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+              "{\n" +
+              "  \"name\": \"name\",\n" +
+              "  \"description\": \"description\",\n" +
+              "  \"ingredients\": [{" +
+              "    \"ingredient\": 9999," +
+              "    \"amount\": 1" +
+              "}],\n" +
+              "  \"instructions\": \"instructions\",\n" +
+              "  \"estimatedMinutes\": 1,\n" +
+              "  \"recipeDifficulty\": \"EASY\"\n" +
+              "}"
+            )
+            .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
+        )
+        .andExpect(status().isNotFound());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testUpdateRecipeWithIngredients() {
+    try {
+      mvc
+        .perform(
+          put(BASE_URL + "/" + recipe.getId().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+              "{\n" +
+              "  \"name\": \"name\",\n" +
+              "  \"description\": \"description\",\n" +
+              "  \"ingredients\": [{" +
+              "    \"ingredient\": " +
+              ingredient.getId() +
+              "," +
+              "    \"amount\": 1" +
+              "}],\n" +
               "  \"instructions\": \"instructions\",\n" +
               "  \"estimatedMinutes\": 50,\n" +
               "  \"recipeDifficulty\": \"EASY\"\n" +

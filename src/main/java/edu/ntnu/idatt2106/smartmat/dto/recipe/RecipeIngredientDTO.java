@@ -8,6 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Data transfer object for a recipe ingredient.
+ * Displays an ingredient with ingredient data
+ * @author Simen G., Carl G.
+ * @version 1.1 - 26.04.2021
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,5 +25,5 @@ public class RecipeIngredientDTO {
   private IngredientDTO ingredient;
 
   @NotBlank
-  private int amount;
+  private double amount;
 }

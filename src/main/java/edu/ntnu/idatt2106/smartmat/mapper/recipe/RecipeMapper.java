@@ -17,8 +17,8 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper for recipe.
- * @author Simen G. & Callum G.
- * @version 1.0 - 21.04.2023
+ * @author Simen G., Callum G., Carl G.
+ * @version 1.1 - 26.04.2023
  */
 @Mapper(componentModel = "spring")
 public interface RecipeMapper {
@@ -112,14 +112,7 @@ public interface RecipeMapper {
    * @return The mapped recipe.
    */
   @Mappings(
-    {
-      @Mapping(target = "id", ignore = true),
-      @Mapping(
-        target = "ingredients",
-        source = "ingredients",
-        qualifiedByName = "ingredientDTOsToIngredients"
-      ),
-    }
+    { @Mapping(target = "id", ignore = true), @Mapping(target = "ingredients", ignore = true) }
   )
   Recipe recipeCreateDTOToRecipe(RecipeCreateDTO recipeDTO);
 }
