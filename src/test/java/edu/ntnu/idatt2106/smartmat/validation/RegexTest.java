@@ -39,6 +39,10 @@ public class RegexTest {
   private final String javaVariableUpperCase = "BadName";
   private final String javaVariableNumber = "goodName1";
 
+  private final String numericStringGood = "1234567890";
+  private final String numericStringBadChar = "1234567890a";
+  private final String numericStringNegative = "-1234567890";
+
   @Test
   public void testEmailRegexWorksOnNormalEmail() {
     assertTrue(emailGood.matches(RegexPattern.EMAIL.getPattern()));
@@ -172,5 +176,20 @@ public class RegexTest {
   @Test
   public void testJavaVariableRegexWorksOnNumber() {
     assertTrue(javaVariableNumber.matches(RegexPattern.JAVA_VARIABLE.getPattern()));
+  }
+
+  @Test
+  public void testNumericRegexWorksOnNumericString() {
+    assertTrue(numericStringGood.matches(RegexPattern.NUMERIC_STRING.getPattern()));
+  }
+
+  @Test
+  public void testNumericRegexFailsOnBadChar() {
+    assertFalse(numericStringBadChar.matches(RegexPattern.NUMERIC_STRING.getPattern()));
+  }
+
+  @Test
+  public void testNumericRegexFailsOnNegative() {
+    assertFalse(numericStringNegative.matches(RegexPattern.NUMERIC_STRING.getPattern()));
   }
 }

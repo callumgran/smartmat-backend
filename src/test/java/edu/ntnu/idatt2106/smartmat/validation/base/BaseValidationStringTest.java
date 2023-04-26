@@ -15,6 +15,7 @@ public class BaseValidationStringTest {
   private final String equalLongString = "longString";
   private final String equalShortString = "short";
   private final String tooShortString = "shor";
+  private final String numericalString = "1234567890";
 
   private final int minLen = 5;
   private final int maxLen = 10;
@@ -127,5 +128,20 @@ public class BaseValidationStringTest {
   @Test
   public void testValidateStringIsBetweenReturnsTrueOnEqualMaxString() {
     assertTrue(BaseValidation.isBetween(equalLongString, minLen, maxLen));
+  }
+
+  @Test
+  public void testValidateStringIsNumericalReturnsTrueOnNumericalString() {
+    assertTrue(BaseValidation.isNumeric(numericalString));
+  }
+
+  @Test
+  public void testValidateStringIsNumericalReturnsFalseOnEmptyString() {
+    assertFalse(BaseValidation.isNumeric(emptyString));
+  }
+
+  @Test
+  public void testValidateStringIsNumericalReturnsFalseOnNonNumericalString() {
+    assertFalse(BaseValidation.isNumeric(goodString));
   }
 }

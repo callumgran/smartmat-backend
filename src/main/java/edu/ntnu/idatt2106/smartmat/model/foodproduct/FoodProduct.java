@@ -44,11 +44,11 @@ public class FoodProduct {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "`name`")
+  @Column(name = "`name`", nullable = false, length = 64)
   @NonNull
   private String name;
 
-  @Column(name = "`EAN`")
+  @Column(name = "`EAN`", unique = true, length = 13, nullable = true)
   private String EAN;
 
   @Column(name = "`amount`")

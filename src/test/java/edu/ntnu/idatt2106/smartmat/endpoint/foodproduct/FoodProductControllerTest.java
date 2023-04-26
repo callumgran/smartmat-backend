@@ -134,7 +134,7 @@ public class FoodProductControllerTest {
           put(BASE_URL + "/id/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
+              "{\"id\": 1,\"name\":\"Carrotproduct\",\"ean\":\"1234567890123\",\"amount\": 1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -155,7 +155,7 @@ public class FoodProductControllerTest {
           put(BASE_URL + "/id/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
+              "{\"id\": 1,\"name\":\"Carrot\",\"ean\":\"123456789012\",\"amount\": 1.0,\"looseWeight\": true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -175,7 +175,7 @@ public class FoodProductControllerTest {
           post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
+              "{\"name\": \"CarrotProduct\",\"ean\": \"123456789\",\"amount\": 1.0,\"looseWeight\": true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -195,7 +195,7 @@ public class FoodProductControllerTest {
           post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
+              "{\"name\":\"CarrotProduct\",\"ean\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD))))
         )

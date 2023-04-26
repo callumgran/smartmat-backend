@@ -80,7 +80,7 @@ public class SecurityConfig {
     response.setStatus(status);
     response.setHeader("Content-Type", "application/json");
     PrintWriter writer = response.getWriter();
-    writer.print("{\"detail\": \"" + message + "\"}");
+    writer.print("{\"detail\": \" Du er ikke logget inn. \"}");
   }
 
   /**
