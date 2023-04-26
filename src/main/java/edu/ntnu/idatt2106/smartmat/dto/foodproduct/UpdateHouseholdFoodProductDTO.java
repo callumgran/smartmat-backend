@@ -28,10 +28,6 @@ public class UpdateHouseholdFoodProductDTO {
 
   @NonNull
   @NotBlank
-  private String householdId;
-
-  @NonNull
-  @NotBlank
   @JsonFormat(pattern = "yyyy-MM-dd")
   private String expirationDate;
 

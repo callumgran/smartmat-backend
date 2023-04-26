@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @version 1.0 - 21.04.2023
  */
 @RestController
-@RequestMapping(value = "/api/v1/private/households/")
+@RequestMapping(value = "/api/v1/private/households")
 @EnableAutoConfiguration
 @RequiredArgsConstructor
 public class HouseholdFoodProductController {
