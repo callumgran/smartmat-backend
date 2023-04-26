@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for public shopping list endpoints.
- * @author Tobias O., Carl G.
- * @version 1.0 - 24.04.2023.
+ * @author Tobias O., Carl G., Callum G.
+ * @version 1.1 - 26.04.2023.
  */
 @RestController
 @RequestMapping("/api/v1/private/shoppinglists")
@@ -122,7 +122,7 @@ public class ShoppingListController {
     throws ShoppingListAlreadyExistsException, NullPointerException, HouseholdNotFoundException, UserDoesNotExistsException, PermissionDeniedException {
     LOGGER.info("POST request for creating a new shopping list: {}", shoppingListDTO);
 
-    UUID householdId = UUID.fromString(shoppingListDTO.getHousehold());
+    UUID householdId = shoppingListDTO.getHousehold();
 
     boolean hasCreateAccess = isAdminOrHouseholdOwner(auth, householdId);
     LOGGER.info("User has create access: {}", hasCreateAccess);
@@ -232,7 +232,7 @@ public class ShoppingListController {
     shoppingList.setDateCompleted(shoppingListDTO.getDateCompleted());
 
     Household potentialNewHousehold = householdService.getHouseholdById(
-      UUID.fromString(shoppingListDTO.getHousehold())
+      shoppingListDTO.getHousehold()
     );
     if (
       !potentialNewHousehold.equals(currenHousehold) &&

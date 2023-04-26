@@ -16,6 +16,8 @@ public class BaseValidationStringTest {
   private final String equalShortString = "short";
   private final String tooShortString = "shor";
   private final String numericalString = "1234567890";
+  private final String goodUUID = "123e4567-e89b-12d3-a456-426655440000";
+  private final String badUUID = "123e4567-e89b-12d3-a456-42665544000";
 
   private final int minLen = 5;
   private final int maxLen = 10;
@@ -143,5 +145,25 @@ public class BaseValidationStringTest {
   @Test
   public void testValidateStringIsNumericalReturnsFalseOnNonNumericalString() {
     assertFalse(BaseValidation.isNumeric(goodString));
+  }
+
+  @Test
+  public void testValidateStringIsUUIDReturnsTrueOnGoodUUID() {
+    assertTrue(BaseValidation.isUUID(goodUUID));
+  }
+
+  @Test
+  public void testValidateStringIsUUIDReturnsFalseOnBadUUID() {
+    assertFalse(BaseValidation.isUUID(badUUID));
+  }
+
+  @Test
+  public void testValidateStringIsUUIDReturnsFalseOnEmptyString() {
+    assertFalse(BaseValidation.isUUID(emptyString));
+  }
+
+  @Test
+  public void testValidateStringIsUUIDReturnsFalseOnNonUUIDString() {
+    assertFalse(BaseValidation.isUUID(goodString));
   }
 }

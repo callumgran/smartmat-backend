@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.dto.foodproduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ import lombok.NonNull;
 public class UpdateHouseholdFoodProductDTO {
 
   @NonNull
-  private String id;
+  private UUID id;
 
   @NonNull
   private Long foodProductId;

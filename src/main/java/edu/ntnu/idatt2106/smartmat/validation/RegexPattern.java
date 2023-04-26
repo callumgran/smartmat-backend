@@ -46,7 +46,12 @@ public enum RegexPattern {
    * Numeric string regex pattern.
    * Must be of characters 0-9.
    */
-  NUMERIC_STRING("^[0-9]+$");
+  NUMERIC_STRING("^[0-9]+$"),
+  /**
+   * UUID regex pattern.
+   * Must be of characters a-z, A-Z, 0-9, -.
+   */
+  UUID("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$");
 
   /**
    * The pattern to be used.

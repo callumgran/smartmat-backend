@@ -27,7 +27,7 @@ public class UpdateShoppingListDTO {
 
   @NotBlank
   @NonNull
-  private String household;
+  private UUID household;
 
   private LocalDate dateCompleted;
 }

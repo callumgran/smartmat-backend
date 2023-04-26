@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
+import java.time.LocalDate;
 import org.junit.Test;
 
 public class FoodProductValidationTest {
@@ -31,6 +32,9 @@ public class FoodProductValidationTest {
 
   private final boolean notLoose = false;
   private final boolean loose = true;
+
+  private final LocalDate badDate = LocalDate.now().minusDays(8);
+  private final LocalDate goodDate = LocalDate.now();
 
   @Test
   public void testValidateEanValidEightDigitEan() {
@@ -247,6 +251,131 @@ public class FoodProductValidationTest {
         goodAmount,
         notLoose,
         goodId
+      )
+    );
+  }
+
+  @Test
+  public void testValidateCreateCustomFoodProductValid() {
+    assertTrue(FoodProductValidation.validateCreateCustomFoodProduct(shortName, goodAmount));
+  }
+
+  @Test
+  public void testValidateCreateCustomFoodProductInvalidName() {
+    assertFalse(FoodProductValidation.validateCreateCustomFoodProduct(emptyString, goodAmount));
+  }
+
+  @Test
+  public void testValidateCreateCustomFoodProductInvalidAmount() {
+    assertFalse(FoodProductValidation.validateCreateCustomFoodProduct(shortName, badAmount));
+  }
+
+  @Test
+  public void testValidateCreateShoppingListItemValid() {
+    assertTrue(FoodProductValidation.validateCreateShoppingListItem(shortName, goodAmount, goodId));
+  }
+
+  @Test
+  public void testValidateCreateShoppingListItemInvalidName() {
+    assertFalse(
+      FoodProductValidation.validateCreateShoppingListItem(emptyString, goodAmount, goodId)
+    );
+  }
+
+  @Test
+  public void testValidateCreateShoppingListItemInvalidAmount() {
+    assertFalse(FoodProductValidation.validateCreateShoppingListItem(shortName, badAmount, goodId));
+  }
+
+  @Test
+  public void testValidateCreateShoppingListItemInvalidIngredientId() {
+    assertFalse(FoodProductValidation.validateCreateShoppingListItem(shortName, goodAmount, badId));
+  }
+
+  @Test
+  public void testValidateCreateHouseholdFoodProductValid() {
+    assertTrue(
+      FoodProductValidation.validateCreateHouseholdFoodProduct(
+        goodId,
+        goodDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateCreateHouseholdFoodProductInvalidId() {
+    assertFalse(
+      FoodProductValidation.validateCreateHouseholdFoodProduct(
+        badId,
+        goodDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateCreateHouseholdFoodProductInvalidDate() {
+    assertFalse(
+      FoodProductValidation.validateCreateHouseholdFoodProduct(
+        goodId,
+        badDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateCreateHouseholdFoodProductInvalidAmount() {
+    assertFalse(
+      FoodProductValidation.validateCreateHouseholdFoodProduct(
+        goodId,
+        goodDate.toString(),
+        badAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateUpdateHouseholdFoodProductValid() {
+    assertTrue(
+      FoodProductValidation.validateUpdateHouseholdFoodProduct(
+        goodId,
+        goodDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateUpdateHouseholdFoodProductInvalidFoodProductId() {
+    assertFalse(
+      FoodProductValidation.validateUpdateHouseholdFoodProduct(
+        badId,
+        goodDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateUpdateHouseholdFoodProductInvalidDate() {
+    assertFalse(
+      FoodProductValidation.validateUpdateHouseholdFoodProduct(
+        goodId,
+        badDate.toString(),
+        goodAmount
+      )
+    );
+  }
+
+  @Test
+  public void testValidateUpdateHouseholdFoodProductInvalidAmount() {
+    assertFalse(
+      FoodProductValidation.validateUpdateHouseholdFoodProduct(
+        goodId,
+        goodDate.toString(),
+        badAmount
       )
     );
   }

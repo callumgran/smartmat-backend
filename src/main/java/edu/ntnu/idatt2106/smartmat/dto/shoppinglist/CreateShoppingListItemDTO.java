@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.shoppinglist;
 
 import io.micrometer.common.lang.NonNull;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -26,7 +25,6 @@ public class CreateShoppingListItemDTO {
   private String name;
 
   @NotBlank
-  @Min(1)
   private double amount;
 
   @NotBlank
