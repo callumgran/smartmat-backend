@@ -64,14 +64,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // Note also that the token comes in this format 'Bearer token'
     String jwtToken = authHeader.substring(7);
     final String[] vals = validateJwtTokenAndGetUsername(jwtToken);
-    final String username = vals[0];
-    final UserRole role = UserRole.valueOf(vals[1]);
-
-    if (username == null) {
+    if (vals == null) {
       // validation failed or token expired
       filterChain.doFilter(request, response);
       return;
     }
+    final String username = vals[0];
+    final UserRole role = UserRole.valueOf(vals[1]);
 
     final String grantedRole = role.name();
 
