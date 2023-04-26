@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.dto.foodproduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,7 @@ public class UpdateHouseholdFoodProductDTO {
   @NonNull
   @NotBlank
   @JsonFormat(pattern = "yyyy-MM-dd")
-  private String expirationDate;
+  private LocalDate expirationDate;
 
   private double amountLeft;
 }

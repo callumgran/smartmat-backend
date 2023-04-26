@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.integration.foodproduct;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -61,9 +62,32 @@ public class CustomFoodItemServiceTest {
   }
 
   @Test
-  public void testCustomFoodItemExists() {
+  public void testCustomFoodItemExistsExisting() {
     when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
     assertTrue(customFoodItemService.existsById(customFoodItem.getId()));
+  }
+
+  @Test
+  public void testCustomFoodItemNoneExisting() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(false);
+    assertFalse(customFoodItemService.existsById(customFoodItem.getId()));
+  }
+
+  @Test
+  public void testGetCustomFoodItemExisting() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
+    when(customFoodItemRepository.findById(customFoodItem.getId()))
+      .thenReturn(java.util.Optional.of(customFoodItem));
+    assertDoesNotThrow(() -> customFoodItemService.getItemById(customFoodItem.getId()));
+  }
+
+  @Test
+  public void testGetCustomFoodItemNonExisting() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(false);
+    assertThrows(
+      ShoppingListItemNotFoundException.class,
+      () -> customFoodItemService.getItemById(customFoodItem.getId())
+    );
   }
 
   @Test
@@ -96,6 +120,22 @@ public class CustomFoodItemServiceTest {
     assertThrows(
       ShoppingListItemNotFoundException.class,
       () -> customFoodItemService.deleteCustomFoodItem(customFoodItem.getId())
+    );
+  }
+
+  @Test
+  public void testUpdateExistingCustomFoodItem() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(true);
+    when(customFoodItemRepository.save(customFoodItem)).thenReturn(customFoodItem);
+    assertDoesNotThrow(() -> customFoodItemService.updateCustomFoodItem(customFoodItem));
+  }
+
+  @Test
+  public void testUpdateNonExistingCustomFoodItem() {
+    when(customFoodItemRepository.existsById(customFoodItem.getId())).thenReturn(false);
+    assertThrows(
+      ShoppingListItemNotFoundException.class,
+      () -> customFoodItemService.updateCustomFoodItem(customFoodItem)
     );
   }
 }

@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.validation.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.validation.BaseValidation;
-import edu.ntnu.idatt2106.smartmat.validation.RegexPattern;
 import edu.ntnu.idatt2106.smartmat.validation.ValidationRules;
 import java.time.LocalDate;
 
@@ -44,8 +43,7 @@ public class FoodProductValidation extends BaseValidation {
         name,
         FoodProductRules.MIN_NAME_LENGTH.getValue(),
         FoodProductRules.MAX_NAME_LENGTH.getValue()
-      ) &&
-      name.matches(RegexPattern.NAME.getPattern())
+      )
     );
   }
 

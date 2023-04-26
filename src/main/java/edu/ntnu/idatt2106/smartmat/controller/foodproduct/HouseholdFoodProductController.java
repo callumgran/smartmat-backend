@@ -21,7 +21,6 @@ import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -260,7 +259,7 @@ public class HouseholdFoodProductController {
     if (
       !FoodProductValidation.validateCreateHouseholdFoodProduct(
         createHouseholdFoodProductDTO.getFoodProductId(),
-        createHouseholdFoodProductDTO.getExpirationDate(),
+        createHouseholdFoodProductDTO.getExpirationDate().toString(),
         createHouseholdFoodProductDTO.getAmountLeft()
       )
     ) throw new BadInputException(
@@ -329,7 +328,7 @@ public class HouseholdFoodProductController {
     if (
       !FoodProductValidation.validateUpdateHouseholdFoodProduct(
         householdFoodProductDTO.getFoodProductId(),
-        householdFoodProductDTO.getExpirationDate(),
+        householdFoodProductDTO.getExpirationDate().toString(),
         householdFoodProductDTO.getAmountLeft()
       )
     ) throw new BadInputException("Inputen til matvaren var ikke gyldig.");
@@ -351,9 +350,7 @@ public class HouseholdFoodProductController {
 
     householdFoodProduct.setAmountLeft(householdFoodProductDTO.getAmountLeft());
 
-    householdFoodProduct.setExpirationDate(
-      LocalDate.parse(householdFoodProductDTO.getExpirationDate())
-    );
+    householdFoodProduct.setExpirationDate(householdFoodProductDTO.getExpirationDate());
 
     HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
       householdFoodProductService.updateFoodProduct(householdFoodProduct)

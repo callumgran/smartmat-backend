@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to custom food items.
  * @auther Callum Gran
- * @version 1.1 - 26.04.2023
+ * @version 1.2 - 26.04.2023
  */
 @RestController
 @RequestMapping("/api/v1/private/customfooditems")
@@ -178,7 +178,7 @@ public class CustomFoodProductController {
    * @throws HouseholdNotFoundException if the household is not found.
    * @throws PermissionDeniedException if the user does not have permission to delete an item from the shopping list.
    */
-  @DeleteMapping(value = "/{id}")
+  @DeleteMapping(value = "/household/{householdId}/item/{id}")
   @Operation(
     summary = "Delete an item from a shopping list",
     description = "Delete an item from a shopping list. Requires authentication and be privileged member of the household or admin. First checks if a shopping list item exists. If it is, it deletes the shopping list item. Otherwise, it deletes the custom food item if possible.",
@@ -186,10 +186,11 @@ public class CustomFoodProductController {
   )
   public ResponseEntity<Void> deleteItemFromShoppingList(
     @AuthenticationPrincipal Auth auth,
+    @PathVariable("householdId") UUID householdId,
     @PathVariable("id") UUID id
   )
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
-    if (!isAdminOrPrivilegedHouseholdMember(auth, id)) {
+    if (!isAdminOrPrivilegedHouseholdMember(auth, householdId)) {
       throw new PermissionDeniedException(
         "You do not have permission to delete an item from this shopping list."
       );
