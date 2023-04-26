@@ -1,8 +1,10 @@
 package edu.ntnu.idatt2106.smartmat.controller.foodproduct;
 
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.BareFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.FoodProductMapper;
@@ -10,6 +12,7 @@ import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
+import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller for food product endpoints.
  * All food product endpoints are private and require authentication.
  * @author Callum G, Nicolai H, Brand,
- * @version 1.1 - 24.04.2023
+ * @version 1.2 - 26.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/foodproducts")
@@ -46,6 +49,8 @@ public class FoodProductController {
   private static final Logger LOGGER = LoggerFactory.getLogger(FoodProductController.class);
 
   private final FoodProductService foodProductService;
+
+  private final IngredientService ingredientService;
 
   /**
    * Gets a food product by its id.
@@ -116,7 +121,7 @@ public class FoodProductController {
   public ResponseEntity<FoodProductDTO> updateFoodProduct(
     @AuthenticationPrincipal Auth auth,
     @PathVariable long id,
-    @RequestBody FoodProductDTO foodProductDTO
+    @RequestBody BareFoodProductDTO foodProductDTO
   ) throws PermissionDeniedException, FoodProductNotFoundException, NullPointerException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til denne ressursen."
@@ -124,7 +129,7 @@ public class FoodProductController {
 
     LOGGER.info("GET /api/v1/private/foodproducts/update");
 
-    FoodProduct foodProduct = FoodProductMapper.INSTANCE.foodProductDTOToFoodProduct(
+    FoodProduct foodProduct = FoodProductMapper.INSTANCE.bareFoodProductDTOToFoodProduct(
       foodProductDTO
     );
     foodProduct.setId(id);
@@ -173,6 +178,7 @@ public class FoodProductController {
    * @return a 201 CREATED response with the created food product.
    * @throws PermissionDeniedException If the user does not have permission to create the food product.
    * @throws NullPointerException If the food product is null.
+   * @throws IngredientNotFoundException If the ingredient is not found.
    */
   @PostMapping(
     value = "",
@@ -186,17 +192,22 @@ public class FoodProductController {
   )
   public ResponseEntity<FoodProductDTO> createFoodProduct(
     @AuthenticationPrincipal Auth auth,
-    @RequestBody FoodProductDTO foodProductDTO
-  ) throws PermissionDeniedException, NullPointerException {
+    @RequestBody BareFoodProductDTO foodProductDTO
+  ) throws PermissionDeniedException, NullPointerException, IngredientNotFoundException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til denne ressursen."
     );
 
     LOGGER.info("GET /api/v1/private/foodproducts/create");
 
-    FoodProduct foodProduct = FoodProductMapper.INSTANCE.foodProductDTOToFoodProduct(
+    FoodProduct foodProduct = FoodProductMapper.INSTANCE.bareFoodProductDTOToFoodProduct(
       foodProductDTO
     );
+
+    foodProduct.setIngredient(
+      ingredientService.getIngredientById(foodProductDTO.getIngredientId())
+    );
+
     FoodProductDTO createdFoodProductDTO = FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(
       foodProductService.saveFoodProduct(foodProduct)
     );
