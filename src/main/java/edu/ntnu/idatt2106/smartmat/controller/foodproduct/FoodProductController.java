@@ -13,6 +13,7 @@ import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
+import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller for food product endpoints.
  * All food product endpoints are private and require authentication.
  * @author Callum G, Nicolai H, Brand,
- * @version 1.2 - 26.04.2023
+ * @version 1.3 - 26.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/foodproducts")
@@ -82,6 +83,7 @@ public class FoodProductController {
    * @return a 200 OK response with the food product.
    * @throws FoodProductNotFoundException If the food product is not found.
    * @throws NullPointerException If the EAN is null.
+   * @throws BadInputException If the EAN is invalid.
    */
   @GetMapping(value = "/ean/{EAN}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -90,7 +92,10 @@ public class FoodProductController {
     tags = { "foodproduct" }
   )
   public ResponseEntity<FoodProductDTO> getFoodProductByEAN(@PathVariable("EAN") String EAN)
-    throws FoodProductNotFoundException, NullPointerException {
+    throws FoodProductNotFoundException, NullPointerException, BadInputException {
+    if (!FoodProductValidation.validateEan(EAN)) throw new BadInputException(
+      "EAN koden er ugyldig"
+    );
     LOGGER.info("GET /api/v1/private/foodproducts/{}", EAN);
     FoodProductDTO foodProductDTO = FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(
       foodProductService.getFoodProductByEan(EAN)
@@ -122,10 +127,24 @@ public class FoodProductController {
     @AuthenticationPrincipal Auth auth,
     @PathVariable long id,
     @RequestBody BareFoodProductDTO foodProductDTO
-  ) throws PermissionDeniedException, FoodProductNotFoundException, NullPointerException {
+  )
+    throws PermissionDeniedException, FoodProductNotFoundException, NullPointerException, BadInputException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til denne ressursen."
     );
+
+    LOGGER.info("Food product update request: {}", foodProductDTO);
+
+    if (
+      !FoodProductValidation.validateUpdateFoodProduct(
+        foodProductDTO.getId(),
+        foodProductDTO.getEAN(),
+        foodProductDTO.getName(),
+        foodProductDTO.getAmount(),
+        foodProductDTO.isLooseWeight(),
+        foodProductDTO.getIngredientId()
+      )
+    ) throw new BadInputException("Ugyldig input for oppdatering av en matvare");
 
     LOGGER.info("GET /api/v1/private/foodproducts/update");
 
@@ -179,6 +198,7 @@ public class FoodProductController {
    * @throws PermissionDeniedException If the user does not have permission to create the food product.
    * @throws NullPointerException If the food product is null.
    * @throws IngredientNotFoundException If the ingredient is not found.
+   * @throws BadInputException If the input is invalid.
    */
   @PostMapping(
     value = "",
@@ -193,10 +213,21 @@ public class FoodProductController {
   public ResponseEntity<FoodProductDTO> createFoodProduct(
     @AuthenticationPrincipal Auth auth,
     @RequestBody BareFoodProductDTO foodProductDTO
-  ) throws PermissionDeniedException, NullPointerException, IngredientNotFoundException {
+  )
+    throws PermissionDeniedException, NullPointerException, IngredientNotFoundException, BadInputException {
     if (!AuthValidation.hasRole(auth, UserRole.ADMIN)) throw new PermissionDeniedException(
       "Du har ikke tilgang til denne ressursen."
     );
+
+    if (
+      !FoodProductValidation.validateCreateFoodProduct(
+        foodProductDTO.getEAN(),
+        foodProductDTO.getName(),
+        foodProductDTO.getAmount(),
+        foodProductDTO.isLooseWeight(),
+        foodProductDTO.getIngredientId()
+      )
+    ) throw new BadInputException("Ugyldig input for å lage matvare.");
 
     LOGGER.info("GET /api/v1/private/foodproducts/create");
 
@@ -232,10 +263,10 @@ public class FoodProductController {
   public ResponseEntity<List<FoodProductDTO>> searchFoodProducts(
     @AuthenticationPrincipal Auth auth,
     @RequestBody SearchRequest searchRequest
-  ) throws BadInputException, NullPointerException {
-    if (
-      SearchRequestValidation.validateSearchRequest(searchRequest)
-    ) throw new NullPointerException("Ugyldig søkeforespørsel.");
+  ) throws BadInputException, NullPointerException, BadInputException {
+    if (SearchRequestValidation.validateSearchRequest(searchRequest)) throw new BadInputException(
+      "Ugyldig søkeforespørsel."
+    );
 
     LOGGER.info("GET /api/v1/private/foodproducts/search");
 

@@ -34,14 +34,19 @@ public enum RegexPattern {
    * Must not start or end with ', ., -.
    * Must not contain two or more consecutive ', ., -.
    */
-  NAME("^[ÆØÅæøåa-zA-Z]+(([',. -][ÆØÅæøåa-zA-Z ])?[a-zA-Z]*)*$"),
+  NAME("^[ÆØÅæøåa-zA-Z]+(([',. -][ÆØÅæøåa-zA-Z ])?[ÆØÅa-zA-Z]*)*$"),
   /**
    * Java variable name regex pattern.
    * Must be of characters a-z, A-Z, 0-9 and _.
    * Must start with a lowercase letter or _.
    * Allows for $, as this is legal in Java.
    */
-  JAVA_VARIABLE("^[_$a-z][\\w$]*$");
+  JAVA_VARIABLE("^[_$a-z][\\w$]*$"),
+  /**
+   * Numeric string regex pattern.
+   * Must be of characters 0-9.
+   */
+  NUMERIC_STRING("^[0-9]+$");
 
   /**
    * The pattern to be used.

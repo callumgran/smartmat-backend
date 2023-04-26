@@ -144,6 +144,15 @@ public abstract class BaseValidation {
   }
 
   /**
+   * Check if the given string is numeric.
+   * @param string The string to check.
+   * @return True if the string is numeric, false otherwise.
+   */
+  public static boolean isNumeric(String string) {
+    return string.matches(RegexPattern.NUMERIC_STRING.getPattern());
+  }
+
+  /**
    * Check if a generic array is not null and not empty.
    * @param <T> The type of the array.
    * @param array The array to check.
