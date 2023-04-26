@@ -19,6 +19,7 @@ import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
+import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,9 @@ public class FoodProductControllerTest {
 
   @MockBean
   private FoodProductService foodProductService;
+
+  @MockBean
+  private IngredientService ingredientService;
 
   private static final String BASE_URL = "/api/v1/private/foodproducts";
 
@@ -124,12 +128,13 @@ public class FoodProductControllerTest {
   public void testUpdateFoodProductThatExists() {
     try {
       when(foodProductService.updateFoodProduct(any(FoodProduct.class))).thenReturn(carrotProduct);
+      when(ingredientService.getIngredientById(1L)).thenReturn(carrot);
       mvc
         .perform(
           put(BASE_URL + "/id/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredient\": {\"id\":1,\"name\":\"Carrot\"}, \"household\": null}"
+              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -144,12 +149,13 @@ public class FoodProductControllerTest {
     try {
       when(foodProductService.updateFoodProduct(any(FoodProduct.class)))
         .thenThrow(new FoodProductNotFoundException());
+      when(ingredientService.getIngredientById(1L)).thenReturn(carrot);
       mvc
         .perform(
           put(BASE_URL + "/id/1")
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredient\": {\"id\":1,\"name\":\"Carrot\"}, \"household\": null}"
+              "{\"id\":1,\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -163,12 +169,13 @@ public class FoodProductControllerTest {
   public void testCreateFoodProductThatDoesExist() {
     try {
       when(foodProductService.saveFoodProduct(any(FoodProduct.class))).thenReturn(carrotProduct);
+      when(ingredientService.getIngredientById(1L)).thenReturn(carrot);
       mvc
         .perform(
           post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredient\": {\"id\":1,\"name\":\"Carrot\"}, \"household\": null}"
+              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.ADMIN))))
         )
@@ -182,12 +189,13 @@ public class FoodProductControllerTest {
   public void testCreateFoodProductWithoutAdmin() {
     try {
       when(foodProductService.saveFoodProduct(any(FoodProduct.class))).thenReturn(carrotProduct);
+      when(ingredientService.getIngredientById(1L)).thenReturn(carrot);
       mvc
         .perform(
           post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(
-              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredient\": {\"id\":1,\"name\":\"Carrot\"}, \"household\": null}"
+              "{\"name\":\"CarrotProduct\",\"EAN\":\"123456789\",\"amount\":1.0,\"looseWeight\":true, \"ingredientId\": 1}"
             )
             .with(authentication(createAuthenticationToken(testUserFactory(TestUserEnum.GOOD))))
         )

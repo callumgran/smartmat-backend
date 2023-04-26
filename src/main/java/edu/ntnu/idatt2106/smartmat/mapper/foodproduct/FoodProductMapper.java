@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.mapper.foodproduct;
 
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.BareFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.IngredientFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.ingredient.BareIngredientDTO;
@@ -38,6 +39,19 @@ public interface FoodProductMapper {
     }
   )
   FoodProduct foodProductDTOToFoodProduct(FoodProductDTO foodProductDTO);
+
+  /**
+   * Maps a bare food product DTO to a food product.
+   * @param foodProductDTO The bare food product DTO to map.
+   * @return The mapped food product.
+   */
+  @Mappings(
+    {
+      @Mapping(target = "ingredient", ignore = true),
+      @Mapping(target = "households", ignore = true),
+    }
+  )
+  FoodProduct bareFoodProductDTOToFoodProduct(BareFoodProductDTO foodProductDTO);
 
   /**
    * Maps a food product DTO to a food product.
