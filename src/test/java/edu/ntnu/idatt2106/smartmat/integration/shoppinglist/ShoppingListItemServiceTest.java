@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.integration.shoppinglist;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -68,6 +69,29 @@ public class ShoppingListItemServiceTest {
   }
 
   @Test
+  public void testShoppingListItemExistsNonExisting() {
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(false);
+    assertFalse(shoppingListItemService.existsById(shoppingListItem.getId()));
+  }
+
+  @Test
+  public void testGetShoppingListItemExists() {
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(true);
+    when(shoppingListItemRepository.findById(shoppingListItem.getId()))
+      .thenReturn(java.util.Optional.of(shoppingListItem));
+    assertDoesNotThrow(() -> shoppingListItemService.getItemById(shoppingListItem.getId()));
+  }
+
+  @Test
+  public void testGetShoppingListItemNonExisting() {
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(false);
+    assertThrows(
+      ShoppingListItemNotFoundException.class,
+      () -> shoppingListItemService.getItemById(shoppingListItem.getId())
+    );
+  }
+
+  @Test
   public void testCreatingNonExistingShoppingListItem() {
     when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(false);
     when(shoppingListItemRepository.save(shoppingListItem)).thenReturn(shoppingListItem);
@@ -99,6 +123,22 @@ public class ShoppingListItemServiceTest {
     assertThrows(
       ShoppingListItemNotFoundException.class,
       () -> shoppingListItemService.deleteShoppingListItem(shoppingListItem.getId())
+    );
+  }
+
+  @Test
+  public void testUpdateExistingShoppingListItem() {
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(true);
+    when(shoppingListItemRepository.save(shoppingListItem)).thenReturn(shoppingListItem);
+    assertDoesNotThrow(() -> shoppingListItemService.updateShoppingListItem(shoppingListItem));
+  }
+
+  @Test
+  public void testUpdateNonExistingShoppingListItem() {
+    when(shoppingListItemRepository.existsById(shoppingListItem.getId())).thenReturn(false);
+    assertThrows(
+      ShoppingListItemNotFoundException.class,
+      () -> shoppingListItemService.updateShoppingListItem(shoppingListItem)
     );
   }
 }
