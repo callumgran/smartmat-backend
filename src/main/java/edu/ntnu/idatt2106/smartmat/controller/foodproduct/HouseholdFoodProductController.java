@@ -10,6 +10,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.HouseholdFoodProductMapper;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
@@ -272,11 +273,24 @@ public class HouseholdFoodProductController {
       createHouseholdFoodProductDTO.getFoodProductId()
     );
 
-    HouseholdFoodProduct householdFoodProduct = new HouseholdFoodProduct();
-    householdFoodProduct.setHousehold(householdService.getHouseholdById(householdId));
-    householdFoodProduct.setFoodProduct(
-      foodProductService.getFoodProductById(createHouseholdFoodProductDTO.getFoodProductId())
+    HouseholdFoodProduct householdFoodProduct = HouseholdFoodProductMapper.INSTANCE.createHouseholdFoodProductDTOToHouseholdFoodProduct(
+      createHouseholdFoodProductDTO
     );
+    householdFoodProduct.setHousehold(householdService.getHouseholdById(householdId));
+
+    LOGGER.info("Set household.");
+
+    FoodProduct foodProduct = foodProductService.getFoodProductById(
+      createHouseholdFoodProductDTO.getFoodProductId()
+    );
+
+    LOGGER.info(
+      "Found food product with id {}: {}",
+      createHouseholdFoodProductDTO.getFoodProductId(),
+      foodProduct
+    );
+
+    householdFoodProduct.setFoodProduct(foodProduct);
 
     HouseholdFoodProductDTO createdHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
       householdFoodProductService.saveFoodProduct(householdFoodProduct)
