@@ -6,7 +6,7 @@ import java.time.chrono.ChronoLocalDate;
  * Class for validating user input.
  * Base class for validation of user input for different models.
  * @author Callum G.
- * @version 1.0 - 18.04.2023
+ * @version 1.1 - 26.04.2023
  */
 public abstract class BaseValidation {
 
@@ -150,6 +150,18 @@ public abstract class BaseValidation {
    */
   public static boolean isNumeric(String string) {
     return string.matches(RegexPattern.NUMERIC_STRING.getPattern());
+  }
+
+  /**
+   * Check if the given string is a valid UUID.
+   * @param string The string to check.
+   * @return True if the string is a valid UUID, false otherwise.
+   */
+  public static boolean isUUID(String string) {
+    return (
+      string.length() == ValidationRules.UUID_SIZE.getValue() &&
+      string.matches(RegexPattern.UUID.getPattern())
+    );
   }
 
   /**

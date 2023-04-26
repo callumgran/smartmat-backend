@@ -2,12 +2,14 @@ package edu.ntnu.idatt2106.smartmat.validation.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.validation.BaseValidation;
 import edu.ntnu.idatt2106.smartmat.validation.RegexPattern;
+import edu.ntnu.idatt2106.smartmat.validation.ValidationRules;
+import java.time.LocalDate;
 
 /**
  * Class for validating food products
  *
  * @author Callum G.
- * @version 1.0 26.04.2020
+ * @version 1.3 26.04.2020
  */
 public class FoodProductValidation extends BaseValidation {
 
@@ -67,7 +69,7 @@ public class FoodProductValidation extends BaseValidation {
       (validateEan(ean) || looseWeight) &&
       validateName(name) &&
       isLargerThan(amount, 0) &&
-      isLargerThan(ingredientId, 0)
+      isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
     );
   }
 
@@ -90,11 +92,81 @@ public class FoodProductValidation extends BaseValidation {
     Long ingredientId
   ) {
     return (
-      isLargerThan(id, 0) &&
+      isLargerThanOrEqual(id, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       (validateEan(ean) || looseWeight) &&
       validateName(name) &&
       isLargerThan(amount, 0) &&
-      isLargerThan(ingredientId, 0)
+      isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
+    );
+  }
+
+  /**
+   * Validates the creation of a custom food product
+   * Checks if the name and amount are valid
+   * @param name the name to validate
+   * @param amount the amount to validate
+   * @return true if the name and amount are valid, false otherwise
+   */
+  public static boolean validateCreateCustomFoodProduct(String name, double amount) {
+    return (validateName(name) && isLargerThan(amount, 0));
+  }
+
+  /**
+   * Validates the creation of a shopping list item.
+   * Checks if the name, amount, ingredient ID are valid
+   * @param name the name to validate
+   * @param amount the amount to validate
+   * @param ingredientId the ingredient ID to validate
+   * @return true if the name, amount, ingredient ID are valid, false otherwise
+   */
+  public static boolean validateCreateShoppingListItem(
+    String name,
+    double amount,
+    Long ingredientId
+  ) {
+    return (
+      validateName(name) &&
+      isLargerThan(amount, 0) &&
+      isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
+    );
+  }
+
+  /**
+   * Validates the creation of a household food product
+   * Checks if the food product id, expiration date and amount left are valid.
+   * @param foodProductId the food product id to validate
+   * @param expirationDate the expiration date to validate
+   * @param amountLeft the amount left to validate
+   * @return true if the food product id, expiration date and amount left are valid, false otherwise
+   */
+  public static boolean validateCreateHouseholdFoodProduct(
+    Long foodProductId,
+    String expirationDate,
+    double amountLeft
+  ) {
+    return (
+      isLargerThanOrEqual(foodProductId, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
+      isAfter(LocalDate.parse(expirationDate), LocalDate.now().minusDays(7)) &&
+      isLargerThan(amountLeft, 0)
+    );
+  }
+
+  /**
+   * Validates the update of a household food product
+   * Checks if the food product id, expiration date and amount left are valid.
+   * @param foodProductId the food product id to validate
+   * @param expirationDate the expiration date to validate
+   * @param amountLeft the amount left to validate
+   */
+  public static boolean validateUpdateHouseholdFoodProduct(
+    Long foodProductId,
+    String expirationDate,
+    double amountLeft
+  ) {
+    return (
+      isLargerThanOrEqual(foodProductId, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
+      isAfter(LocalDate.parse(expirationDate), LocalDate.now().minusDays(7)) &&
+      isLargerThan(amountLeft, 0)
     );
   }
 }

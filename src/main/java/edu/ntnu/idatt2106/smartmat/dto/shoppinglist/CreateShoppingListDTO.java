@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.dto.shoppinglist;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,5 @@ public class CreateShoppingListDTO {
 
   @NotBlank
   @NonNull
-  private String household;
+  private UUID household;
 }

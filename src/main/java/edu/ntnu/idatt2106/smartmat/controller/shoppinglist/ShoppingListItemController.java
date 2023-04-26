@@ -8,6 +8,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundExcep
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListItemMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
@@ -19,6 +20,7 @@ import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListItemService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
+import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
@@ -42,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to shopping list items.
  * @auther Callum Gran
- * @version 26.04.2023
+ * @version 1.1 - 26.04.2023
  */
 @RestController
 @RequestMapping("/api/v1/private/shoppinglistitems")
@@ -100,8 +102,8 @@ public class ShoppingListItemController {
    * @throws UserDoesNotExistsException if the user is not found.
    * @throws HouseholdNotFoundException if the household is not found.
    * @throws PermissionDeniedException if the user does not have permission.
-   * @throws ShoppingListItemNotFoundException
-   * @throws IncorrectItemAmountException if the item amount is incorrect.
+   * @throws ShoppingListItemNotFoundException if the shopping list item is not found.
+   * @throws BadInputException if the input is bad.
    */
   @PostMapping(
     value = "",
@@ -117,7 +119,7 @@ public class ShoppingListItemController {
     @AuthenticationPrincipal Auth auth,
     @RequestBody CreateShoppingListItemDTO item
   )
-    throws NullPointerException, ShoppingListNotFoundException, IngredientNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException, ShoppingListItemNotFoundException {
+    throws NullPointerException, ShoppingListNotFoundException, IngredientNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException, ShoppingListItemNotFoundException, BadInputException {
     ShoppingList shoppingList = shoppingListService.getShoppingListById(item.getShoppingListId());
 
     LOGGER.info("Adding item to shopping list");
@@ -127,6 +129,14 @@ public class ShoppingListItemController {
         "You do not have permission to add an item to this shopping list."
       );
     }
+
+    if (
+      !FoodProductValidation.validateCreateShoppingListItem(
+        item.getName(),
+        item.getAmount(),
+        item.getIngredientId()
+      )
+    ) throw new BadInputException("Ugyldig input for å legge til ingrediens i handleliste");
 
     Ingredient ingredient = ingredientService.getIngredientById(item.getIngredientId());
 

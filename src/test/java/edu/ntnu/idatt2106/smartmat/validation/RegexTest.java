@@ -43,6 +43,9 @@ public class RegexTest {
   private final String numericStringBadChar = "1234567890a";
   private final String numericStringNegative = "-1234567890";
 
+  private final String goodUUID = "123e4567-e89b-12d3-a456-426655440000";
+  private final String badUUID = "123e4567-e89b-12d3-a456-42665544000";
+
   @Test
   public void testEmailRegexWorksOnNormalEmail() {
     assertTrue(emailGood.matches(RegexPattern.EMAIL.getPattern()));
@@ -191,5 +194,15 @@ public class RegexTest {
   @Test
   public void testNumericRegexFailsOnNegative() {
     assertFalse(numericStringNegative.matches(RegexPattern.NUMERIC_STRING.getPattern()));
+  }
+
+  @Test
+  public void testUUIDRegexWorksOnGoodUUID() {
+    assertTrue(goodUUID.matches(RegexPattern.UUID.getPattern()));
+  }
+
+  @Test
+  public void testUUIDRegexFailsOnBadUUID() {
+    assertFalse(badUUID.matches(RegexPattern.UUID.getPattern()));
   }
 }

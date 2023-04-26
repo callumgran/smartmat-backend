@@ -17,6 +17,8 @@ import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
+import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
@@ -110,11 +112,11 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<HouseholdFoodProductDTO> getHouseholdFoodProductById(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
-    @PathVariable("id") String id
+    @PathVariable("householdId") UUID householdId,
+    @PathVariable("id") UUID id
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, UUID.fromString(householdId))) {
+    if (!isAdminOrHouseholdMember(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
@@ -122,7 +124,7 @@ public class HouseholdFoodProductController {
 
     LOGGER.info("GET /api/v1/private/households/{}/foodproducts/{}", householdId, id);
     HouseholdFoodProductDTO householdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
-      householdFoodProductService.getFoodProductById(UUID.fromString(id))
+      householdFoodProductService.getFoodProductById(id)
     );
 
     LOGGER.info("Found and returning household food product with id: {}", id);
@@ -140,6 +142,7 @@ public class HouseholdFoodProductController {
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws FoodProductNotFoundException If the food product does not exist.
    * @throws NullPointerException If the household id or food product ean is null.
+   * @throws BadInputException If the ean is not valid.
    */
   @GetMapping(
     value = "/{householdId}/foodproducts/ean/{ean}",
@@ -152,22 +155,23 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<HouseholdFoodProductDTO> getHouseholdFoodProductByEan(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
+    @PathVariable("householdId") UUID householdId,
     @PathVariable("ean") String ean
   )
-    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, UUID.fromString(householdId))) {
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
+    if (!isAdminOrHouseholdMember(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
     }
 
+    if (!FoodProductValidation.validateEan(ean)) throw new BadInputException(
+      "EAN-verdien er ikke gyldig."
+    );
+
     LOGGER.info("GET /api/v1/private/households/{}/foodproducts/ean/{}", householdId, ean);
     HouseholdFoodProductDTO householdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
-      householdFoodProductService.findHouseholdFoodProductByIdAndEAN(
-        UUID.fromString(householdId),
-        ean
-      )
+      householdFoodProductService.findHouseholdFoodProductByIdAndEAN(householdId, ean)
     );
 
     LOGGER.info("Found and returning household food product with ean: {}", ean);
@@ -198,11 +202,15 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<List<HouseholdFoodProductDTO>> searchForHouseholdFoodProduct(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
+    @PathVariable("householdId") UUID householdId,
     @RequestBody SearchRequest searchRequest
   )
     throws BadInputException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, UUID.fromString(householdId))) {
+    if (!SearchRequestValidation.validateSearchRequest(searchRequest)) throw new BadInputException(
+      "Søkeverdiene er ikke gyldige."
+    );
+
+    if (!isAdminOrHouseholdMember(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
@@ -229,6 +237,7 @@ public class HouseholdFoodProductController {
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws FoodProductNotFoundException If the food product does not exist.
    * @throws NullPointerException If the household id or food product ean is null.
+   * @throws BadInputException If the household food product is invalid.
    */
   @PostMapping(value = "/{householdId}/foodproducts", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -238,15 +247,25 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<HouseholdFoodProductDTO> createHouseholdFoodProduct(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
+    @PathVariable("householdId") UUID householdId,
     @RequestBody CreateHouseholdFoodProductDTO createHouseholdFoodProductDTO
   )
-    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, UUID.fromString(householdId))) {
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
+    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å opprette matvarene i husstanden."
       );
     }
+
+    if (
+      !FoodProductValidation.validateCreateHouseholdFoodProduct(
+        createHouseholdFoodProductDTO.getFoodProductId(),
+        createHouseholdFoodProductDTO.getExpirationDate(),
+        createHouseholdFoodProductDTO.getAmountLeft()
+      )
+    ) throw new BadInputException(
+      "Input verdiene for å opprette en matvare i husstanden er ikke gyldige."
+    );
 
     LOGGER.info("POST /api/v1/private/households/{}/foodproducts", householdId);
     LOGGER.info(
@@ -255,9 +274,7 @@ public class HouseholdFoodProductController {
     );
 
     HouseholdFoodProduct householdFoodProduct = new HouseholdFoodProduct();
-    householdFoodProduct.setHousehold(
-      householdService.getHouseholdById(UUID.fromString(householdId))
-    );
+    householdFoodProduct.setHousehold(householdService.getHouseholdById(householdId));
     householdFoodProduct.setFoodProduct(
       foodProductService.getFoodProductById(createHouseholdFoodProductDTO.getFoodProductId())
     );
@@ -285,6 +302,7 @@ public class HouseholdFoodProductController {
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws FoodProductNotFoundException If the food product does not exist.
    * @throws NullPointerException If the household id or food product ean is null.
+   * @throws BadInputException If the household food product is invalid.
    */
   @PutMapping(
     value = "/{householdId}/foodproducts/id/{id}",
@@ -297,31 +315,35 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<HouseholdFoodProductDTO> updateHouseholdFoodProduct(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
-    @PathVariable("id") String id,
+    @PathVariable("householdId") UUID householdId,
+    @PathVariable("id") UUID id,
     @RequestBody UpdateHouseholdFoodProductDTO householdFoodProductDTO
   )
-    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, UUID.fromString(householdId))) {
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
+    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å oppdatere matvarene i husstanden."
       );
     }
 
+    if (
+      !FoodProductValidation.validateUpdateHouseholdFoodProduct(
+        householdFoodProductDTO.getFoodProductId(),
+        householdFoodProductDTO.getExpirationDate(),
+        householdFoodProductDTO.getAmountLeft()
+      )
+    ) throw new BadInputException("Inputen til matvaren var ikke gyldig.");
+
     LOGGER.info("PUT /api/v1/private/households/{}/foodproducts/id/{}", householdId, id);
 
     if (householdFoodProductDTO.getAmountLeft() <= 0) {
-      householdFoodProductService.deleteFoodProductById(UUID.fromString(id));
+      householdFoodProductService.deleteFoodProductById(id);
       return ResponseEntity.noContent().build();
     }
 
-    HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(
-      UUID.fromString(id)
-    );
+    HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(id);
 
-    householdFoodProduct.setHousehold(
-      householdService.getHouseholdById(UUID.fromString(householdId))
-    );
+    householdFoodProduct.setHousehold(householdService.getHouseholdById(householdId));
 
     householdFoodProduct.setFoodProduct(
       foodProductService.getFoodProductById(householdFoodProductDTO.getFoodProductId())
@@ -367,11 +389,11 @@ public class HouseholdFoodProductController {
   )
   public ResponseEntity<Void> deleteHouseholdFoodProduct(
     @AuthenticationPrincipal Auth auth,
-    @PathVariable("householdId") String householdId,
-    @PathVariable("id") String id
+    @PathVariable("householdId") UUID householdId,
+    @PathVariable("id") UUID id
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, UUID.fromString(householdId))) {
+    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å slette matvarene i husstanden."
       );
@@ -379,7 +401,7 @@ public class HouseholdFoodProductController {
 
     LOGGER.info("DELETE /api/v1/private/households/{}/foodproducts/{}", householdId, id);
 
-    householdFoodProductService.deleteFoodProductById(UUID.fromString(id));
+    householdFoodProductService.deleteFoodProductById(id);
 
     LOGGER.info("Deleted and returning household food product with id: {}", id);
     return ResponseEntity.noContent().build();
