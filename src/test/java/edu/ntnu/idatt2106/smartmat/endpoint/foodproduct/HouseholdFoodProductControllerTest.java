@@ -437,9 +437,8 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                "{\"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                carrotProduct.getId()
               )
             )
         )
@@ -476,9 +475,8 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                "{\"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                carrotProduct.getId()
               )
             )
         )
@@ -515,9 +513,8 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                "{\"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                carrotProduct.getId()
               )
             )
         )
@@ -554,9 +551,8 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                "{\"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                carrotProduct.getId()
               )
             )
         )
@@ -593,9 +589,8 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                "{\"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                carrotProduct.getId()
               )
             )
         )
@@ -634,10 +629,9 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"id\": \"%s\", \"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                "{\"id\": \"%s\", \"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
                 carrotHouseholdProduct.getId(),
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                carrotProduct.getId()
               )
             )
         )
@@ -676,10 +670,9 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"id\": \"%s\", \"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                "{\"id\": \"%s\", \"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
                 carrotHouseholdProduct.getId(),
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                carrotProduct.getId()
               )
             )
         )
@@ -718,10 +711,9 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"id\": \"%s\", \"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                "{\"id\": \"%s\", \"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
                 carrotHouseholdProduct.getId(),
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                carrotProduct.getId()
               )
             )
         )
@@ -760,10 +752,9 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"id\": \"%s\", \"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                "{\"id\": \"%s\", \"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
                 carrotHouseholdProduct.getId(),
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                carrotProduct.getId()
               )
             )
         )
@@ -790,10 +781,9 @@ public class HouseholdFoodProductControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(
               String.format(
-                "{\"id\": \"%s\", \"foodProductId\": %d, \"householdId\": \"%s\", \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
+                "{\"id\": \"%s\", \"foodProductId\": %d, \"expirationDate\": \"2023-12-02\", \"amountLeft\": 1}",
                 carrotHouseholdProduct.getId(),
-                carrotProduct.getId(),
-                HOUSEHOLD_ID
+                carrotProduct.getId()
               )
             )
         )
