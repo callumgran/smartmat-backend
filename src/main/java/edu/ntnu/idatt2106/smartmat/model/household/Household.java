@@ -60,5 +60,5 @@ public class Household {
   private Set<CustomFoodItem> customFoodItems;
 
   @OneToMany(mappedBy = "household")
-  private Set<TempUsedIngredient> tempUsedIngredients;
+  private Set<WeeklyRecipe> WeeklyRecipes;
 }

@@ -1,15 +1,14 @@
 package edu.ntnu.idatt2106.smartmat.model.household;
 
+import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * Class representing a temporary ingredient in the system.
+ * Class representing a weekly recipe in the system.
  * @author Callum G.
  * @version 1.1 - 28.04.2023
  */
@@ -31,8 +30,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "`temp_used_ingredient`")
-@IdClass(TempUsedIngredientId.class)
-public class TempUsedIngredient {
+@IdClass(WeeklyRecipeId.class)
+public class WeeklyRecipe {
 
   @Id
   @ManyToOne(optional = false)
@@ -44,6 +43,7 @@ public class TempUsedIngredient {
   @NonNull
   private LocalDate dateToUse;
 
-  @OneToMany(mappedBy = "tempUsedIngredient")
-  private Set<TempUsedIngredientAmount> tempUsedIngredientAmount;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "`recipe_id`", nullable = false, referencedColumnName = "`id`")
+  private Recipe recipe;
 }

@@ -37,12 +37,12 @@ public class HouseholdRecipeRecommendTest {
   @Before
   public void setUp() throws Exception {
     Unit unit = new Unit("Kilogram", "kg", null);
-    Ingredient carrot = new Ingredient(1L, "Carrot", null, null, null, unit);
-    Ingredient potato = new Ingredient(2L, "Potato", null, null, null, unit);
-    Ingredient onion = new Ingredient(3L, "Onion", null, null, null, unit);
-    Ingredient garlic = new Ingredient(4L, "Garlic", null, null, null, unit);
-    Ingredient tomato = new Ingredient(5L, "Tomato", null, null, null, unit);
-    Ingredient pasta = new Ingredient(6L, "Pasta", null, null, null, unit);
+    Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
+    Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
+    Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
+    Ingredient garlic = new Ingredient(4L, "Garlic", null, null, unit);
+    Ingredient tomato = new Ingredient(5L, "Tomato", null, null, unit);
+    Ingredient pasta = new Ingredient(6L, "Pasta", null, null, unit);
 
     // Create pasta recipe
     Recipe pastaRecipe = new Recipe(
@@ -52,11 +52,10 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       "Cook pasta, make sauce",
       50,
-      RecipeDifficulty.EASY
+      RecipeDifficulty.EASY,
+      new HashSet<>()
     );
-    RecipeIngredient pastaRecipeTomato = new RecipeIngredient(pastaRecipe, tomato, 1.0);
     RecipeIngredient pastaRecipePasta = new RecipeIngredient(pastaRecipe, pasta, 1.0);
-    pastaRecipe.getIngredients().add(pastaRecipeTomato);
     pastaRecipe.getIngredients().add(pastaRecipePasta);
 
     // Create tomato sauce recipe
@@ -67,7 +66,8 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       "Cook tomato sauce",
       50,
-      RecipeDifficulty.EASY
+      RecipeDifficulty.EASY,
+      new HashSet<>()
     );
     RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
     RecipeIngredient tomatoSauceRecipeOnion = new RecipeIngredient(tomatoSauceRecipe, onion, 1.0);
@@ -84,9 +84,10 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       "Cook carrot soup",
       50,
-      RecipeDifficulty.EASY
+      RecipeDifficulty.EASY,
+      new HashSet<>()
     );
-    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 1.0);
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
     RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(carrotSoupRecipe, potato, 1.0);
     RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(carrotSoupRecipe, onion, 1.0);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
@@ -96,6 +97,15 @@ public class HouseholdRecipeRecommendTest {
     recipes = List.of(pastaRecipe, tomatoSauceRecipe, carrotSoupRecipe);
 
     // Create food products
+    FoodProduct tomatoFoodProduct = new FoodProduct(
+      1L,
+      "Bama Tomato",
+      "123456789123",
+      1.0D,
+      false,
+      null,
+      tomato
+    );
     FoodProduct carrotFoodProduct = new FoodProduct(
       1L,
       "Bama Carrot",
@@ -126,6 +136,13 @@ public class HouseholdRecipeRecommendTest {
 
     // Create household food products
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
+    HouseholdFoodProduct householdFoodProductTomato = new HouseholdFoodProduct(
+      UUID.randomUUID(),
+      tomatoFoodProduct,
+      household,
+      LocalDate.now().plusDays(10),
+      2.0
+    );
     HouseholdFoodProduct householdFoodProductCarrot = new HouseholdFoodProduct(
       UUID.randomUUID(),
       carrotFoodProduct,
@@ -147,6 +164,7 @@ public class HouseholdRecipeRecommendTest {
       LocalDate.now().plusDays(10),
       2.0
     );
+    household.getFoodProducts().add(householdFoodProductTomato);
     household.getFoodProducts().add(householdFoodProductCarrot);
     household.getFoodProducts().add(householdFoodProductPotato);
     household.getFoodProducts().add(householdFoodProductOnion);
@@ -169,7 +187,7 @@ public class HouseholdRecipeRecommendTest {
   @Test
   public void testHouseHoldRecipeRecommend() {
     List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
-      .getRecommendedRecipes(household, recipes)
+      .getRecommendedRecipes(household, recipes, new ArrayList<>())
       .stream()
       .toList();
 
@@ -183,7 +201,7 @@ public class HouseholdRecipeRecommendTest {
   @Test
   public void testHouseHoldRecipeRecommendNoRecipes() {
     List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
-      .getRecommendedRecipes(household, new ArrayList<>())
+      .getRecommendedRecipes(household, new ArrayList<>(), new ArrayList<>())
       .stream()
       .toList();
 
@@ -195,7 +213,8 @@ public class HouseholdRecipeRecommendTest {
     List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(
         new Household(null, "Household", new HashSet<>(), new HashSet<>(), null, null, null),
-        recipes
+        recipes,
+        new ArrayList<>()
       )
       .stream()
       .toList();
@@ -204,5 +223,19 @@ public class HouseholdRecipeRecommendTest {
     assertTrue(recommendedRecipes.contains(recipes.get(0)));
     assertTrue(recommendedRecipes.contains(recipes.get(1)));
     assertTrue(recommendedRecipes.contains(recipes.get(2)));
+  }
+
+  @Test
+  public void testHouseholdRecipeRecommendRecipesCorrectlyWhenRecipesAreUsed() {
+    List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
+      .getRecommendedRecipes(household, recipes, List.of(recipes.get(2)))
+      .stream()
+      .toList();
+
+    assertEquals(2, recommendedRecipes.size());
+    assertTrue(recommendedRecipes.contains(recipes.get(1)));
+    assertTrue(recommendedRecipes.contains(recipes.get(2)));
+    assertFalse(recommendedRecipes.contains(recipes.get(0)));
+    assertEquals(recommendedRecipes.get(0), recipes.get(2));
   }
 }

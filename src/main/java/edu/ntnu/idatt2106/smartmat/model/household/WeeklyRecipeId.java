@@ -8,15 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Class representing the primary key of a temporary used ingredient in a household.
+ * Class representing the primary key of a WeeklyRecipe in a household.
  * @author Callum G.
- * @version 1.0 - 28.4.2023
+ * @version 1.1 - 28.4.2023
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-public class TempUsedIngredientId implements Serializable {
+public class WeeklyRecipeId implements Serializable {
 
   private Household household;
 

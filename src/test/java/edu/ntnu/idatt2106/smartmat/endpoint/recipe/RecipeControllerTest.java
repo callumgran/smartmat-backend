@@ -68,7 +68,8 @@ public class RecipeControllerTest {
         new HashSet<>(),
         "instructions",
         1,
-        RecipeDifficulty.EASY
+        RecipeDifficulty.EASY,
+        new HashSet<>()
       );
 
     ingredient = Ingredient.builder().id(1L).name("Ingredient").build();

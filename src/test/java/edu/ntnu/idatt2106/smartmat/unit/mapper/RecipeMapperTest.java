@@ -23,7 +23,8 @@ public class RecipeMapperTest {
     new HashSet<>(),
     "instructions",
     1,
-    RecipeDifficulty.EASY
+    RecipeDifficulty.EASY,
+    new HashSet<>()
   );
   private final RecipeDTO recipeDTO = new RecipeDTO(
     UUID_1.toString(),

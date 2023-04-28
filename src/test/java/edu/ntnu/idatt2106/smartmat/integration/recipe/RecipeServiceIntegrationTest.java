@@ -73,7 +73,8 @@ public class RecipeServiceIntegrationTest {
         new HashSet<>(),
         "1: do this, 2...",
         30,
-        RecipeDifficulty.EASY
+        RecipeDifficulty.EASY,
+        new HashSet<>()
       );
     bananaCake =
       new Recipe(
@@ -83,7 +84,8 @@ public class RecipeServiceIntegrationTest {
         new HashSet<>(),
         "1: do this, 2...",
         30,
-        RecipeDifficulty.MEDIUM
+        RecipeDifficulty.MEDIUM,
+        new HashSet<>()
       );
     chocolateCake =
       new Recipe(
@@ -93,7 +95,8 @@ public class RecipeServiceIntegrationTest {
         new HashSet<>(),
         "1: do this, 2...",
         30,
-        RecipeDifficulty.ADVANCED
+        RecipeDifficulty.ADVANCED,
+        new HashSet<>()
       );
 
     when(recipeRepository.existsById(carrotCakeId)).thenReturn(true);

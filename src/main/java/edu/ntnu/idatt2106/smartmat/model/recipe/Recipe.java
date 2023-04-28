@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.model.recipe;
 
+import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -52,4 +53,7 @@ public class Recipe {
   @Column(name = "`recipe_difficulty`", nullable = false)
   @NonNull
   private RecipeDifficulty recipeDifficulty;
+
+  @OneToMany(mappedBy = "recipe")
+  private Set<WeeklyRecipe> weeklyRecipes;
 }

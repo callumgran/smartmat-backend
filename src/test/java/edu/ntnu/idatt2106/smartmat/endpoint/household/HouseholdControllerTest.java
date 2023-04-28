@@ -25,6 +25,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
@@ -65,6 +66,9 @@ public class HouseholdControllerTest {
 
   @MockBean
   private RecipeService recipeService;
+
+  @MockBean
+  private WeeklyRecipeService weeklyRecipeService;
 
   private static final String BASE_URL = "/api/v1/private/households";
 
