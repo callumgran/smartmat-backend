@@ -23,7 +23,6 @@ public class FoodProductValidationTest {
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-  private final String pepsi = "Pepsi Max 0,33l boks";
 
   private final Long badId = -1L;
   private final Long goodId = 1L;

@@ -618,8 +618,7 @@ public class HouseholdFoodProductControllerTest {
         .thenReturn(true);
       when(householdFoodProductService.updateFoodProduct(any(HouseholdFoodProduct.class)))
         .thenReturn(carrotHouseholdProduct);
-      when(householdFoodProductService.getFoodProductById(carrotHouseholdProduct.getId()))
-        .thenReturn(carrotHouseholdProduct);
+      when(householdFoodProductService.existsById(carrotHouseholdProduct.getId())).thenReturn(true);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
       when(householdService.getHouseholdById(HOUSEHOLD_ID)).thenReturn(household);
       mvc
@@ -659,8 +658,8 @@ public class HouseholdFoodProductControllerTest {
         .thenReturn(true);
       when(householdFoodProductService.updateFoodProduct(any(HouseholdFoodProduct.class)))
         .thenReturn(carrotHouseholdProduct);
-      when(householdFoodProductService.getFoodProductById(carrotHouseholdProduct.getId()))
-        .thenThrow(new FoodProductNotFoundException());
+      when(householdFoodProductService.existsById(carrotHouseholdProduct.getId()))
+        .thenReturn(false);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
       when(householdService.getHouseholdById(HOUSEHOLD_ID)).thenReturn(household);
       mvc
@@ -700,8 +699,7 @@ public class HouseholdFoodProductControllerTest {
         .thenReturn(false);
       when(householdFoodProductService.updateFoodProduct(any(HouseholdFoodProduct.class)))
         .thenReturn(carrotHouseholdProduct);
-      when(householdFoodProductService.getFoodProductById(carrotHouseholdProduct.getId()))
-        .thenReturn(carrotHouseholdProduct);
+      when(householdFoodProductService.existsById(carrotHouseholdProduct.getId())).thenReturn(true);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
       when(householdService.getHouseholdById(HOUSEHOLD_ID)).thenReturn(household);
       mvc
@@ -741,8 +739,8 @@ public class HouseholdFoodProductControllerTest {
         .thenReturn(false);
       when(householdFoodProductService.updateFoodProduct(any(HouseholdFoodProduct.class)))
         .thenThrow(new FoodProductNotFoundException());
-      when(householdFoodProductService.getFoodProductById(carrotHouseholdProduct.getId()))
-        .thenReturn(carrotHouseholdProduct);
+      when(householdFoodProductService.existsById(carrotHouseholdProduct.getId()))
+        .thenReturn(false);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
       when(householdService.getHouseholdById(HOUSEHOLD_ID)).thenReturn(household);
       mvc
@@ -770,8 +768,7 @@ public class HouseholdFoodProductControllerTest {
     try {
       when(householdFoodProductService.updateFoodProduct(any(HouseholdFoodProduct.class)))
         .thenReturn(carrotHouseholdProduct);
-      when(householdFoodProductService.getFoodProductById(carrotHouseholdProduct.getId()))
-        .thenReturn(carrotHouseholdProduct);
+      when(householdFoodProductService.existsById(carrotHouseholdProduct.getId())).thenReturn(true);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
       when(householdService.getHouseholdById(HOUSEHOLD_ID)).thenReturn(household);
       mvc
