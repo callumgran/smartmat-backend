@@ -27,9 +27,11 @@ public class HouseholdRecipeRecommend {
           score +=
             ingredientEntry.getValue() / householdIngredients.get(ingredientEntry.getKey()) * 100;
         }
+      } else {
+        score -= 10;
       }
     }
-
+    System.out.println(score);
     return score;
   }
 
@@ -41,15 +43,28 @@ public class HouseholdRecipeRecommend {
    * Returns a collection of recipes that are sorted by recommendation for the household.
    * @param household The household to recommend recipes for.
    * @param recipes The recipes to recommend from.
+   * @param usedRecipes The recipes that are going to be used.
    * @return A collection of recipes that are sorted by recommendation for the household.
    */
   public static Collection<Recipe> getRecommendedRecipes(
     Household household,
-    Collection<Recipe> recipes
+    Collection<Recipe> recipes,
+    Collection<Recipe> usedRecipes
   ) {
     final Map<Ingredient, Double> householdIngredients = household
       .getFoodProducts()
       .stream()
+      .filter(i -> {
+        usedRecipes
+          .stream()
+          .flatMap(r -> r.getIngredients().stream())
+          .forEach(i2 -> {
+            if (i2.getIngredient().getId() == i.getFoodProduct().getIngredient().getId()) {
+              i.setAmountLeft(i.getAmountLeft() - i2.getAmount());
+            }
+          });
+        return i.getAmountLeft() > 0;
+      })
       .collect(
         Collectors.toMap(
           i -> i.getFoodProduct().getIngredient(),

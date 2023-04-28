@@ -10,20 +10,19 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
-// import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
-// import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
-import edu.ntnu.idatt2106.smartmat.model.household.TempUsedIngredient;
-import edu.ntnu.idatt2106.smartmat.model.household.TempUsedIngredientAmount;
-import edu.ntnu.idatt2106.smartmat.model.household.TempUsedIngredientId;
+import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
+import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
-import edu.ntnu.idatt2106.smartmat.repository.household.TempUsedIngredientRepository;
+import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
-import edu.ntnu.idatt2106.smartmat.service.household.TempUsedIngredientService;
-import edu.ntnu.idatt2106.smartmat.service.household.TempUsedIngredientServiceImpl;
+import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
+import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeServiceImpl;
 import java.time.LocalDate;
 import java.util.HashSet;
-// import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,25 +38,25 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @version 1.0 - 28.4.2023
  */
 @RunWith(SpringRunner.class)
-public class TempUsedIngredientServiceIntegrationTest {
+public class WeeklyRecipeServiceIntegrationTest {
 
   @TestConfiguration
-  static class TempUsedIngredientServiceIntegrationTestConfiguration {
+  static class WeeklyRecipeServiceIntegrationTestConfiguration {
 
     @Bean
-    public TempUsedIngredientService householdService() {
-      return new TempUsedIngredientServiceImpl();
+    public WeeklyRecipeService householdService() {
+      return new WeeklyRecipeServiceImpl();
     }
   }
 
   @Autowired
-  private TempUsedIngredientService tempUsedIngredientService;
+  private WeeklyRecipeService weeklyRecipeService;
 
   @MockBean
   private HouseholdFoodProductService householdFoodProductService;
 
   @MockBean
-  private TempUsedIngredientRepository tempUsedIngredientRepository;
+  private WeeklyRecipeRepository weeklyRecipeRepository;
 
   // private final UUID EXISTING_UUID = UUID.randomUUID();
 
@@ -89,11 +88,11 @@ public class TempUsedIngredientServiceIntegrationTest {
 
   // private HouseholdFoodProduct nullHfp;
 
-  private TempUsedIngredient tmpIngredient;
+  private WeeklyRecipe weeklyRecipe;
 
-  private TempUsedIngredient noneTmpIngredient;
+  private WeeklyRecipe noneWeeklyRecipe;
 
-  private TempUsedIngredient nullTmpIngredient;
+  private WeeklyRecipe nullWeeklyRecipe;
 
   @Before
   public void setUp() {
@@ -103,6 +102,32 @@ public class TempUsedIngredientServiceIntegrationTest {
 
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     noneHousehold = testHouseholdFactory(TestHouseholdEnum.BAD_HOUSEHOLD);
+    Recipe carrotSoupRecipe = new Recipe(
+      null,
+      "Carrot soup",
+      "Carrot soup",
+      new HashSet<>(),
+      "Cook carrot soup",
+      50,
+      RecipeDifficulty.EASY,
+      new HashSet<>()
+    );
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
+    carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
+
+    Recipe tomatoSauceRecipe = new Recipe(
+      null,
+      "Tomato sauce",
+      "Tomato sauce",
+      new HashSet<>(),
+      "Cook tomato sauce",
+      50,
+      RecipeDifficulty.EASY,
+      new HashSet<>()
+    );
+    RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
+    tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeTomato);
+
     // nullHousehold = null;
 
     // foodProduct =
@@ -122,134 +147,101 @@ public class TempUsedIngredientServiceIntegrationTest {
     //   );
     // nullHfp = null;
 
-    tmpIngredient = new TempUsedIngredient(LocalDate.of(2023, 2, 1));
-    tmpIngredient.setHousehold(household);
-    TempUsedIngredientAmount tmpIngredientAmount = new TempUsedIngredientAmount(
-      tmpIngredient,
-      carrot,
-      1.0D
-    );
-    TempUsedIngredientAmount tmpIngredientAmount2 = new TempUsedIngredientAmount(
-      noneTmpIngredient,
-      tomato,
-      1.0D
-    );
-    tmpIngredient.setTempUsedIngredientAmount(new HashSet<>());
-    tmpIngredient.getTempUsedIngredientAmount().add(tmpIngredientAmount);
-    tmpIngredient.getTempUsedIngredientAmount().add(tmpIngredientAmount2);
+    weeklyRecipe = new WeeklyRecipe(LocalDate.of(2023, 2, 1));
+    weeklyRecipe.setHousehold(household);
+    weeklyRecipe.setRecipe(tomatoSauceRecipe);
 
-    noneTmpIngredient = new TempUsedIngredient(LocalDate.of(2023, 2, 1));
-    noneTmpIngredient.setHousehold(noneHousehold);
-    noneTmpIngredient.setTempUsedIngredientAmount(new HashSet<>());
+    noneWeeklyRecipe = new WeeklyRecipe(LocalDate.of(2023, 2, 1));
+    noneWeeklyRecipe.setHousehold(noneHousehold);
+    noneWeeklyRecipe.setRecipe(carrotSoupRecipe);
 
-    nullTmpIngredient = null;
-    when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(household, LocalDate.of(2023, 2, 1))
-      )
-    )
+    nullWeeklyRecipe = null;
+    when(weeklyRecipeRepository.existsById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
       .thenReturn(true);
     when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(noneHousehold, LocalDate.of(2023, 2, 1))
-      )
+      weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
     )
       .thenReturn(false);
   }
 
   @Test
   public void testExistsByIdExisting() {
-    when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(household, LocalDate.of(2023, 2, 1))
-      )
-    )
+    when(weeklyRecipeRepository.existsById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
       .thenReturn(true);
-    assertTrue(tempUsedIngredientService.existsById(tmpIngredient));
+    assertTrue(weeklyRecipeService.existsById(weeklyRecipe));
   }
 
   @Test
   public void testExistsByIdNonExisting() {
     when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(noneHousehold, LocalDate.of(2023, 2, 1))
-      )
+      weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
     )
       .thenReturn(false);
-    assertFalse(tempUsedIngredientService.existsById(noneTmpIngredient));
+    assertFalse(weeklyRecipeService.existsById(noneWeeklyRecipe));
   }
 
   @Test
   public void testExistsByIdNull() {
     assertThrows(
       NullPointerException.class,
-      () -> tempUsedIngredientService.existsById(nullTmpIngredient)
+      () -> weeklyRecipeService.existsById(nullWeeklyRecipe)
     );
   }
 
   @Test
   public void testSaveExisting() {
-    when(tempUsedIngredientRepository.save(tmpIngredient)).thenReturn(tmpIngredient);
+    when(weeklyRecipeRepository.save(weeklyRecipe)).thenReturn(weeklyRecipe);
     assertThrows(
       IllegalArgumentException.class,
-      () -> tempUsedIngredientService.saveTempUsedIngredient(tmpIngredient)
+      () -> weeklyRecipeService.saveWeeklyRecipe(weeklyRecipe)
     );
   }
 
   @Test
   public void testSaveNonExisting() {
-    when(tempUsedIngredientRepository.save(noneTmpIngredient)).thenReturn(noneTmpIngredient);
-    assertEquals(
-      tempUsedIngredientService.saveTempUsedIngredient(noneTmpIngredient),
-      noneTmpIngredient
-    );
+    when(weeklyRecipeRepository.save(noneWeeklyRecipe)).thenReturn(noneWeeklyRecipe);
+    assertEquals(weeklyRecipeService.saveWeeklyRecipe(noneWeeklyRecipe), noneWeeklyRecipe);
   }
 
   @Test
   public void testSaveNull() {
     assertThrows(
       NullPointerException.class,
-      () -> tempUsedIngredientService.saveTempUsedIngredient(nullTmpIngredient)
+      () -> weeklyRecipeService.saveWeeklyRecipe(nullWeeklyRecipe)
     );
   }
 
   @Test
   public void testSaveWithNullHousehold() {
-    tmpIngredient.setHousehold(null);
+    weeklyRecipe.setHousehold(null);
     assertThrows(
       NullPointerException.class,
-      () -> tempUsedIngredientService.saveTempUsedIngredient(tmpIngredient)
+      () -> weeklyRecipeService.saveWeeklyRecipe(weeklyRecipe)
     );
   }
 
   @Test
   public void deleteByIdExisting() {
-    when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(household, LocalDate.of(2023, 2, 1))
-      )
-    )
+    when(weeklyRecipeRepository.existsById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
       .thenReturn(true);
     doNothing()
-      .when(tempUsedIngredientRepository)
-      .deleteById(new TempUsedIngredientId(household, LocalDate.of(2023, 2, 1)));
-    assertDoesNotThrow(() -> tempUsedIngredientService.deleteTempUsedIngredient(tmpIngredient));
+      .when(weeklyRecipeRepository)
+      .deleteById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1)));
+    assertDoesNotThrow(() -> weeklyRecipeService.deleteWeeklyRecipe(weeklyRecipe));
   }
 
   @Test
   public void deleteByIdNonExisting() {
     when(
-      tempUsedIngredientRepository.existsById(
-        new TempUsedIngredientId(noneHousehold, LocalDate.of(2023, 2, 1))
-      )
+      weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
     )
       .thenReturn(false);
     doNothing()
-      .when(tempUsedIngredientRepository)
-      .deleteById(new TempUsedIngredientId(noneHousehold, LocalDate.of(2023, 2, 1)));
+      .when(weeklyRecipeRepository)
+      .deleteById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)));
     assertThrows(
       IllegalArgumentException.class,
-      () -> tempUsedIngredientService.deleteTempUsedIngredient(noneTmpIngredient)
+      () -> weeklyRecipeService.deleteWeeklyRecipe(noneWeeklyRecipe)
     );
   }
 
@@ -257,16 +249,16 @@ public class TempUsedIngredientServiceIntegrationTest {
   public void deleteByIdNull() {
     assertThrows(
       NullPointerException.class,
-      () -> tempUsedIngredientService.deleteTempUsedIngredient(nullTmpIngredient)
+      () -> weeklyRecipeService.deleteWeeklyRecipe(nullWeeklyRecipe)
     );
   }
 
   @Test
   public void deleteByIdNullHousehold() {
-    tmpIngredient.setHousehold(null);
+    weeklyRecipe.setHousehold(null);
     assertThrows(
       NullPointerException.class,
-      () -> tempUsedIngredientService.deleteTempUsedIngredient(tmpIngredient)
+      () -> weeklyRecipeService.deleteWeeklyRecipe(weeklyRecipe)
     );
   }
 }

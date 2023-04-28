@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.controller.household;
 import edu.ntnu.idatt2106.smartmat.dto.household.CreateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
+import edu.ntnu.idatt2106.smartmat.dto.household.TmpIngredientUsedDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
@@ -10,6 +11,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
@@ -20,18 +22,22 @@ import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
+import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.HouseholdRecipeRecommend;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +47,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +83,8 @@ public class HouseholdController {
   private final ShoppingListService shoppingListService;
 
   private final RecipeService recipeService;
+
+  private final WeeklyRecipeService weeklyRecipeService;
 
   private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
     throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
@@ -436,8 +445,7 @@ public class HouseholdController {
     @PathVariable UUID id
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    boolean hasAccess = isAdminOrHouseholdMember(auth, id);
-    if (!hasAccess) {
+    if (!isAdminOrHouseholdMember(auth, id)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente handlelisten til denne husholdningen."
       );
@@ -478,8 +486,7 @@ public class HouseholdController {
     @PathVariable UUID id
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    boolean hasAccess = isAdminOrHouseholdMember(auth, id);
-    if (!hasAccess) {
+    if (!isAdminOrHouseholdMember(auth, id)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente anbefalte oppskrifter for denne husholdningen."
       );
@@ -487,7 +494,8 @@ public class HouseholdController {
 
     Collection<Recipe> recipes = HouseholdRecipeRecommend.getRecommendedRecipes(
       householdService.getHouseholdById(id),
-      recipeService.findAllRecipes()
+      recipeService.findAllRecipes(),
+      weeklyRecipeService.getRecipesForHousehold(id)
     );
 
     LOGGER.info("Found {} recommended recipes for household with id: {}", recipes.size(), id);
@@ -498,5 +506,101 @@ public class HouseholdController {
       .collect(Collectors.toList());
 
     return ResponseEntity.ok(recipeDTOS);
+  }
+
+  /**
+   * Method to add a weekly recipe to a household.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
+   * @param recipeId The id of the recipe.
+   * @return 201 CREATED if the recipe was added.
+   * @throws NullPointerException If any values are null.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws RecipeNotFoundException If the recipe does not exist.
+   */
+  @PostMapping(value = "/{id}/recipes/{recipeId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Add a weekly recipe to a household",
+    description = "Add a weekly recipe to a household. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<Void> addWeeklyRecipe(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable UUID recipeId,
+    @RequestBody TmpIngredientUsedDTO tmpIngredientUsedDTO
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException, RecipeNotFoundException {
+    if (!isAdminOrHouseholdMember(auth, id)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å legge til en ukentlig oppskrift for denne husholdningen."
+      );
+    }
+
+    Recipe recipe = recipeService.findRecipeById(recipeId);
+    LOGGER.info("Found recipe with id: {}", recipeId);
+
+    Household household = householdService.getHouseholdById(id);
+    LOGGER.info("Found household with id: {}", id);
+
+    final int householdSize = household.getMembers().size();
+
+    recipe.getIngredients().forEach(i -> i.setAmount(i.getAmount() * householdSize));
+
+    final WeeklyRecipe tempUsedDay = new WeeklyRecipe(
+      household,
+      tmpIngredientUsedDTO.getDate(),
+      recipe
+    );
+
+    weeklyRecipeService.saveWeeklyRecipe(tempUsedDay);
+
+    LOGGER.info("Added weekly recipe with id: {} to household with id: {}", recipeId, id);
+
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Method to delete temporary used ingredients for a household on a specific date.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
+   * @param date The date of the temporary used ingredients.
+   * @return 204 NO CONTENT if the temporary used ingredients were deleted.
+   * @throws NullPointerException If any values are null.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @DeleteMapping(value = "/{id}/tempused/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Delete temporary used ingredients for a household on a specific date",
+    description = "Delete temporary used ingredients for a household on a specific date. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<Void> deleteWeeklyRecipe(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!isAdminOrHouseholdMember(auth, id)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å slette midlertidig brukte ingredienser for denne husholdningen."
+      );
+    }
+
+    weeklyRecipeService.deleteWeeklyRecipeById(
+      new WeeklyRecipeId(householdService.getHouseholdById(id), date)
+    );
+
+    LOGGER.info(
+      "Deleted temporary used ingredients for household with id: {} on date: {}",
+      id,
+      date
+    );
+
+    return ResponseEntity.noContent().build();
   }
 }

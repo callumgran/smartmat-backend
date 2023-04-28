@@ -27,22 +27,8 @@ public class FoodProductRepositoryTest {
 
   @Test
   public void findByEAN() {
-    Ingredient carrot = new Ingredient(
-      null,
-      "Carrot",
-      new HashSet<>(),
-      new HashSet<>(),
-      null,
-      null
-    );
-    Ingredient raisin = new Ingredient(
-      null,
-      "Raisin",
-      new HashSet<>(),
-      new HashSet<>(),
-      null,
-      null
-    );
+    Ingredient carrot = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
+    Ingredient raisin = new Ingredient(null, "Raisin", new HashSet<>(), new HashSet<>(), null);
 
     carrot = entityManager.persist(carrot);
     raisin = entityManager.persist(raisin);

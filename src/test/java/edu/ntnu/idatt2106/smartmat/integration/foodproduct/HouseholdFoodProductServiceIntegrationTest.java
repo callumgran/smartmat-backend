@@ -65,7 +65,7 @@ public class HouseholdFoodProductServiceIntegrationTest {
 
   @Before
   public void setUp() throws FoodProductNotFoundException {
-    Ingredient carrot = new Ingredient(1L, "Carrot", new HashSet<>(), new HashSet<>(), null, null);
+    Ingredient carrot = new Ingredient(1L, "Carrot", new HashSet<>(), new HashSet<>(), null);
     existingFoodProduct =
       new FoodProduct(1L, "Carrot", "1234567890123", 4.0D, true, new HashSet<>(), carrot);
 
