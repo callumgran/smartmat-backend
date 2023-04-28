@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.ingredient;
 
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.household.TempUsedIngredientAmount;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import jakarta.persistence.*;
@@ -36,6 +37,9 @@ public class Ingredient {
 
   @OneToMany(mappedBy = "ingredient")
   private Set<RecipeIngredient> recipes;
+
+  @OneToMany(mappedBy = "ingredient")
+  private Set<TempUsedIngredientAmount> usedIngredientAmounts;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "`unit`", nullable = true, referencedColumnName = "`unit_name`")

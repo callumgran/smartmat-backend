@@ -27,8 +27,22 @@ public class HouseholdFoodProductRepositoryTest {
 
   @Test
   public void findByEAN() {
-    Ingredient carrot = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
-    Ingredient raisin = new Ingredient(null, "Raisin", new HashSet<>(), new HashSet<>(), null);
+    Ingredient carrot = new Ingredient(
+      null,
+      "Carrot",
+      new HashSet<>(),
+      new HashSet<>(),
+      null,
+      null
+    );
+    Ingredient raisin = new Ingredient(
+      null,
+      "Raisin",
+      new HashSet<>(),
+      new HashSet<>(),
+      null,
+      null
+    );
 
     carrot = entityManager.persist(carrot);
     raisin = entityManager.persist(raisin);
@@ -58,6 +72,7 @@ public class HouseholdFoodProductRepositoryTest {
     Household household = new Household(
       null,
       "Household",
+      new HashSet<>(),
       new HashSet<>(),
       new HashSet<>(),
       new HashSet<>(),

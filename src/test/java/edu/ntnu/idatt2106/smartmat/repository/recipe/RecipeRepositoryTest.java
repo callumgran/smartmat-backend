@@ -32,7 +32,14 @@ public class RecipeRepositoryTest {
 
   @Test
   public void testFindByNameContainingIgnoreCase() {
-    Ingredient ingredient = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
+    Ingredient ingredient = new Ingredient(
+      null,
+      "Carrot",
+      new HashSet<>(),
+      new HashSet<>(),
+      null,
+      null
+    );
     Recipe recipe = new Recipe(
       null,
       "Carrot Cake",
