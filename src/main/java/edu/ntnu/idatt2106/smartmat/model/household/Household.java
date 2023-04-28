@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.model.household;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ import lombok.Setter;
  * A household is a collection of users that share SmartMat shopping lists
  * and food-stores.
  * @author Callum G., Carl G.
- * @version 1.2 - 20.4.2023
+ * @version 1.3 - 28.4.2023
  */
 @Setter
 @Getter
@@ -61,4 +62,7 @@ public class Household {
 
   @OneToMany(mappedBy = "household")
   private Set<WeeklyRecipe> WeeklyRecipes;
+
+  @OneToMany(mappedBy = "household")
+  private Set<FoodProductHistory> foodProductHistory;
 }

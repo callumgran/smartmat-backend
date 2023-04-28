@@ -34,7 +34,7 @@ public class FoodProductTest {
     @Test
     public void testFoodProductConstructorWithNulls() {
       try {
-        foodProduct = new FoodProduct(1L, null, null, null, false, null, null);
+        foodProduct = new FoodProduct(1L, null, null, null, false, null, null, null);
         fail();
       } catch (NullPointerException e) {
         assertEquals(NullPointerException.class, e.getClass());

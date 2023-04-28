@@ -104,7 +104,8 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
-      tomato
+      tomato,
+      null
     );
     FoodProduct carrotFoodProduct = new FoodProduct(
       1L,
@@ -113,7 +114,8 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
-      carrot
+      carrot,
+      null
     );
     FoodProduct potatoFoodProduct = new FoodProduct(
       2L,
@@ -122,7 +124,8 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
-      potato
+      potato,
+      null
     );
     FoodProduct onionFoodProduct = new FoodProduct(
       3L,
@@ -131,7 +134,8 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
-      onion
+      onion,
+      null
     );
 
     // Create household food products
@@ -212,7 +216,7 @@ public class HouseholdRecipeRecommendTest {
   public void testHouseholdRecipeRecommendAllRecipesWhenNoFoodInHousehold() {
     List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(
-        new Household(null, "Household", new HashSet<>(), new HashSet<>(), null, null, null),
+        testHouseholdFactory(TestHouseholdEnum.NULL_ID),
         recipes,
         new ArrayList<>()
       )
