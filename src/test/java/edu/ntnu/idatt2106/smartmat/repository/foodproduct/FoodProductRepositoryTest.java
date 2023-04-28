@@ -40,7 +40,8 @@ public class FoodProductRepositoryTest {
       4.0D,
       true,
       new HashSet<>(),
-      carrot
+      carrot,
+      null
     );
     FoodProduct raisinFoodProduct = new FoodProduct(
       null,
@@ -49,7 +50,8 @@ public class FoodProductRepositoryTest {
       2.0D,
       true,
       new HashSet<>(),
-      raisin
+      raisin,
+      null
     );
     entityManager.persist(carrotFoodProduct);
     entityManager.persist(raisinFoodProduct);

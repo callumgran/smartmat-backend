@@ -9,6 +9,18 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A class that recommends recipes for a household.
+ * It uses the household's food products to recommend recipes.
+ * The more food products the household has, the more recipes it will recommend.
+ * The recipes are sorted by recommendation, so the first recipe is the most recommended.
+ * The recommendation is based on how many ingredients the household has for the recipe.
+ * The more ingredients the household has for the recipe, the higher the recommendation.
+ * The recommendation is also based on how many of the ingredients the household has.
+ * The recommendation also takes into account how much of the ingredients the household has planned to use.
+ * @author Callum G.
+ * @version 1.0 28.04.2023
+ */
 public class HouseholdRecipeRecommend {
 
   private static double getRecipeScore(

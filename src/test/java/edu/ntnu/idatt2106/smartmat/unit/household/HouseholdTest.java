@@ -29,7 +29,7 @@ public class HouseholdTest {
   @Test
   public void testHouseholdConstructorWithNulls() {
     try {
-      household = new Household(null, null, null, null, null, null, null);
+      household = new Household(null, null, null, null, null, null, null, null);
       fail();
     } catch (NullPointerException e) {
       assertEquals(NullPointerException.class, e.getClass());

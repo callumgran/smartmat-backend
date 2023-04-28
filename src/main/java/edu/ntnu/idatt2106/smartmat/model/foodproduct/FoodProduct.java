@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,4 +64,7 @@ public class FoodProduct {
   @ManyToOne(optional = true)
   @JoinColumn(name = "`ingredient`", nullable = true, referencedColumnName = "`ingredient_id`")
   private Ingredient ingredient;
+
+  @OneToMany(mappedBy = "foodProduct")
+  private Set<FoodProductHistory> foodProductHistories;
 }

@@ -54,7 +54,8 @@ public class FoodProductControllerTest {
   @Before
   public void setUp() {
     carrot = new Ingredient(1L, "Carrot", null, null, null);
-    carrotProduct = new FoodProduct(1L, "CarrotProduct", "123456789", 1.0, false, null, carrot);
+    carrotProduct =
+      new FoodProduct(1L, "CarrotProduct", "123456789", 1.0, false, null, carrot, null);
 
     user = testUserFactory(TestUserEnum.GOOD);
   }
