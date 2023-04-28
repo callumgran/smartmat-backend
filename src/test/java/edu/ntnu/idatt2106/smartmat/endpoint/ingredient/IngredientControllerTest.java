@@ -43,7 +43,7 @@ public class IngredientControllerTest {
 
   @Before
   public void setUp() {
-    carrot = new Ingredient(1L, "Carrot", null, null, null);
+    carrot = new Ingredient(1L, "Carrot", null, null, null, null);
   }
 
   @Test

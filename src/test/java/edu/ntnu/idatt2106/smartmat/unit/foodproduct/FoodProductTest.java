@@ -56,7 +56,7 @@ public class FoodProductTest {
       final String EAN = "EAN";
       final double amount = 10.1;
       final Set<HouseholdFoodProduct> households = new HashSet<>();
-      final Ingredient ingredient = new Ingredient(1L, "ingredient", null, null, null);
+      final Ingredient ingredient = new Ingredient(1L, "ingredient", null, null, null, null);
 
       foodProduct.setId(tmp);
       foodProduct.setName(foodProductName);

@@ -16,7 +16,7 @@ public class IngredientTest {
 
   @Test
   public void testIngredientConstructor() {
-    Ingredient ingredient = new Ingredient(id, name, null, null, null);
+    Ingredient ingredient = new Ingredient(id, name, null, null, null, null);
 
     assertEquals(id, ingredient.getId());
     assertEquals(name, ingredient.getName());
@@ -25,7 +25,7 @@ public class IngredientTest {
   @Test
   public void testIngredientConstructorWithNulls() {
     try {
-      new Ingredient(1L, null, null, null, null);
+      new Ingredient(1L, null, null, null, null, null);
       fail();
     } catch (NullPointerException e) {
       assertEquals(NullPointerException.class, e.getClass());

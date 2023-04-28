@@ -58,4 +58,7 @@ public class Household {
 
   @OneToMany(mappedBy = "household")
   private Set<CustomFoodItem> customFoodItems;
+
+  @OneToMany(mappedBy = "household")
+  private Set<TempUsedIngredient> tempUsedIngredients;
 }

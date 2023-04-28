@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * Class representing the primary key of a household member.
  * @author Simen G.
- * @version 1.0
- * @date 18.4.2023
+ * @version 1.0 - 18.4.2023
  */
 @AllArgsConstructor
 @NoArgsConstructor
