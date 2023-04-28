@@ -3,6 +3,8 @@ package edu.ntnu.idatt2106.smartmat.service.foodproduct;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import java.util.UUID;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
@@ -34,4 +36,10 @@ public interface HouseholdFoodProductService {
 
   HouseholdFoodProduct findHouseholdFoodProductByIdAndEAN(@NonNull UUID id, @NonNull String EAN)
     throws FoodProductNotFoundException, NullPointerException;
+
+  void removeAmountFoodProductFromHouseholdByIngredient(
+    @NonNull Household household,
+    @NonNull Ingredient ingredient,
+    double amount
+  ) throws NullPointerException, FoodProductNotFoundException;
 }

@@ -4,6 +4,8 @@ import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundExc
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.HouseholdFoodProductRepository;
 import java.util.UUID;
 import lombok.NonNull;
@@ -127,5 +129,33 @@ public class HouseholdFoodProductServiceImpl implements HouseholdFoodProductServ
     return householdFoodProductRepository
       .findHouseholdFoodProductByHouseholdAndEAN(id, EAN)
       .orElseThrow(FoodProductNotFoundException::new);
+  }
+
+  /**
+   * Removes a FoodProduct from a Household by its ingredient.
+   * @param household The household to remove the FoodProduct from.
+   * @param ingredient The ingredient to find the FoodProduct by.
+   * @throws FoodProductNotFoundException If the FoodProduct is not found.
+   * @throws NullPointerException If the household or ingredient is null.
+   */
+  @Override
+  public void removeAmountFoodProductFromHouseholdByIngredient(
+    @NonNull Household household,
+    @NonNull Ingredient ingredient,
+    double amount
+  ) throws FoodProductNotFoundException, NullPointerException {
+    HouseholdFoodProduct householdFoodProduct = householdFoodProductRepository
+      .findHouseholdFoodProductByHouseholdAndIngredient(household, ingredient)
+      .get()
+      .stream()
+      .findFirst()
+      .orElseThrow(FoodProductNotFoundException::new);
+
+    if ((householdFoodProduct.getAmountLeft() - amount) > 1) {
+      householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - amount);
+      householdFoodProductRepository.save(householdFoodProduct);
+    } else {
+      householdFoodProductRepository.delete(householdFoodProduct);
+    }
   }
 }

@@ -37,12 +37,12 @@ public class HouseholdRecipeRecommendTest {
   @Before
   public void setUp() throws Exception {
     Unit unit = new Unit("Kilogram", "kg", null);
-    Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
-    Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
-    Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
-    Ingredient garlic = new Ingredient(4L, "Garlic", null, null, unit);
-    Ingredient tomato = new Ingredient(5L, "Tomato", null, null, unit);
-    Ingredient pasta = new Ingredient(6L, "Pasta", null, null, unit);
+    Ingredient carrot = new Ingredient(1L, "Carrot", null, null, null, unit);
+    Ingredient potato = new Ingredient(2L, "Potato", null, null, null, unit);
+    Ingredient onion = new Ingredient(3L, "Onion", null, null, null, unit);
+    Ingredient garlic = new Ingredient(4L, "Garlic", null, null, null, unit);
+    Ingredient tomato = new Ingredient(5L, "Tomato", null, null, null, unit);
+    Ingredient pasta = new Ingredient(6L, "Pasta", null, null, null, unit);
 
     // Create pasta recipe
     Recipe pastaRecipe = new Recipe(
@@ -194,7 +194,7 @@ public class HouseholdRecipeRecommendTest {
   public void testHouseholdRecipeRecommendAllRecipesWhenNoFoodInHousehold() {
     List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(
-        new Household(null, "Household", new HashSet<>(), new HashSet<>(), null, null),
+        new Household(null, "Household", new HashSet<>(), new HashSet<>(), null, null, null),
         recipes
       )
       .stream()
