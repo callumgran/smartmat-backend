@@ -347,24 +347,30 @@ public class HouseholdFoodProductController {
       )
     ) throw new BadInputException("Inputen til matvaren var ikke gyldig.");
 
+    if (!householdFoodProductService.existsById(id)) throw new FoodProductNotFoundException(
+      "Matvaren eksisterer ikke."
+    );
+
     LOGGER.info("PUT /api/v1/private/households/{}/foodproducts/id/{}", householdId, id);
+
+    if (!id.equals(householdFoodProductDTO.getId())) throw new BadInputException(
+      "Iden til matvaren stemmer ikke overens med iden i URLen."
+    );
 
     if (householdFoodProductDTO.getAmountLeft() <= 0) {
       householdFoodProductService.deleteFoodProductById(id);
       return ResponseEntity.noContent().build();
     }
 
-    HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(id);
+    HouseholdFoodProduct householdFoodProduct = HouseholdFoodProductMapper.INSTANCE.updateHouseholdFoodProductDTOToHouseholdFoodProduct(
+      householdFoodProductDTO
+    );
 
     householdFoodProduct.setHousehold(householdService.getHouseholdById(householdId));
 
     householdFoodProduct.setFoodProduct(
       foodProductService.getFoodProductById(householdFoodProductDTO.getFoodProductId())
     );
-
-    householdFoodProduct.setAmountLeft(householdFoodProductDTO.getAmountLeft());
-
-    householdFoodProduct.setExpirationDate(householdFoodProductDTO.getExpirationDate());
 
     HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
       householdFoodProductService.updateFoodProduct(householdFoodProduct)

@@ -164,7 +164,7 @@ public class FoodProductValidation extends BaseValidation {
     return (
       isLargerThanOrEqual(foodProductId, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       isAfter(LocalDate.parse(expirationDate), LocalDate.now().minusDays(7)) &&
-      isLargerThan(amountLeft, 0.0D)
+      isLargerThanOrEqual(amountLeft, 0.0D)
     );
   }
 }
