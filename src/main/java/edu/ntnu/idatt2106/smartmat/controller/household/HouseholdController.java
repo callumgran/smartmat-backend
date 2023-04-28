@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.smartmat.dto.household.CreateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
+import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
@@ -14,19 +15,24 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundE
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMemberMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.recipe.RecipeMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.recipe.HouseholdRecipeRecommend;
+import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -68,6 +74,8 @@ public class HouseholdController {
   private final UserService userService;
 
   private final ShoppingListService shoppingListService;
+
+  private final RecipeService recipeService;
 
   private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
     throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
@@ -447,5 +455,48 @@ public class HouseholdController {
     ShoppingListDTO shoppingListDTO = ShoppingListMapper.INSTANCE.shoppingListToDTO(shoppingList);
 
     return ResponseEntity.ok(shoppingListDTO);
+  }
+
+  /**
+   * Method to get recommended recipes for a household.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
+   * @return 200 OK if the recipes were found.
+   * @throws NullPointerException If any values are null.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @GetMapping(value = "/{id}/recipes", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Get recommended recipes for a household",
+    description = "Get recommended recipes for a household. Recipes are recommended based on the household's ingredients. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<List<RecipeDTO>> getRecommendedRecipes(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    boolean hasAccess = isAdminOrHouseholdMember(auth, id);
+    if (!hasAccess) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å hente anbefalte oppskrifter for denne husholdningen."
+      );
+    }
+
+    Collection<Recipe> recipes = HouseholdRecipeRecommend.getRecommendedRecipes(
+      householdService.getHouseholdById(id),
+      recipeService.findAllRecipes()
+    );
+
+    LOGGER.info("Found {} recommended recipes for household with id: {}", recipes.size(), id);
+
+    List<RecipeDTO> recipeDTOS = recipes
+      .stream()
+      .map(RecipeMapper.INSTANCE::recipeToRecipeDTO)
+      .collect(Collectors.toList());
+
+    return ResponseEntity.ok(recipeDTOS);
   }
 }
