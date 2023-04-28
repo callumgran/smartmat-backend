@@ -168,9 +168,22 @@
 			<artifactId>mockito-inline</artifactId>
 			<version>5.2.0</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+				<gebEnv>test</gebEnv>
+				<jacoco.skip>false</jacoco.skip>
+				<maven.test.skip>false</maven.test.skip>
+				<skip.unit.tests>false</skip.unit.tests>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -203,7 +216,45 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.10</version>
+				<configuration>
+					<excludes>
+						<exclude>edu/ntnu/idatt2106/smartmat/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/dto/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/dto/**/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/exceptions/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/exceptions/**/*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	
 </project>
