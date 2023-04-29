@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class used to map between HouseholdMember and HouseholdMemberDTO.
- * @author Callum G.
- * @version 1.0 - 19.04.2023
+ * @author Callum G, Nicolai H. Brand.
+ * @version 1.0 - 29.04.2023
  */
 @RequiredArgsConstructor
 @Mapper(componentModel = "spring")
@@ -42,6 +42,36 @@ public abstract class HouseholdMemberMapper {
   @Named("userToUsername")
   public String userToUsername(User user) {
     return user.getUsername();
+  }
+
+  /**
+   * Maps a user to a first name.
+   * @param user The user to map.
+   * @return The mapped first name.
+   */
+  @Named("userToFirstName")
+  public String userToFirstName(User user) {
+    return user.getFirstName();
+  }
+
+  /**
+   * Maps a user to a last name.
+   * @param user The user to map.
+   * @return The mapped last name.
+   */
+  @Named("userToLastName")
+  public String userToLastName(User user) {
+    return user.getLastName();
+  }
+
+  /**
+   * Maps a user to an email.
+   * @param user The user to map.
+   * @return The mapped email.
+   */
+  @Named("userToEmail")
+  public String userToEmail(User user) {
+    return user.getEmail();
   }
 
   /**
@@ -101,6 +131,9 @@ public abstract class HouseholdMemberMapper {
   @Mappings(
     {
       @Mapping(target = "username", source = "user", qualifiedByName = "userToUsername"),
+      @Mapping(target = "firstName", source = "user", qualifiedByName = "userToFirstName"),
+      @Mapping(target = "lastName", source = "user", qualifiedByName = "userToLastName"),
+      @Mapping(target = "email", source = "user", qualifiedByName = "userToEmail"),
       @Mapping(target = "household", source = "household", qualifiedByName = "householdToId"),
     }
   )
