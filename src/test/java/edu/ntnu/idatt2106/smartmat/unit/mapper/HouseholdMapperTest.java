@@ -49,6 +49,9 @@ public class HouseholdMapperTest {
         .builder()
         .household(HOUSEHOLD_ID)
         .username(householdMember.getUser().getUsername())
+        .firstName(householdMember.getUser().getFirstName())
+        .lastName(householdMember.getUser().getLastName())
+        .email(householdMember.getUser().getEmail())
         .householdRole(householdMember.getHouseholdRole())
         .build();
       return householdMemberDTO;
@@ -102,6 +105,9 @@ public class HouseholdMapperTest {
       .builder()
       .household(HOUSEHOLD_ID)
       .username(householdMember.getUser().getUsername())
+      .firstName(householdMember.getUser().getFirstName())
+      .lastName(householdMember.getUser().getLastName())
+      .email(householdMember.getUser().getEmail())
       .householdRole(householdMember.getHouseholdRole())
       .build();
 

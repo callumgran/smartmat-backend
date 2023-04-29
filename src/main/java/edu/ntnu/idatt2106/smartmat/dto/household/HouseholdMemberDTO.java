@@ -12,8 +12,8 @@ import lombok.NonNull;
 /**
  * Data transfer object for household member.
  * Used to transfer household member data between layers.
- * @author Callum G.
- * @version 1.0 - 19.04.2023
+ * @author Callum G, Nicolai H. Brand.
+ * @version 1.0 - 29.04.2023
  */
 @Data
 @AllArgsConstructor
@@ -28,6 +28,18 @@ public class HouseholdMemberDTO {
   @NonNull
   @NotBlank
   private String username;
+
+  @NonNull
+  @NotBlank
+  private String firstName;
+
+  @NonNull
+  @NotBlank
+  private String lastName;
+
+  @NonNull
+  @NotBlank
+  private String email;
 
   @NonNull
   @NotBlank
