@@ -28,7 +28,6 @@ import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
-import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import java.util.Set;
 import java.util.UUID;
@@ -70,9 +69,6 @@ public class HouseholdControllerTest {
 
   @MockBean
   private WeeklyRecipeService weeklyRecipeService;
-
-  @MockBean
-  private FoodProductHistoryService foodProductHistoryService;
 
   private static final String BASE_URL = "/api/v1/private/households";
 

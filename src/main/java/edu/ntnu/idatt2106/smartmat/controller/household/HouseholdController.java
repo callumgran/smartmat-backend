@@ -5,6 +5,7 @@ import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.TmpIngredientUsedDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
+import edu.ntnu.idatt2106.smartmat.dto.household.WeeklyRecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
@@ -66,7 +67,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.4 - 24.04.2023
+ * @version 1.5 - 24.04.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -495,7 +496,12 @@ public class HouseholdController {
     Collection<Recipe> recipes = HouseholdRecipeRecommend.getRecommendedRecipes(
       householdService.getHouseholdById(id),
       recipeService.findAllRecipes(),
-      weeklyRecipeService.getRecipesForHousehold(id)
+      weeklyRecipeService
+        .getRecipesForHousehold(id)
+        .stream()
+        .filter(weeklyRecipe -> !weeklyRecipe.isUsed())
+        .map(WeeklyRecipe::getRecipe)
+        .toList()
     );
 
     LOGGER.info("Found {} recommended recipes for household with id: {}", recipes.size(), id);
@@ -552,7 +558,8 @@ public class HouseholdController {
     final WeeklyRecipe tempUsedDay = new WeeklyRecipe(
       household,
       tmpIngredientUsedDTO.getDate(),
-      recipe
+      recipe,
+      false
     );
 
     weeklyRecipeService.saveWeeklyRecipe(tempUsedDay);
@@ -563,17 +570,17 @@ public class HouseholdController {
   }
 
   /**
-   * Method to delete temporary used ingredients for a household on a specific date.
+   * Method to delete a weekly recipe for a household on a specific date.
    * @param auth The authentication of the user.
    * @param id The id of the household.
-   * @param date The date of the temporary used ingredients.
+   * @param date The date of the weekly recipe.
    * @return 204 NO CONTENT if the temporary used ingredients were deleted.
    * @throws NullPointerException If any values are null.
    * @throws PermissionDeniedException If the user does not have access to the household.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    */
-  @DeleteMapping(value = "/{id}/tempused/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @DeleteMapping(value = "/{id}/recipes/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Delete temporary used ingredients for a household on a specific date",
     description = "Delete temporary used ingredients for a household on a specific date. Requires authentication.",
@@ -602,5 +609,53 @@ public class HouseholdController {
     );
 
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Method to get a weekly recipe for a household on a specific date.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
+   * @param date The monday date of the weekly recipe.
+   * @return 200 OK if the weekly recipe was found.
+   * @throws NullPointerException If any values are null.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @GetMapping(value = "/{id}/weeklyrecipes", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Gets the weekly recipes for a household from a specific monday",
+    description = "Gets the weekly recipes for a household from a specific monday. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<Collection<WeeklyRecipeDTO>> getWeeklyRecipes(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate monday
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!isAdminOrHouseholdMember(auth, id)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å hente en ukentlig oppskrift for denne husholdningen."
+      );
+    }
+
+    Collection<WeeklyRecipe> recipes = weeklyRecipeService.getRecipesForHouseholdWeek(id, monday);
+
+    LOGGER.info("Found weekly recipes for household with id: {} on date: {}", id, monday);
+
+    return ResponseEntity.ok(
+      recipes
+        .stream()
+        .map(r ->
+          WeeklyRecipeDTO
+            .builder()
+            .used(r.isUsed())
+            .dateToUse(r.getDateToUse())
+            .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(r.getRecipe()))
+            .build()
+        )
+        .collect(Collectors.toList())
+    );
   }
 }

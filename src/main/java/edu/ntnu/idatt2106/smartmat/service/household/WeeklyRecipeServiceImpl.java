@@ -5,7 +5,6 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundExcepti
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
-import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
@@ -134,7 +133,8 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
           }
         });
       });
-    weeklyRecipeRepository.delete(weeklyRecipe);
+    weeklyRecipe.setUsed(true);
+    weeklyRecipeRepository.save(weeklyRecipe);
   }
 
   /**
@@ -145,10 +145,28 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
    * @throws IllegalArgumentException if the household does not exist
    */
   @Override
-  public Collection<Recipe> getRecipesForHousehold(@NonNull UUID household)
+  public Collection<WeeklyRecipe> getRecipesForHousehold(@NonNull UUID household)
     throws NullPointerException, HouseholdNotFoundException {
     return weeklyRecipeRepository
       .findAllRecipesByHousehold(household)
       .orElseThrow(() -> new HouseholdNotFoundException("Husholdning ikke funnet"));
+  }
+
+  /**
+   * Gets the recipes for the household and week
+   * @param household the household to get the recipes for
+   * @param monday the monday of the week to get the recipes for
+   * @return the recipes for the household and week
+   * @throws NullPointerException if the household or monday is null
+   * @throws IllegalArgumentException if the household does not exist
+   */
+  @Override
+  public Collection<WeeklyRecipe> getRecipesForHouseholdWeek(
+    @NonNull UUID household,
+    @NonNull LocalDate monday
+  ) throws NullPointerException, HouseholdNotFoundException {
+    return weeklyRecipeRepository
+      .findAllRecipesByHouseholdAndWeek(household, monday, monday.plusDays(6))
+      .orElseThrow(() -> new NullPointerException("Ingen oppskrifter funnet for denne uken"));
   }
 }

@@ -46,4 +46,7 @@ public class WeeklyRecipe {
   @ManyToOne(optional = false)
   @JoinColumn(name = "`recipe_id`", nullable = false, referencedColumnName = "`id`")
   private Recipe recipe;
+
+  @Column(name = "`used`")
+  private boolean used;
 }
