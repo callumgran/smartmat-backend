@@ -42,4 +42,9 @@ public interface HouseholdFoodProductService {
     @NonNull Ingredient ingredient,
     double amount
   ) throws NullPointerException, FoodProductNotFoundException;
+
+  HouseholdFoodProduct getFoodProductFromHouseholdByIngredient(
+    @NonNull Household household,
+    @NonNull Ingredient ingredient
+  ) throws NullPointerException, FoodProductNotFoundException;
 }

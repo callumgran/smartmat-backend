@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.unit;
 
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO for unit with name and abbreviation
- * @author Simen G.
- * @version 1.0 25.04.2023
+ * @author Simen G. & Callum G.
+ * @version 1.1 28.04.2023
  */
 @Data
 @AllArgsConstructor
@@ -23,4 +24,8 @@ public class UnitDTO {
   private String name;
 
   private String abbreviation;
+
+  private double toNormalFormConversionFactor;
+
+  private UnitTypeEnum unitType;
 }

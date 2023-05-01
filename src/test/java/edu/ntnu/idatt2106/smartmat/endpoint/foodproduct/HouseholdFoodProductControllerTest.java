@@ -26,6 +26,7 @@ import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -54,6 +55,9 @@ public class HouseholdFoodProductControllerTest {
 
   @MockBean
   private FoodProductService foodProductService;
+
+  @MockBean
+  private FoodProductHistoryService foodProductHistoryService;
 
   private static final String BASE_URL = "/api/v1/private/households";
 
@@ -133,7 +137,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -161,7 +166,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -206,7 +212,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -234,7 +241,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -262,7 +270,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -296,7 +305,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -352,7 +362,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -386,7 +397,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -420,7 +432,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -458,7 +471,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -496,7 +510,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -534,7 +549,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -572,7 +588,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -610,7 +627,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -650,7 +668,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -691,7 +710,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -731,7 +751,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -800,7 +821,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -834,7 +856,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -868,7 +891,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID
@@ -902,7 +926,8 @@ public class HouseholdFoodProductControllerTest {
           new HouseholdFoodProductController(
             foodProductService,
             householdFoodProductService,
-            householdService
+            householdService,
+            foodProductHistoryService
           ),
           new Auth(user.getUsername(), user.getRole()),
           HOUSEHOLD_ID

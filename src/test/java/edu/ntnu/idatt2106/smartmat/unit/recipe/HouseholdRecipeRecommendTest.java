@@ -36,7 +36,7 @@ public class HouseholdRecipeRecommendTest {
 
   @Before
   public void setUp() throws Exception {
-    Unit unit = new Unit("Kilogram", "kg", null);
+    Unit unit = new Unit("Kilogram", "kg", null, 0.0, null);
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
     Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);

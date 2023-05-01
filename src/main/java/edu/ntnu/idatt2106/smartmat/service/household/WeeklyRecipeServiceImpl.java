@@ -2,12 +2,16 @@ package edu.ntnu.idatt2106.smartmat.service.household;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
+import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import io.micrometer.common.lang.NonNull;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,9 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
 
   @Autowired
   private WeeklyRecipeRepository weeklyRecipeRepository;
+
+  @Autowired
+  private FoodProductHistoryService foodProductHistoryService;
 
   @Autowired
   private HouseholdFoodProductService householdFoodProductService;
@@ -104,15 +111,29 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
       .getIngredients()
       .stream()
       .forEach(ingredient -> {
-        FauxPas.throwingRunnable(() ->
+        FauxPas.throwingRunnable(() -> {
           householdFoodProductService.removeAmountFoodProductFromHouseholdByIngredient(
             weeklyRecipe.getHousehold(),
             ingredient.getIngredient(),
             ingredient.getAmount()
-          )
-        );
+          );
+          HouseholdFoodProduct product = householdFoodProductService.getFoodProductFromHouseholdByIngredient(
+            weeklyRecipe.getHousehold(),
+            ingredient.getIngredient()
+          );
+          for (int i = 0; i < ingredient.getAmount(); i++) {
+            foodProductHistoryService.saveFoodProductHistory(
+              FoodProductHistory
+                .builder()
+                .household(weeklyRecipe.getHousehold())
+                .foodProduct(product.getFoodProduct())
+                .thrownAmount(0)
+                .date(LocalDate.now())
+                .build()
+            );
+          }
+        });
       });
-
     weeklyRecipeRepository.delete(weeklyRecipe);
   }
 

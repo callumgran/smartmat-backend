@@ -158,4 +158,25 @@ public class HouseholdFoodProductServiceImpl implements HouseholdFoodProductServ
       householdFoodProductRepository.delete(householdFoodProduct);
     }
   }
+
+  /**
+   * Gets a FoodProduct from a Household by its ingredient.
+   * @param household The household to get the FoodProduct from.
+   * @param ingredient The ingredient to find the FoodProduct by.
+   * @return The found FoodProduct.
+   * @throws FoodProductNotFoundException If the FoodProduct is not found.
+   * @throws NullPointerException If the household or ingredient is null.
+   */
+  @Override
+  public HouseholdFoodProduct getFoodProductFromHouseholdByIngredient(
+    @NonNull Household household,
+    @NonNull Ingredient ingredient
+  ) throws FoodProductNotFoundException, NullPointerException {
+    return householdFoodProductRepository
+      .findHouseholdFoodProductByHouseholdAndIngredient(household, ingredient)
+      .get()
+      .stream()
+      .findFirst()
+      .orElseThrow(FoodProductNotFoundException::new);
+  }
 }

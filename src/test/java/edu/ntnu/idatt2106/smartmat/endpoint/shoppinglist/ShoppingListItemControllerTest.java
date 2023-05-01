@@ -88,7 +88,8 @@ public class ShoppingListItemControllerTest {
     user = testUserFactory(TestUserEnum.GOOD);
     shoppingList = new ShoppingList(shoppingListId, null, household, new HashSet<>(), null);
     shoppingListItem = new ShoppingListItem(shoppingListItemId, 1, false, shoppingList, null);
-    ingredient = new Ingredient(ingredientId, "Test", null, null, new Unit("Test", "Test", null));
+    ingredient =
+      new Ingredient(ingredientId, "Test", null, null, new Unit("Test", "Test", null, 0.0, null));
   }
 
   @Test
