@@ -34,4 +34,6 @@ public class FoodProductDTO {
   private boolean looseWeight;
 
   private BareIngredientDTO ingredient;
+
+  private boolean foodProductIsIngredient;
 }

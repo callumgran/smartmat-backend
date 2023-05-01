@@ -41,7 +41,8 @@ public class HouseholdFoodProductRepositoryTest {
       true,
       new HashSet<>(),
       carrot,
-      null
+      null,
+      false
     );
     FoodProduct raisinFoodProduct = new FoodProduct(
       null,
@@ -51,7 +52,8 @@ public class HouseholdFoodProductRepositoryTest {
       true,
       new HashSet<>(),
       raisin,
-      null
+      null,
+      false
     );
 
     entityManager.persist(carrotFoodProduct);

@@ -55,11 +55,41 @@ public class FoodProductServiceIntegrationTest {
   public void setUp() throws FoodProductNotFoundException {
     Ingredient carrot = new Ingredient(1L, "Carrot", new HashSet<>(), new HashSet<>(), null);
     existingFoodProduct =
-      new FoodProduct(1L, "Carrot", "1234567890123", 4.0D, true, new HashSet<>(), carrot, null);
+      new FoodProduct(
+        1L,
+        "Carrot",
+        "1234567890123",
+        4.0D,
+        true,
+        new HashSet<>(),
+        carrot,
+        null,
+        false
+      );
     newFoodProduct =
-      new FoodProduct(null, "Raisin", "1234567890124", 2.0D, true, new HashSet<>(), carrot, null);
+      new FoodProduct(
+        null,
+        "Raisin",
+        "1234567890124",
+        2.0D,
+        true,
+        new HashSet<>(),
+        carrot,
+        null,
+        false
+      );
     corruptedFoodProduct =
-      new FoodProduct(2L, "Raisin", "1234567890124", 2.0D, true, new HashSet<>(), carrot, null);
+      new FoodProduct(
+        2L,
+        "Raisin",
+        "1234567890124",
+        2.0D,
+        true,
+        new HashSet<>(),
+        carrot,
+        null,
+        false
+      );
 
     when(foodProductRepository.existsById(existingFoodProduct.getId())).thenReturn(true);
     when(foodProductRepository.existsById(newFoodProduct.getId())).thenReturn(false);
