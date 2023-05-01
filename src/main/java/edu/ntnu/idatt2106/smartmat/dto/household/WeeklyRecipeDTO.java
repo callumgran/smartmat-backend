@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Class representing an ingredientDTO for food product.
- * @author Callum G., Carl G.
- * @version 1.1 - 25.04.2023
+ * Class representing a weekly recipe.
+ * @author Callum G.
+ * @version 1.0 - 01.05.2023
  */
 @Data
 @Builder

@@ -59,7 +59,7 @@ public class HouseholdMemberMapperTest {
   private HouseholdMember member;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     user = testUserFactory(TestUserEnum.GOOD);
 
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
@@ -69,12 +69,8 @@ public class HouseholdMemberMapperTest {
     member.setUser(user);
     member.setHouseholdRole(HouseholdRole.MEMBER);
 
-    try {
-      when(userService.getUserByUsername(user.getUsername())).thenReturn(user);
-      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    when(userService.getUserByUsername(user.getUsername())).thenReturn(user);
+    when(householdService.getHouseholdById(household.getId())).thenReturn(household);
   }
 
   @Test
