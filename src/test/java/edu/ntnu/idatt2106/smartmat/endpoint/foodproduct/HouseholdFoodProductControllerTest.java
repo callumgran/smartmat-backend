@@ -99,7 +99,18 @@ public class HouseholdFoodProductControllerTest {
     admin = testUserFactory(TestUserEnum.ADMIN);
     carrot = new Ingredient(1L, "Carrot", null, null, null);
     carrotProduct =
-      new FoodProduct(1L, "CarrotProduct", "123456789", 1.0, false, null, carrot, null, false);
+      new FoodProduct(
+        1L,
+        "CarrotProduct",
+        "123456789",
+        1.0,
+        false,
+        null,
+        null,
+        carrot,
+        null,
+        false
+      );
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     household.setId(HOUSEHOLD_ID);
     carrotHouseholdProduct =

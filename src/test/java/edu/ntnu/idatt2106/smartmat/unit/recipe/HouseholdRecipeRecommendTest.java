@@ -105,6 +105,7 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
+      null,
       tomato,
       null,
       false
@@ -115,6 +116,7 @@ public class HouseholdRecipeRecommendTest {
       "123456789123",
       1.0D,
       false,
+      null,
       null,
       carrot,
       null,
@@ -127,6 +129,7 @@ public class HouseholdRecipeRecommendTest {
       1.0D,
       false,
       null,
+      null,
       potato,
       null,
       false
@@ -137,6 +140,7 @@ public class HouseholdRecipeRecommendTest {
       "123456789123",
       1.0D,
       false,
+      null,
       null,
       onion,
       null,

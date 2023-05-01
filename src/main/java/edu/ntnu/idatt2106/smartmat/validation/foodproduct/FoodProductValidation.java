@@ -19,15 +19,28 @@ public class FoodProductValidation extends BaseValidation {
    * @return true if the EAN code is valid, false otherwise
    */
   public static boolean validateEan(String ean) {
-    return (
-      isNotNullOrEmpty(ean) &&
-      isBetween(
+    if (!isNotNullOrEmpty(ean)) {
+      System.out.println("EAN er tom");
+      return false;
+    }
+
+    if (
+      !isBetween(
         ean,
         FoodProductRules.MIN_EAN_LENGTH.getValue(),
         FoodProductRules.MAX_EAN_LENGTH.getValue()
-      ) &&
-      isNumeric(ean)
-    );
+      )
+    ) {
+      System.out.println("EAN lengden er ikke mellom MIN_EAN_LENGTH og MAX_EAN_LENGTH");
+      return false;
+    }
+
+    if (!isNumeric(ean)) {
+      System.out.println("EAN inneholnder ikke numeriske tall");
+      return false;
+    }
+
+    return true;
   }
 
   /**

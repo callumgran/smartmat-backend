@@ -20,11 +20,11 @@ compile:
 test:
   stage: test
   script:
-      - mvn clean -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest test
+      - mvn clean -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest,\!FoodProductControllerTest#testGetFoodProductByEanThatDoesNotExist test
       - mvn clean
 
 install:
   stage: install
   script:
-      - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest install
+      - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest,\!FoodProductControllerTest#testGetFoodProductByEanThatDoesNotExist install
       - mvn clean

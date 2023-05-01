@@ -28,9 +28,9 @@ public interface FoodProductMapper {
   }
 
   /**
-   * Maps a food product to a food product DTO.
-   * @param foodProduct The food product to map.
-   * @return The mapped food product DTO.
+   * Maps a food product DTO to a food product.
+   * @param foodProductDTO The food product DTO to map.
+   * @return The mapped food product.
    */
   @Mappings(
     {
@@ -54,9 +54,9 @@ public interface FoodProductMapper {
   FoodProduct bareFoodProductDTOToFoodProduct(BareFoodProductDTO foodProductDTO);
 
   /**
-   * Maps a food product DTO to a food product.
-   * @param foodProductDTO The food product DTO to map.
-   * @return The mapped food product.
+   * Maps a food product to a food product DTO.
+   * @param foodProduct The food product to map.
+   * @return The mapped food product DTO.
    */
   @Mappings(
     {
