@@ -21,6 +21,7 @@ import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
 import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeServiceImpl;
+import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.time.LocalDate;
 import java.util.HashSet;
 import org.junit.Before;
@@ -35,7 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 /**
  * Integration test for the temperary used ingredient service.
  * @author Callum G.
- * @version 1.0 - 28.4.2023
+ * @version 1.1 - 1.5.2023
  */
 @RunWith(SpringRunner.class)
 public class WeeklyRecipeServiceIntegrationTest {
@@ -57,6 +58,9 @@ public class WeeklyRecipeServiceIntegrationTest {
 
   @MockBean
   private WeeklyRecipeRepository weeklyRecipeRepository;
+
+  @MockBean
+  private FoodProductHistoryService foodProductHistoryService;
 
   // private final UUID EXISTING_UUID = UUID.randomUUID();
 

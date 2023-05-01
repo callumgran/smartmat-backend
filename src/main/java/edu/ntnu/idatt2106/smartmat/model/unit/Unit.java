@@ -30,4 +30,16 @@ public class Unit {
 
   @OneToMany(mappedBy = "unit")
   private Set<Ingredient> ingredients;
+
+  /**
+   * The conversion factor from the unit to the normal form of the unit
+   * For example, if the unit is "dl" and the normal form is "l", the conversion factor is 0.1
+   * If the unit is "g" and the normal form is "kg", the conversion factor is 0.001
+   */
+  @Column(name = "`to_normal_form_conversion_factor`", nullable = false)
+  private double toNormalFormConversionFactor;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "`unit_type`", length = 10, nullable = false)
+  private UnitTypeEnum unitType;
 }

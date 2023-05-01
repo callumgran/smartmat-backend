@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.controller.foodproduct;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.CreateHouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.HouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.UpdateHouseholdFoodProductDTO;
+import edu.ntnu.idatt2106.smartmat.dto.statistic.CreateFoodProductHistoryDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
@@ -13,15 +14,18 @@ import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.HouseholdFoodProductMapper
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +64,8 @@ public class HouseholdFoodProductController {
   private final HouseholdFoodProductService householdFoodProductService;
 
   private final HouseholdService householdService;
+
+  private final FoodProductHistoryService foodProductHistoryService;
 
   private boolean isAdminOrHouseholdMember(Auth auth, UUID householdId)
     throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
@@ -422,5 +428,138 @@ public class HouseholdFoodProductController {
 
     LOGGER.info("Deleted and returning household food product with id: {}", id);
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Method to use a household food product.
+   * @param auth The authentication object.
+   * @param householdId The id of the household.
+   * @param id The id of the household food product to use.
+   * @return The 200 ok response or 204 No Content if the household food product was deleted for having no quantity.
+   * @throws PermissionDeniedException If the user does not have permission to access the household.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws FoodProductNotFoundException If the food product does not exist.
+   * @throws NullPointerException If the household id or food product ean is null.
+   */
+  @PutMapping(
+    value = "/{householdId}/foodproducts/id/{id}/use",
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(
+    summary = "Use a household food product",
+    description = "Use a household food product, requires authentication.",
+    tags = { "householdfoodproduct" }
+  )
+  public ResponseEntity<HouseholdFoodProductDTO> useHouseholdFoodProduct(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable("householdId") UUID householdId,
+    @PathVariable("id") UUID id,
+    @RequestBody CreateFoodProductHistoryDTO foodProductHistoryDTO
+  )
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
+    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å bruke matvarene i husstanden."
+      );
+    }
+
+    LOGGER.info("PUT /api/v1/private/households/{}/foodproducts/id/{}/use", householdId, id);
+
+    HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(id);
+
+    FoodProductHistory foodProductHistory = FoodProductHistory
+      .builder()
+      .foodProduct(householdFoodProduct.getFoodProduct())
+      .household(householdFoodProduct.getHousehold())
+      .thrownAmount(foodProductHistoryDTO.getThrownAmount())
+      .date(LocalDate.now())
+      .build();
+
+    foodProductHistoryService.saveFoodProductHistory(foodProductHistory);
+
+    if (householdFoodProduct.getAmountLeft() - 1 <= 0) {
+      householdFoodProductService.deleteFoodProductById(id);
+      return ResponseEntity.noContent().build();
+    }
+
+    householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - 1);
+
+    HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
+      householdFoodProductService.updateFoodProduct(householdFoodProduct)
+    );
+
+    LOGGER.info(
+      "Updated and returning household food product with id: {}",
+      updatedHouseholdFoodProductDTO.getId()
+    );
+
+    return ResponseEntity.ok().body(updatedHouseholdFoodProductDTO);
+  }
+
+  /**
+   * Method to throwaway a household food product.
+   * @param auth The authentication object.
+   * @param householdId The id of the household.
+   * @param id The id of the household food product to throw away.
+   * @return The 200 ok or 204 No Content if the household food product was deleted for having no quantity.
+   * @throws PermissionDeniedException If the user does not have permission to access the household.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws FoodProductNotFoundException If the food product does not exist.
+   * @throws NullPointerException If the household id or food product ean is null.
+   */
+  @PutMapping(
+    value = "/{householdId}/foodproducts/id/{id}/throw",
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(
+    summary = "Use a household food product",
+    description = "Use a household food product, requires authentication.",
+    tags = { "householdfoodproduct" }
+  )
+  public ResponseEntity<HouseholdFoodProductDTO> throwHouseholdFoodProduct(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable("householdId") UUID householdId,
+    @PathVariable("id") UUID id
+  )
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
+    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+      throw new PermissionDeniedException(
+        "Brukeren har ikke tilgang til å bruke matvarene i husstanden."
+      );
+    }
+
+    LOGGER.info("PUT /api/v1/private/households/{}/foodproducts/id/{}/use", householdId, id);
+
+    HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(id);
+
+    FoodProductHistory foodProductHistory = FoodProductHistory
+      .builder()
+      .foodProduct(householdFoodProduct.getFoodProduct())
+      .household(householdFoodProduct.getHousehold())
+      .thrownAmount(1)
+      .date(LocalDate.now())
+      .build();
+
+    foodProductHistoryService.saveFoodProductHistory(foodProductHistory);
+
+    if (householdFoodProduct.getAmountLeft() - 1 <= 0) {
+      householdFoodProductService.deleteFoodProductById(id);
+      return ResponseEntity.noContent().build();
+    }
+
+    householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - 1);
+
+    HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
+      householdFoodProductService.updateFoodProduct(householdFoodProduct)
+    );
+
+    LOGGER.info(
+      "Updated and returning household food product with id: {}",
+      updatedHouseholdFoodProductDTO.getId()
+    );
+
+    return ResponseEntity.ok().body(updatedHouseholdFoodProductDTO);
   }
 }
