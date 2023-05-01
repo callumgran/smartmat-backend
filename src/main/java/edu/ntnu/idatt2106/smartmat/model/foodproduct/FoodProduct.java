@@ -58,6 +58,9 @@ public class FoodProduct {
   @Column(name = "`loose_weight`")
   private boolean looseWeight;
 
+  @Column(name = "`image`")
+  private String image;
+
   @OneToMany(mappedBy = "foodProduct")
   private Set<HouseholdFoodProduct> households;
 

@@ -4,19 +4,23 @@ import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunction
 import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.foodproduct.FoodProductController;
+import edu.ntnu.idatt2106.smartmat.dto.kassalapp.KassalApiDataDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.KassalappAPITokenSingleton;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
@@ -26,13 +30,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest({ FoodProductController.class, SecurityConfig.class })
 public class FoodProductControllerTest {
+
+  @MockBean
+  private RestTemplate restTemplate;
 
   @Autowired
   private MockMvc mvc;
@@ -55,7 +66,18 @@ public class FoodProductControllerTest {
   public void setUp() {
     carrot = new Ingredient(1L, "Carrot", null, null, null);
     carrotProduct =
-      new FoodProduct(1L, "CarrotProduct", "123456789", 1.0, false, null, carrot, null, false);
+      new FoodProduct(
+        1L,
+        "CarrotProduct",
+        "123456789",
+        1.0,
+        false,
+        null,
+        null,
+        carrot,
+        null,
+        false
+      );
 
     user = testUserFactory(TestUserEnum.GOOD);
   }
@@ -113,6 +135,19 @@ public class FoodProductControllerTest {
     try {
       when(foodProductService.getFoodProductByEan("123456789"))
         .thenThrow(new FoodProductNotFoundException());
+      when(
+        restTemplate.exchange(
+          any(String.class),
+          eq(HttpMethod.GET),
+          any(HttpEntity.class),
+          eq(KassalApiDataDTO.class)
+        )
+      )
+        .thenThrow(new RestClientException("Not found"));
+      KassalappAPITokenSingleton kassalappAPITokenSingleton = mock(
+        KassalappAPITokenSingleton.class
+      );
+      when(kassalappAPITokenSingleton.getKassalappAPIToken()).thenReturn("token");
       mvc
         .perform(
           get(BASE_URL + "/ean/123456789")

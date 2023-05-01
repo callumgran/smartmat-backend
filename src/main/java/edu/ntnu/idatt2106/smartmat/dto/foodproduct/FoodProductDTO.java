@@ -29,11 +29,18 @@ public class FoodProductDTO {
 
   private String EAN;
 
+  @NotBlank
   private double amount;
 
+  @NotBlank
   private boolean looseWeight;
 
+  @NotBlank
+  private String image;
+
+  @NotBlank
   private BareIngredientDTO ingredient;
 
+  @NotBlank
   private boolean foodProductIsIngredient;
 }

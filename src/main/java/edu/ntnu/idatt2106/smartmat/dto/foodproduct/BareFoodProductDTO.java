@@ -38,4 +38,8 @@ public class BareFoodProductDTO {
   @NonNull
   @NotBlank
   private Long ingredientId;
+
+  @NonNull
+  @NotBlank
+  private String image;
 }

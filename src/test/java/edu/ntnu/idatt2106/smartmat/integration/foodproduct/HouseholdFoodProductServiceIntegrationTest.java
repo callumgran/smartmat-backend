@@ -74,6 +74,7 @@ public class HouseholdFoodProductServiceIntegrationTest {
         "1234567890123",
         4.0D,
         true,
+        null,
         new HashSet<>(),
         carrot,
         null,
