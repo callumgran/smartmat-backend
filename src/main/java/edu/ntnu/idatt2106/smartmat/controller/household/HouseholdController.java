@@ -615,14 +615,14 @@ public class HouseholdController {
    * Method to get a weekly recipe for a household on a specific date.
    * @param auth The authentication of the user.
    * @param id The id of the household.
-   * @param date The monday date of the weekly recipe.
+   * @param monday The monday date of the weekly recipe.
    * @return 200 OK if the weekly recipe was found.
    * @throws NullPointerException If any values are null.
    * @throws PermissionDeniedException If the user does not have access to the household.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    */
-  @GetMapping(value = "/{id}/weeklyrecipes", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{id}/recipes/{monday}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Gets the weekly recipes for a household from a specific monday",
     description = "Gets the weekly recipes for a household from a specific monday. Requires authentication.",
