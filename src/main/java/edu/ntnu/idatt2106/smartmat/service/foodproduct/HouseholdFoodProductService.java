@@ -5,6 +5,7 @@ import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import java.util.Collection;
 import java.util.UUID;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
@@ -34,8 +35,10 @@ public interface HouseholdFoodProductService {
   Page<HouseholdFoodProduct> searchFoodProducts(@NonNull SearchRequest searchRequest)
     throws NullPointerException;
 
-  HouseholdFoodProduct findHouseholdFoodProductByIdAndEAN(@NonNull UUID id, @NonNull String EAN)
-    throws FoodProductNotFoundException, NullPointerException;
+  Collection<HouseholdFoodProduct> findHouseholdFoodProductByIdAndEAN(
+    @NonNull UUID id,
+    @NonNull String EAN
+  ) throws FoodProductNotFoundException, NullPointerException;
 
   void removeAmountFoodProductFromHouseholdByIngredient(
     @NonNull Household household,
