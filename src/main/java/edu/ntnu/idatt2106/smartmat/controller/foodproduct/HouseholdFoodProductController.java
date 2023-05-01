@@ -3,7 +3,6 @@ package edu.ntnu.idatt2106.smartmat.controller.foodproduct;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.CreateHouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.HouseholdFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.UpdateHouseholdFoodProductDTO;
-import edu.ntnu.idatt2106.smartmat.dto.statistic.CreateFoodProductHistoryDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
@@ -159,7 +158,7 @@ public class HouseholdFoodProductController {
     description = "Get a household food product by its ean and the household id, requires authentication.",
     tags = { "householdfoodproduct" }
   )
-  public ResponseEntity<HouseholdFoodProductDTO> getHouseholdFoodProductByEan(
+  public ResponseEntity<List<HouseholdFoodProductDTO>> getHouseholdFoodProductByEan(
     @AuthenticationPrincipal Auth auth,
     @PathVariable("householdId") UUID householdId,
     @PathVariable("ean") String ean
@@ -176,12 +175,15 @@ public class HouseholdFoodProductController {
     );
 
     LOGGER.info("GET /api/v1/private/households/{}/foodproducts/ean/{}", householdId, ean);
-    HouseholdFoodProductDTO householdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
-      householdFoodProductService.findHouseholdFoodProductByIdAndEAN(householdId, ean)
-    );
 
     LOGGER.info("Found and returning household food product with ean: {}", ean);
-    return ResponseEntity.ok(householdFoodProductDTO);
+    return ResponseEntity.ok(
+      householdFoodProductService
+        .findHouseholdFoodProductByIdAndEAN(householdId, ean)
+        .stream()
+        .map(HouseholdFoodProductMapper.INSTANCE::householdFoodProductToHouseholdFoodProductDTO)
+        .toList()
+    );
   }
 
   /**
@@ -455,7 +457,7 @@ public class HouseholdFoodProductController {
     @AuthenticationPrincipal Auth auth,
     @PathVariable("householdId") UUID householdId,
     @PathVariable("id") UUID id,
-    @RequestBody CreateFoodProductHistoryDTO foodProductHistoryDTO
+    @RequestBody Double amountUsed
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
     if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
@@ -468,22 +470,21 @@ public class HouseholdFoodProductController {
 
     HouseholdFoodProduct householdFoodProduct = householdFoodProductService.getFoodProductById(id);
 
-    FoodProductHistory foodProductHistory = FoodProductHistory
-      .builder()
-      .foodProduct(householdFoodProduct.getFoodProduct())
-      .household(householdFoodProduct.getHousehold())
-      .thrownAmount(foodProductHistoryDTO.getThrownAmount())
-      .date(LocalDate.now())
-      .build();
+    householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - amountUsed);
 
-    foodProductHistoryService.saveFoodProductHistory(foodProductHistory);
+    if (householdFoodProduct.getAmountLeft() <= 0) {
+      FoodProductHistory foodProductHistory = FoodProductHistory
+        .builder()
+        .foodProduct(householdFoodProduct.getFoodProduct())
+        .household(householdFoodProduct.getHousehold())
+        .thrownAmount(0)
+        .date(LocalDate.now())
+        .build();
 
-    if (householdFoodProduct.getAmountLeft() - 1 <= 0) {
+      foodProductHistoryService.saveFoodProductHistory(foodProductHistory);
       householdFoodProductService.deleteFoodProductById(id);
       return ResponseEntity.noContent().build();
     }
-
-    householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - 1);
 
     HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
       householdFoodProductService.updateFoodProduct(householdFoodProduct)
@@ -509,7 +510,7 @@ public class HouseholdFoodProductController {
    * @throws FoodProductNotFoundException If the food product does not exist.
    * @throws NullPointerException If the household id or food product ean is null.
    */
-  @PutMapping(
+  @DeleteMapping(
     value = "/{householdId}/foodproducts/id/{id}/throw",
     produces = MediaType.APPLICATION_JSON_VALUE
   )
@@ -518,7 +519,7 @@ public class HouseholdFoodProductController {
     description = "Use a household food product, requires authentication.",
     tags = { "householdfoodproduct" }
   )
-  public ResponseEntity<HouseholdFoodProductDTO> throwHouseholdFoodProduct(
+  public ResponseEntity<Void> throwHouseholdFoodProduct(
     @AuthenticationPrincipal Auth auth,
     @PathVariable("householdId") UUID householdId,
     @PathVariable("id") UUID id
@@ -538,28 +539,15 @@ public class HouseholdFoodProductController {
       .builder()
       .foodProduct(householdFoodProduct.getFoodProduct())
       .household(householdFoodProduct.getHousehold())
-      .thrownAmount(1)
+      .thrownAmount(householdFoodProduct.getAmountLeft())
       .date(LocalDate.now())
       .build();
 
     foodProductHistoryService.saveFoodProductHistory(foodProductHistory);
 
-    if (householdFoodProduct.getAmountLeft() - 1 <= 0) {
-      householdFoodProductService.deleteFoodProductById(id);
-      return ResponseEntity.noContent().build();
-    }
+    LOGGER.info("Deleted household food product with id: {}", id);
 
-    householdFoodProduct.setAmountLeft(householdFoodProduct.getAmountLeft() - 1);
-
-    HouseholdFoodProductDTO updatedHouseholdFoodProductDTO = HouseholdFoodProductMapper.INSTANCE.householdFoodProductToHouseholdFoodProductDTO(
-      householdFoodProductService.updateFoodProduct(householdFoodProduct)
-    );
-
-    LOGGER.info(
-      "Updated and returning household food product with id: {}",
-      updatedHouseholdFoodProductDTO.getId()
-    );
-
-    return ResponseEntity.ok().body(updatedHouseholdFoodProductDTO);
+    householdFoodProductService.deleteFoodProductById(id);
+    return ResponseEntity.noContent().build();
   }
 }

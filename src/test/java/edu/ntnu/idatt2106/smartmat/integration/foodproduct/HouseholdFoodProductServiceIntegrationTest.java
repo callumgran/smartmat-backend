@@ -17,6 +17,7 @@ import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductServi
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductServiceImpl;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.Before;
@@ -126,7 +127,7 @@ public class HouseholdFoodProductServiceIntegrationTest {
         "1234567890123"
       )
     )
-      .thenReturn(Optional.of(existingHouseholdFoodProduct));
+      .thenReturn(Optional.of(List.of(existingHouseholdFoodProduct)));
   }
 
   @Test
@@ -239,10 +240,14 @@ public class HouseholdFoodProductServiceIntegrationTest {
   public void testGetFoodProductByEANExistingHouseholdFoodProduct()
     throws FoodProductNotFoundException {
     assertEquals(
-      foodProductService.findHouseholdFoodProductByIdAndEAN(
-        existingHouseholdFoodProduct.getHousehold().getId(),
-        existingHouseholdFoodProduct.getFoodProduct().getEAN()
-      ),
+      foodProductService
+        .findHouseholdFoodProductByIdAndEAN(
+          existingHouseholdFoodProduct.getHousehold().getId(),
+          existingHouseholdFoodProduct.getFoodProduct().getEAN()
+        )
+        .stream()
+        .findFirst()
+        .get(),
       existingHouseholdFoodProduct
     );
   }

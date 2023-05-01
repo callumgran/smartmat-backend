@@ -7,6 +7,7 @@ import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.HouseholdFoodProductRepository;
+import java.util.Collection;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -122,7 +123,7 @@ public class HouseholdFoodProductServiceImpl implements HouseholdFoodProductServ
    * @throws NullPointerException If the id or EAN is null.
    */
   @Override
-  public HouseholdFoodProduct findHouseholdFoodProductByIdAndEAN(
+  public Collection<HouseholdFoodProduct> findHouseholdFoodProductByIdAndEAN(
     @NonNull UUID id,
     @NonNull String EAN
   ) throws FoodProductNotFoundException, NullPointerException {

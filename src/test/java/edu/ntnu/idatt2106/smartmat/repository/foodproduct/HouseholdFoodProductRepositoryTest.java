@@ -92,6 +92,9 @@ public class HouseholdFoodProductRepositoryTest {
 
     HouseholdFoodProduct found = foodProductRepository
       .findHouseholdFoodProductByHouseholdAndEAN(household.getId(), carrotFoodProduct.getEAN())
+      .orElseThrow(NullPointerException::new)
+      .stream()
+      .findFirst()
       .get();
 
     assertEquals(hfpCarrot.getFoodProduct().getName(), found.getFoodProduct().getName());

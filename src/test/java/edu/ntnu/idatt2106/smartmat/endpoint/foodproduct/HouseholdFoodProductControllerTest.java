@@ -29,6 +29,7 @@ import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -284,7 +285,7 @@ public class HouseholdFoodProductControllerTest {
           carrotProduct.getEAN()
         )
       )
-        .thenReturn(carrotHouseholdProduct);
+        .thenReturn(List.of(carrotHouseholdProduct));
       mvc
         .perform(
           get(BASE_HOUSEHOLD_URL + "/foodproducts/ean/" + carrotProduct.getEAN())
@@ -319,7 +320,7 @@ public class HouseholdFoodProductControllerTest {
           carrotProduct.getEAN()
         )
       )
-        .thenReturn(carrotHouseholdProduct);
+        .thenReturn(List.of(carrotHouseholdProduct));
       mvc
         .perform(
           get(BASE_HOUSEHOLD_URL + "/foodproducts/ean/" + carrotProduct.getEAN())
@@ -341,7 +342,7 @@ public class HouseholdFoodProductControllerTest {
           carrotProduct.getEAN()
         )
       )
-        .thenReturn(carrotHouseholdProduct);
+        .thenReturn(List.of(carrotHouseholdProduct));
       mvc
         .perform(
           get(BASE_HOUSEHOLD_URL + "/foodproducts/ean/" + carrotProduct.getEAN())

@@ -29,7 +29,10 @@ public interface HouseholdFoodProductRepository
   @Query(
     "SELECT hfp FROM HouseholdFoodProduct hfp WHERE hfp.household.id = ?1 AND hfp.foodProduct.EAN = ?2"
   )
-  Optional<HouseholdFoodProduct> findHouseholdFoodProductByHouseholdAndEAN(UUID id, String EAN);
+  Optional<Collection<HouseholdFoodProduct>> findHouseholdFoodProductByHouseholdAndEAN(
+    UUID id,
+    String EAN
+  );
 
   /**
    * Finds a HouseholdFoodProduct by the household and ingredient.
