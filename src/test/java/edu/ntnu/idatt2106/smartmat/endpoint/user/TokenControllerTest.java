@@ -34,7 +34,7 @@ public class TokenControllerTest {
   private UserService userService;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     AuthenticateDTO goodAuthDTO = new AuthenticateDTO("test", "test");
 
     AuthenticateDTO badUsernameDTO = new AuthenticateDTO("bad", "test");
@@ -45,19 +45,15 @@ public class TokenControllerTest {
 
     User goodUser = testUserFactory(TestUserEnum.GOOD);
 
-    try {
-      when(userService.authenticateUser(goodAuthDTO.getUsername(), goodAuthDTO.getPassword()))
-        .thenReturn(true);
-      when(userService.authenticateUser(badAuthDTO.getUsername(), badAuthDTO.getPassword()))
-        .thenThrow(BadCredentialsException.class);
-      when(userService.authenticateUser(badUsernameDTO.getUsername(), badUsernameDTO.getPassword()))
-        .thenThrow(BadCredentialsException.class);
-      when(userService.authenticateUser(badPasswordDTO.getUsername(), badPasswordDTO.getPassword()))
-        .thenThrow(BadCredentialsException.class);
-      when(userService.getUserByUsername(goodAuthDTO.getUsername())).thenReturn(goodUser);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    when(userService.authenticateUser(goodAuthDTO.getUsername(), goodAuthDTO.getPassword()))
+      .thenReturn(true);
+    when(userService.authenticateUser(badAuthDTO.getUsername(), badAuthDTO.getPassword()))
+      .thenThrow(BadCredentialsException.class);
+    when(userService.authenticateUser(badUsernameDTO.getUsername(), badUsernameDTO.getPassword()))
+      .thenThrow(BadCredentialsException.class);
+    when(userService.authenticateUser(badPasswordDTO.getUsername(), badPasswordDTO.getPassword()))
+      .thenThrow(BadCredentialsException.class);
+    when(userService.getUserByUsername(goodAuthDTO.getUsername())).thenReturn(goodUser);
   }
 
   @Test

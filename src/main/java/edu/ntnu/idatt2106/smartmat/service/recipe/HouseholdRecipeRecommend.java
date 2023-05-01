@@ -5,6 +5,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class HouseholdRecipeRecommend {
         score -= 10;
       }
     }
-    System.out.println(score);
+
     return score;
   }
 
@@ -58,7 +59,7 @@ public class HouseholdRecipeRecommend {
    * @param usedRecipes The recipes that are going to be used.
    * @return A collection of recipes that are sorted by recommendation for the household.
    */
-  public static Collection<Recipe> getRecommendedRecipes(
+  public static Collection<RecipeRecommendation> getRecommendedRecipes(
     Household household,
     Collection<Recipe> recipes,
     Collection<Recipe> usedRecipes
@@ -109,19 +110,23 @@ public class HouseholdRecipeRecommend {
       );
 
     if (recipeIngredients.isEmpty()) {
-      return recipes;
+      return recipes
+        .stream()
+        .map(r -> RecipeRecommendation.builder().recipe(r).score(0).build())
+        .toList();
     }
 
     return recipeIngredients
       .entrySet()
       .stream()
-      .collect(
-        Collectors.toMap(Map.Entry::getKey, e -> getRecipeScore(e.getValue(), householdIngredients))
+      .map(r ->
+        RecipeRecommendation
+          .builder()
+          .recipe(r.getKey())
+          .score(getRecipeScore(r.getValue(), householdIngredients))
+          .build()
       )
-      .entrySet()
-      .stream()
-      .sorted((e1, e2) -> compare(e1.getValue(), e2.getValue()))
-      .map(Map.Entry::getKey)
-      .collect(Collectors.toList());
+      .sorted((r1, r2) -> compare(r1.getScore(), r2.getScore()))
+      .toList();
   }
 }

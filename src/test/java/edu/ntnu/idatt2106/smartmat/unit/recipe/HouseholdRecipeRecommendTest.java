@@ -17,6 +17,7 @@ import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.service.recipe.HouseholdRecipeRecommend;
@@ -190,21 +191,25 @@ public class HouseholdRecipeRecommendTest {
 
   @Test
   public void testHouseHoldRecipeRecommend() {
-    List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
+    List<RecipeRecommendation> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(household, recipes, new ArrayList<>())
       .stream()
       .toList();
 
     assertEquals(2, recommendedRecipes.size());
-    assertTrue(recommendedRecipes.contains(recipes.get(1)));
-    assertTrue(recommendedRecipes.contains(recipes.get(2)));
-    assertFalse(recommendedRecipes.contains(recipes.get(0)));
-    assertEquals(recommendedRecipes.get(0), recipes.get(2));
+    List<Recipe> recipesReceived = recommendedRecipes
+      .stream()
+      .map(RecipeRecommendation::getRecipe)
+      .toList();
+    assertTrue(recipesReceived.contains(recipes.get(1)));
+    assertTrue(recipesReceived.contains(recipes.get(2)));
+    assertFalse(recipesReceived.contains(recipes.get(0)));
+    assertEquals(recipesReceived.get(0), recipes.get(2));
   }
 
   @Test
   public void testHouseHoldRecipeRecommendNoRecipes() {
-    List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
+    List<RecipeRecommendation> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(household, new ArrayList<>(), new ArrayList<>())
       .stream()
       .toList();
@@ -214,7 +219,7 @@ public class HouseholdRecipeRecommendTest {
 
   @Test
   public void testHouseholdRecipeRecommendAllRecipesWhenNoFoodInHousehold() {
-    List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
+    List<RecipeRecommendation> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(
         testHouseholdFactory(TestHouseholdEnum.NULL_ID),
         recipes,
@@ -222,24 +227,31 @@ public class HouseholdRecipeRecommendTest {
       )
       .stream()
       .toList();
-
     assertEquals(3, recommendedRecipes.size());
-    assertTrue(recommendedRecipes.contains(recipes.get(0)));
-    assertTrue(recommendedRecipes.contains(recipes.get(1)));
-    assertTrue(recommendedRecipes.contains(recipes.get(2)));
+    List<Recipe> recipesReceived = recommendedRecipes
+      .stream()
+      .map(RecipeRecommendation::getRecipe)
+      .toList();
+    assertTrue(recipesReceived.contains(recipes.get(0)));
+    assertTrue(recipesReceived.contains(recipes.get(1)));
+    assertTrue(recipesReceived.contains(recipes.get(2)));
   }
 
   @Test
   public void testHouseholdRecipeRecommendRecipesCorrectlyWhenRecipesAreUsed() {
-    List<Recipe> recommendedRecipes = HouseholdRecipeRecommend
+    List<RecipeRecommendation> recommendedRecipes = HouseholdRecipeRecommend
       .getRecommendedRecipes(household, recipes, List.of(recipes.get(2)))
       .stream()
       .toList();
 
     assertEquals(2, recommendedRecipes.size());
-    assertTrue(recommendedRecipes.contains(recipes.get(1)));
-    assertTrue(recommendedRecipes.contains(recipes.get(2)));
-    assertFalse(recommendedRecipes.contains(recipes.get(0)));
-    assertEquals(recommendedRecipes.get(0), recipes.get(2));
+    List<Recipe> recipesReceived = recommendedRecipes
+      .stream()
+      .map(RecipeRecommendation::getRecipe)
+      .toList();
+    assertTrue(recipesReceived.contains(recipes.get(1)));
+    assertTrue(recipesReceived.contains(recipes.get(2)));
+    assertFalse(recipesReceived.contains(recipes.get(0)));
+    assertEquals(recipesReceived.get(0), recipes.get(2));
   }
 }

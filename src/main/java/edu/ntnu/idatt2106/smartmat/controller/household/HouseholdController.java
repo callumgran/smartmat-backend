@@ -5,7 +5,7 @@ import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.WeeklyRecipeDTO;
-import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
+import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeRecommendationDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
@@ -25,6 +25,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
@@ -481,7 +482,7 @@ public class HouseholdController {
     description = "Get recommended recipes for a household. Recipes are recommended based on the household's ingredients. Requires authentication.",
     tags = { "household" }
   )
-  public ResponseEntity<List<RecipeDTO>> getRecommendedRecipes(
+  public ResponseEntity<List<RecipeRecommendationDTO>> getRecommendedRecipes(
     @AuthenticationPrincipal Auth auth,
     @PathVariable UUID id
   )
@@ -492,7 +493,7 @@ public class HouseholdController {
       );
     }
 
-    Collection<Recipe> recipes = HouseholdRecipeRecommend.getRecommendedRecipes(
+    Collection<RecipeRecommendation> recipes = HouseholdRecipeRecommend.getRecommendedRecipes(
       householdService.getHouseholdById(id),
       recipeService.findAllRecipes(),
       weeklyRecipeService
@@ -505,12 +506,18 @@ public class HouseholdController {
 
     LOGGER.info("Found {} recommended recipes for household with id: {}", recipes.size(), id);
 
-    List<RecipeDTO> recipeDTOS = recipes
-      .stream()
-      .map(RecipeMapper.INSTANCE::recipeToRecipeDTO)
-      .collect(Collectors.toList());
-
-    return ResponseEntity.ok(recipeDTOS);
+    return ResponseEntity.ok(
+      recipes
+        .stream()
+        .map(r -> {
+          return RecipeRecommendationDTO
+            .builder()
+            .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(r.getRecipe()))
+            .score(r.getScore())
+            .build();
+        })
+        .toList()
+    );
   }
 
   /**
