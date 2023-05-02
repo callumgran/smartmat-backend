@@ -152,6 +152,12 @@ public class UnitUtils {
     return newAmount;
   }
 
+  /**
+   * Method to remove the amount of a household food product from a recipe ingredient
+   * @param foodProduct The household food product to remove
+   * @param ingredient The recipe ingredient to remove the household food product from
+   * @return The new amount of the recipe ingredient
+   */
   public static double removeRecipeHouseholdFoodProductAmountFromIngredientAmount(
     HouseholdFoodProduct foodProduct,
     RecipeIngredient ingredient

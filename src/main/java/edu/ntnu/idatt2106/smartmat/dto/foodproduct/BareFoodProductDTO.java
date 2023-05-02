@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.foodproduct;
 
+import edu.ntnu.idatt2106.smartmat.dto.unit.UnitDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,4 +46,8 @@ public class BareFoodProductDTO {
 
   @NotBlank
   private boolean isNotIngredient;
+
+  @NotBlank
+  @NonNull
+  private UnitDTO unit;
 }
