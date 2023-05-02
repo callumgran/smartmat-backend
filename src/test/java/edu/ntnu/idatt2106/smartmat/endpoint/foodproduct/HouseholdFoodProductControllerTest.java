@@ -114,7 +114,8 @@ public class HouseholdFoodProductControllerTest {
         carrot,
         null,
         false,
-        unit
+        unit,
+        null
       );
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     household.setId(HOUSEHOLD_ID);

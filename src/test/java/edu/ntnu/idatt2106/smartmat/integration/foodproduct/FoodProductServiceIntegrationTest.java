@@ -66,6 +66,7 @@ public class FoodProductServiceIntegrationTest {
         carrot,
         null,
         false,
+        null,
         null
       );
     newFoodProduct =
@@ -80,6 +81,7 @@ public class FoodProductServiceIntegrationTest {
         carrot,
         null,
         false,
+        null,
         null
       );
     corruptedFoodProduct =
@@ -94,6 +96,7 @@ public class FoodProductServiceIntegrationTest {
         carrot,
         null,
         false,
+        null,
         null
       );
 

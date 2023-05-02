@@ -22,6 +22,7 @@ import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemService;
+import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListItemService;
@@ -65,6 +66,9 @@ public class ShoppingListControllerTest {
 
   @MockBean
   private UserService userService;
+
+  @MockBean
+  private HouseholdFoodProductService householdFoodProductService;
 
   private static final String BASE_URL = "/api/v1/private/shoppinglists";
 

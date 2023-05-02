@@ -5,20 +5,25 @@ import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.UpdateShoppingListDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
+import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -44,6 +49,8 @@ public class ShoppingListController {
   private final ShoppingListService shoppinglistService;
 
   private final HouseholdService householdService;
+
+  private final HouseholdFoodProductService householdFoodProductService;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingListController.class);
 
@@ -194,6 +201,43 @@ public class ShoppingListController {
   }
 
   /**
+   * Method to retrieve a shopping list with difference
+   * to what is in the basket.
+   * @param auth authentication for user.
+   * @param id id for the shopping list.
+   * @return the shopping list.
+   * @throws ShoppingListNotFoundException if the shopping list is not found.
+   * @throws BasketNotFoundException if the basket is not found.
+   * @throws NullPointerException if any values are null.
+   * @throws PermissionDeniedException if the user does not have permission to create a shopping list.
+   * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the user does not exist.
+   */
+  @GetMapping(value = "/{id}/diff", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Get a shopping list by id",
+    description = "Get a shopping list by id. Requires authentication and be part of the household.",
+    tags = { "shopping list" }
+  )
+  ResponseEntity<ShoppingListDTO> getShoppingListDiff(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id
+  )
+    throws ShoppingListNotFoundException, BasketNotFoundException, NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    LOGGER.info("GET request for shopping list: {}", id);
+    ShoppingList shoppingList = shoppinglistService.getShoppingListWithDiff(id);
+
+    if (!isAdminOrHouseholdMember(auth, shoppingList.getHousehold().getId())) {
+      throw new PermissionDeniedException("Du har ikke tilgang til handlelisten");
+    }
+
+    ShoppingListDTO shoppingListDTO = ShoppingListMapper.INSTANCE.shoppingListToDTO(shoppingList);
+    LOGGER.info("Mapped shopping list to ShoppingListDTO {}", shoppingListDTO);
+
+    return ResponseEntity.ok(shoppingListDTO);
+  }
+
+  /**
    * Method to update a shopping list.
    * @param auth authentication for user.
    * @param id id for the shopping list.
@@ -275,7 +319,7 @@ public class ShoppingListController {
     throws NullPointerException, ShoppingListNotFoundException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
     LOGGER.info("Request to complete shopping list with id: {}", id);
 
-    ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
+    final ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
     boolean hasUpdateAccess = isAdminOrPrivilegedHouseholdMember(
       auth,
@@ -289,9 +333,31 @@ public class ShoppingListController {
     shoppingList.setDateCompleted(dateCompleted);
     LOGGER.info("Completed shoppinglist {} at {}", shoppingList, dateCompleted);
 
-    shoppingList = shoppinglistService.updateShoppingList(shoppingList.getId(), shoppingList);
+    Basket basket = shoppingList.getBasket();
 
-    ShoppingListDTO shoppingListDTO = ShoppingListMapper.INSTANCE.shoppingListToDTO(shoppingList);
+    List<HouseholdFoodProduct> householdFoodProducts = basket
+      .getBasketItems()
+      .stream()
+      .map(bi -> {
+        return HouseholdFoodProduct
+          .builder()
+          .foodProduct(bi.getFoodProduct())
+          .household(shoppingList.getHousehold())
+          .amountLeft(bi.getAmount())
+          .build();
+      })
+      .toList();
+
+    for (HouseholdFoodProduct householdFoodProduct : householdFoodProducts) {
+      householdFoodProductService.saveFoodProduct(householdFoodProduct);
+    }
+
+    final ShoppingList ret = shoppinglistService.updateShoppingList(
+      shoppingList.getId(),
+      shoppingList
+    );
+
+    ShoppingListDTO shoppingListDTO = ShoppingListMapper.INSTANCE.shoppingListToDTO(ret);
 
     LOGGER.info("Shopping list {} completed", shoppingListDTO);
 

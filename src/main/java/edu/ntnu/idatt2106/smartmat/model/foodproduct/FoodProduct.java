@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.BasketItem;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import jakarta.persistence.Column;
@@ -78,4 +79,7 @@ public class FoodProduct {
   @ManyToOne(optional = true)
   @JoinColumn(name = "`unit`", nullable = true, referencedColumnName = "`unit_name`")
   private Unit unit;
+
+  @OneToMany(mappedBy = "foodProduct")
+  Set<BasketItem> baskets;
 }

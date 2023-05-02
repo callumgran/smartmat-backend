@@ -26,6 +26,7 @@ public class CustomFoodItemTest {
         customFoodItemAmount,
         customFoodItemIsCheck,
         null,
+        null,
         null
       );
 
@@ -49,6 +50,7 @@ public class CustomFoodItemTest {
           null,
           customFoodItemAmount,
           customFoodItemIsCheck,
+          null,
           null,
           null
         )

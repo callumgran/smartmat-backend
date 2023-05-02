@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,4 +59,7 @@ public class CustomFoodItem {
 
   @ManyToOne(optional = true)
   private Household household;
+
+  @ManyToOne(optional = true)
+  private Basket basket;
 }

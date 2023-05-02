@@ -85,7 +85,8 @@ public class FoodProductControllerTest {
         carrot,
         null,
         false,
-        unit
+        unit,
+        null
       );
 
     user = testUserFactory(TestUserEnum.GOOD);

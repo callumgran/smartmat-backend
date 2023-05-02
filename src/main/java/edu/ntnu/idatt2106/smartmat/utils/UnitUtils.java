@@ -2,6 +2,8 @@ package edu.ntnu.idatt2106.smartmat.utils;
 
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.BasketItem;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 
 /**
@@ -55,6 +57,32 @@ public class UnitUtils {
   }
 
   /**
+   * Method to get the normalized unit of a shopping list item
+   * @param ingredient The recipe ingredient to get the normalized unit of
+   * @return The normalized unit of the recipe ingredient
+   */
+  public static double getNormalizedUnit(ShoppingListItem shoppingListItem) {
+    return getNormalizedUnit(
+      shoppingListItem.getAmount(),
+      shoppingListItem.getIngredient().getUnit().getToNormalFormConversionFactor(),
+      shoppingListItem.getIngredient().getUnit().getUnitType()
+    );
+  }
+
+  /**
+   * Method to get the normalized unit of a shopping list item
+   * @param ingredient The recipe ingredient to get the normalized unit of
+   * @return The normalized unit of the recipe ingredient
+   */
+  public static double getNormalizedUnit(BasketItem basketItem) {
+    return getNormalizedUnit(
+      basketItem.getAmount() * basketItem.getFoodProduct().getAmount(),
+      basketItem.getFoodProduct().getIngredient().getUnit().getToNormalFormConversionFactor(),
+      basketItem.getFoodProduct().getUnit().getUnitType()
+    );
+  }
+
+  /**
    * Method to get the original unit of a household food product
    * @param amount The amount of the household food product
    * @param conversionFactor The conversion factor of the household food product
@@ -94,6 +122,34 @@ public class UnitUtils {
       amount,
       ingredient.getIngredient().getUnit().getToNormalFormConversionFactor(),
       ingredient.getIngredient().getUnit().getUnitType()
+    );
+  }
+
+  /**
+   * Method to get the original unit of a shopping list item
+   * @param amount The amount of the shopping list item
+   * @param shoppingListItem The shopping list item to get the original unit of
+   * @return The original unit of the shopping list item
+   */
+  public static double getOriginalUnit(double amount, ShoppingListItem shoppingListItem) {
+    return getOriginalUnit(
+      amount,
+      shoppingListItem.getIngredient().getUnit().getToNormalFormConversionFactor(),
+      shoppingListItem.getIngredient().getUnit().getUnitType()
+    );
+  }
+
+  /**
+   * Method to get the original unit of a shopping list item
+   * @param amount The amount of the shopping list item
+   * @param basketItem The shopping list item to get the original unit of
+   * @return The original unit of the shopping list item
+   */
+  public static double getOriginalUnit(double amount, BasketItem basketItem) {
+    return getOriginalUnit(
+      amount,
+      basketItem.getFoodProduct().getUnit().getToNormalFormConversionFactor(),
+      basketItem.getFoodProduct().getUnit().getUnitType()
     );
   }
 

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.Set;
@@ -53,4 +54,7 @@ public class ShoppingList {
 
   @OneToMany(mappedBy = "shoppingList")
   private Set<CustomFoodItem> customFoodItems;
+
+  @OneToOne(optional = true)
+  private Basket basket;
 }
