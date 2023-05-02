@@ -53,7 +53,7 @@ public enum UnitTypeEnum {
   }
 
   /**
-   * Method to get convert the unit type to kg
+   * Method to convert the unit type to kg
    * Standard conversion factor is 1
    * For BY_PIECE, the conversion factor is 4 as a general rule for pieces of food is 250g
    * @param toNormalFormConversionFactor The conversion factor from the unit to the normal form of the unit
@@ -69,6 +69,26 @@ public enum UnitTypeEnum {
         return BY_PIECE_TO_KG * toNormalFormConversionFactor;
       default:
         return 1 * toNormalFormConversionFactor;
+    }
+  }
+
+  /**
+   * Method to convert the unit type from kg
+   * Standard conversion factor is 1
+   * For BY_PIECE, the conversion factor is 4 as a general rule for pieces of food is 250g
+   * @param fromNormalFormConversionFactor The conversion factor from the normal form of the unit to the unit
+   * @return The unit type from kg
+   */
+  public double fromKg(double fromNormalFormConversionFactor) {
+    switch (this) {
+      case SOLID:
+        return 1 / fromNormalFormConversionFactor;
+      case LIQUID:
+        return 1 / fromNormalFormConversionFactor;
+      case BY_PIECE:
+        return 1 / (4 * fromNormalFormConversionFactor);
+      default:
+        return 1 / fromNormalFormConversionFactor;
     }
   }
 }

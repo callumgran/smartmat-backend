@@ -1,0 +1,10 @@
+INSERT INTO unit VALUES ('kilogram', 'kg', 1, 'SOLID');
+INSERT INTO unit VALUES ('gram', 'g', 0.001, 'SOLID');
+INSERT INTO unit VALUES ('milligram', 'mg', 0.000001, 'SOLID');
+INSERT INTO unit VALUES ('liter', 'l', 1, 'LIQUID');
+INSERT INTO unit VALUES ('desiliter', 'dl', 0.1, 'LIQUID');
+INSERT INTO unit VALUES ('centiliter', 'cl', 0.01, 'LIQUID');
+INSERT INTO unit VALUES ('milliliter', 'ml', 0.001, 'LIQUID');
+INSERT INTO unit VALUES ('spiseskje', 'ss', 0.0147867648, 'LIQUID');
+INSERT INTO unit VALUES ('teaspoon', 'ts', 0.00492892159, 'LIQUID');
+INSERT INTO unit VALUES ('per stykk', 'stk', 1, 'BY_PIECE');

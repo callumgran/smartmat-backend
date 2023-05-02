@@ -6,6 +6,8 @@ import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import java.time.LocalDate;
 import java.util.HashSet;
 import org.junit.Test;
@@ -29,9 +31,10 @@ public class HouseholdFoodProductRepositoryTest {
   public void findByEAN() {
     Ingredient carrot = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
     Ingredient raisin = new Ingredient(null, "Raisin", new HashSet<>(), new HashSet<>(), null);
-
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
     carrot = entityManager.persist(carrot);
     raisin = entityManager.persist(raisin);
+    unit = entityManager.persist(unit);
 
     FoodProduct carrotFoodProduct = new FoodProduct(
       null,
@@ -43,7 +46,8 @@ public class HouseholdFoodProductRepositoryTest {
       new HashSet<>(),
       carrot,
       null,
-      false
+      false,
+      unit
     );
     FoodProduct raisinFoodProduct = new FoodProduct(
       null,
@@ -55,7 +59,8 @@ public class HouseholdFoodProductRepositoryTest {
       new HashSet<>(),
       raisin,
       null,
-      false
+      false,
+      unit
     );
 
     entityManager.persist(carrotFoodProduct);
