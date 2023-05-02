@@ -21,6 +21,7 @@ import lombok.NonNull;
 public class FoodProductDTO {
 
   @NonNull
+  @NotBlank
   private Long id;
 
   @NonNull
