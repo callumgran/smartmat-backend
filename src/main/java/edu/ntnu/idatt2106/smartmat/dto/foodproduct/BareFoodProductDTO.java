@@ -19,6 +19,8 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class BareFoodProductDTO {
 
+  @NotBlank
+  @NonNull
   private Long id;
 
   @NonNull

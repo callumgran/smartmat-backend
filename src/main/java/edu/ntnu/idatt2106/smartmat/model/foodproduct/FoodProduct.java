@@ -75,7 +75,7 @@ public class FoodProduct {
   @Column(name = "`is_not_ingredient`")
   private boolean isNotIngredient;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "`unit`", nullable = false, referencedColumnName = "`unit_name`")
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "`unit`", nullable = true, referencedColumnName = "`unit_name`")
   private Unit unit;
 }
