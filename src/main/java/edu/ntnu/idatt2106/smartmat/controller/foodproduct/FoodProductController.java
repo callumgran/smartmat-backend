@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.smartmat.dto.foodproduct.BareFoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.kassalapp.KassalApiDataDTO;
 import edu.ntnu.idatt2106.smartmat.dto.kassalapp.KassalApiProductDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
@@ -11,18 +12,21 @@ import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.FoodProductMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.security.KassalappAPITokenSingleton;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
+import edu.ntnu.idatt2106.smartmat.service.unit.UnitService;
+import edu.ntnu.idatt2106.smartmat.utils.IngredientTitleMatcher;
+import edu.ntnu.idatt2106.smartmat.utils.ParseUnit;
+import edu.ntnu.idatt2106.smartmat.utils.UnitAmountTuple;
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +61,8 @@ public class FoodProductController {
   private final FoodProductService foodProductService;
 
   private final IngredientService ingredientService;
+
+  private final UnitService unitService;
 
   private final RestTemplate restTemplate;
 
@@ -93,6 +99,7 @@ public class FoodProductController {
    * @throws FoodProductNotFoundException If the food product is not found.
    * @throws NullPointerException         If the EAN is null.
    * @throws BadInputException            If the EAN is invalid.
+   * @throws DatabaseException            If the food product is not found in the database.
    */
   @GetMapping(value = "/ean/{EAN}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -101,13 +108,15 @@ public class FoodProductController {
     tags = { "foodproduct" }
   )
   public ResponseEntity<FoodProductDTO> getFoodProductByEAN(@PathVariable("EAN") String EAN)
-    throws FoodProductNotFoundException, NullPointerException, BadInputException {
+    throws FoodProductNotFoundException, NullPointerException, BadInputException, DatabaseException {
     if (!FoodProductValidation.validateEan(EAN)) throw new BadInputException(
       "EAN koden er ugyldig"
     );
     LOGGER.info("GET https://kassal.app/api/v1/products/ean/{}", EAN);
 
     FoodProduct foodProduct;
+
+    boolean isFirstTime = false;
 
     try {
       foodProduct = foodProductService.getFoodProductByEan(EAN);
@@ -125,7 +134,7 @@ public class FoodProductController {
         response =
           restTemplate.exchange(kassalApiUrl, HttpMethod.GET, entity, KassalApiDataDTO.class);
       } catch (Exception e1) {
-        throw new FoodProductNotFoundException();
+        throw new FoodProductNotFoundException(e1.getMessage());
       }
 
       // logga responsen for å debugg
@@ -139,28 +148,36 @@ public class FoodProductController {
 
         String productName = chosenKassalFoodProduct.getName();
 
-        Pattern pattern = Pattern.compile("([0-9]+(?:,[0-9]+)?)\\s*([a-zA-Z]+)");
-        Matcher matcher = pattern.matcher(productName);
+        UnitAmountTuple amountTuple = ParseUnit.parseUnit(
+          unitService.getAllUnits(),
+          productName,
+          unitService.getUnitByAbbreviation("stk")
+        );
 
-        Double amount = null;
-        if (matcher.find()) {
-          amount = Double.parseDouble(matcher.group(1).replace(",", ".").trim());
-          String unit = matcher.group(2);
-          LOGGER.info("Amount: {}, Unit: {}", amount, unit);
-        }
+        Ingredient foundIngredient = IngredientTitleMatcher.getBestMatch(
+          ingredientService.getAllIngredients(),
+          productName
+        );
 
         String productImage = chosenKassalFoodProduct.getImage();
+
+        LOGGER.info("Found unit: {}", amountTuple.getUnit().getAbbreviation());
+        LOGGER.info("Found amount: {}", amountTuple.getAmount());
+
         foodProduct =
           FoodProduct
             .builder()
             .EAN(EAN)
             .name(productName)
             .image(productImage)
-            .amount(amount)
+            .amount(amountTuple.getAmount())
+            .unit(amountTuple.getUnit())
             .isNotIngredient(false)
+            .ingredient(foundIngredient)
             .build();
 
         foodProductService.saveFoodProduct(foodProduct);
+        isFirstTime = true;
       } else {
         // logg response status for debeugging
         LOGGER.error("Kassal API Response Status: {}", response.getStatusCode());
@@ -170,8 +187,11 @@ public class FoodProductController {
         );
       }
     }
-
-    return ResponseEntity.ok(FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(foodProduct));
+    FoodProductDTO foodProductDTO = FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(
+      foodProduct
+    );
+    foodProductDTO.setFirstTime(isFirstTime);
+    return ResponseEntity.ok(foodProductDTO);
   }
 
   /**

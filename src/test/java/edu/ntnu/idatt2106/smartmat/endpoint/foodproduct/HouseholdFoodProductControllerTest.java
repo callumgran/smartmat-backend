@@ -20,6 +20,8 @@ import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
@@ -29,6 +31,7 @@ import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import org.junit.Before;
@@ -95,6 +98,7 @@ public class HouseholdFoodProductControllerTest {
 
   @Before
   public void setUp() throws NoSuchMethodException, SecurityException {
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
     user = testUserFactory(TestUserEnum.GOOD);
     admin = testUserFactory(TestUserEnum.ADMIN);
     carrot = new Ingredient(1L, "Carrot", null, null, null);
@@ -110,7 +114,7 @@ public class HouseholdFoodProductControllerTest {
         carrot,
         null,
         false,
-        null
+        unit
       );
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     household.setId(HOUSEHOLD_ID);

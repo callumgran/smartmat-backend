@@ -19,11 +19,15 @@ import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundExc
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.KassalappAPITokenSingleton;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
+import edu.ntnu.idatt2106.smartmat.service.unit.UnitService;
+import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +56,9 @@ public class FoodProductControllerTest {
   private FoodProductService foodProductService;
 
   @MockBean
+  private UnitService unitService;
+
+  @MockBean
   private IngredientService ingredientService;
 
   private static final String BASE_URL = "/api/v1/private/foodproducts";
@@ -64,6 +71,7 @@ public class FoodProductControllerTest {
 
   @Before
   public void setUp() {
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
     carrot = new Ingredient(1L, "Carrot", null, null, null);
     carrotProduct =
       new FoodProduct(
@@ -77,7 +85,7 @@ public class FoodProductControllerTest {
         carrot,
         null,
         false,
-        null
+        unit
       );
 
     user = testUserFactory(TestUserEnum.GOOD);
