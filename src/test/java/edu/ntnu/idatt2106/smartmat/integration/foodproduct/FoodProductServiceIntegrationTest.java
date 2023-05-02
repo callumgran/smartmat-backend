@@ -65,7 +65,8 @@ public class FoodProductServiceIntegrationTest {
         new HashSet<>(),
         carrot,
         null,
-        false
+        false,
+        null
       );
     newFoodProduct =
       new FoodProduct(
@@ -78,7 +79,8 @@ public class FoodProductServiceIntegrationTest {
         new HashSet<>(),
         carrot,
         null,
-        false
+        false,
+        null
       );
     corruptedFoodProduct =
       new FoodProduct(
@@ -91,7 +93,8 @@ public class FoodProductServiceIntegrationTest {
         new HashSet<>(),
         carrot,
         null,
-        false
+        false,
+        null
       );
 
     when(foodProductRepository.existsById(existingFoodProduct.getId())).thenReturn(true);

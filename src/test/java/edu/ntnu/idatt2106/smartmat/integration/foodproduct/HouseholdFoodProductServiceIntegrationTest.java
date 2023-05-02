@@ -78,7 +78,8 @@ public class HouseholdFoodProductServiceIntegrationTest {
         new HashSet<>(),
         carrot,
         null,
-        false
+        false,
+        null
       );
 
     Household household = new Household(

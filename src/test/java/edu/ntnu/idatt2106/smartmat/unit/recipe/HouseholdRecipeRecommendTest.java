@@ -19,8 +19,9 @@ import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.service.recipe.HouseholdRecipeRecommend;
+import edu.ntnu.idatt2106.smartmat.utils.HouseholdRecipeRecommend;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +38,8 @@ public class HouseholdRecipeRecommendTest {
 
   @Before
   public void setUp() throws Exception {
-    Unit unit = new Unit("Kilogram", "kg", null, 0.0, null);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
     Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
@@ -102,49 +104,53 @@ public class HouseholdRecipeRecommendTest {
       1L,
       "Bama Tomato",
       "123456789123",
-      1.0D,
+      1000.0D,
       false,
       null,
       null,
       tomato,
       null,
-      false
+      false,
+      gram
     );
     FoodProduct carrotFoodProduct = new FoodProduct(
       1L,
       "Bama Carrot",
       "123456789123",
-      1.0D,
+      1000.0D,
       false,
       null,
       null,
       carrot,
       null,
-      false
+      false,
+      gram
     );
     FoodProduct potatoFoodProduct = new FoodProduct(
       2L,
       "Bama Potato",
       "123456789123",
-      1.0D,
+      1000.0D,
       false,
       null,
       null,
       potato,
       null,
-      false
+      false,
+      gram
     );
     FoodProduct onionFoodProduct = new FoodProduct(
       3L,
       "Bama Onion",
       "123456789123",
-      1.0D,
+      1000.0D,
       false,
       null,
       null,
       onion,
       null,
-      false
+      false,
+      gram
     );
 
     // Create household food products
@@ -154,28 +160,28 @@ public class HouseholdRecipeRecommendTest {
       tomatoFoodProduct,
       household,
       LocalDate.now().plusDays(10),
-      2.0
+      4.0
     );
     HouseholdFoodProduct householdFoodProductCarrot = new HouseholdFoodProduct(
       UUID.randomUUID(),
       carrotFoodProduct,
       household,
       LocalDate.now().plusDays(10),
-      5.0
+      10.0
     );
     HouseholdFoodProduct householdFoodProductPotato = new HouseholdFoodProduct(
       UUID.randomUUID(),
       potatoFoodProduct,
       household,
       LocalDate.now().plusDays(10),
-      2.0
+      3.0
     );
     HouseholdFoodProduct householdFoodProductOnion = new HouseholdFoodProduct(
       UUID.randomUUID(),
       onionFoodProduct,
       household,
       LocalDate.now().plusDays(10),
-      2.0
+      4.0
     );
     household.getFoodProducts().add(householdFoodProductTomato);
     household.getFoodProducts().add(householdFoodProductCarrot);
@@ -247,8 +253,29 @@ public class HouseholdRecipeRecommendTest {
 
   @Test
   public void testHouseholdRecipeRecommendRecipesCorrectlyWhenRecipesAreUsed() {
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Recipe carrotSoupRecipe = new Recipe(
+      null,
+      "Carrot soup",
+      "Carrot soup",
+      new HashSet<>(),
+      "Cook carrot soup",
+      50,
+      RecipeDifficulty.EASY,
+      new HashSet<>()
+    );
+    Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
+    Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
+    Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
+    RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(carrotSoupRecipe, potato, 1.0);
+    RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(carrotSoupRecipe, onion, 1.0);
+    carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
+    carrotSoupRecipe.getIngredients().add(carrotSoupRecipePotato);
+    carrotSoupRecipe.getIngredients().add(carrotSoupRecipeOnion);
+
     List<RecipeRecommendation> recommendedRecipes = HouseholdRecipeRecommend
-      .getRecommendedRecipes(household, recipes, List.of(recipes.get(2)))
+      .getRecommendedRecipes(household, recipes, List.of(carrotSoupRecipe))
       .stream()
       .toList();
 
@@ -260,6 +287,6 @@ public class HouseholdRecipeRecommendTest {
     assertTrue(recipesReceived.contains(recipes.get(1)));
     assertTrue(recipesReceived.contains(recipes.get(2)));
     assertFalse(recipesReceived.contains(recipes.get(0)));
-    assertEquals(recipesReceived.get(0), recipes.get(2));
+    assertEquals(recipesReceived.get(0), recipes.get(1));
   }
 }

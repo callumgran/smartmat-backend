@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.model.foodproduct;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,8 +28,8 @@ import lombok.Setter;
  * If a product is looseWeight, the user have to define
  * the amount of the household product.
  *
- * @author Carl G.
- * @version 1.0 - 20.04.2023
+ * @author Carl G. Callum G.
+ * @version 1.1 - 01.05.2023
  */
 @Getter
 @Setter
@@ -73,4 +74,8 @@ public class FoodProduct {
 
   @Column(name = "`is_ingredient`")
   private boolean foodProductIsIngredient;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "`unit`", nullable = false, referencedColumnName = "`unit_name`")
+  private Unit unit;
 }
