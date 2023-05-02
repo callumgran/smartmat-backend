@@ -28,7 +28,14 @@ public class ShoppingListTest {
     Set<CustomFoodItem> customFoodItems = new HashSet<>();
 
     shoppingList =
-      new ShoppingList(UUID.randomUUID(), date, household, shoppingListItems, customFoodItems);
+      new ShoppingList(
+        UUID.randomUUID(),
+        date,
+        household,
+        shoppingListItems,
+        customFoodItems,
+        null
+      );
 
     assertEquals(date, shoppingList.getDateCompleted());
     assertEquals(household, shoppingList.getHousehold());

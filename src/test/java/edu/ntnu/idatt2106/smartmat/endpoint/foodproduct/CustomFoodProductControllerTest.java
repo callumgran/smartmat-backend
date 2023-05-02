@@ -81,9 +81,9 @@ public class CustomFoodProductControllerTest {
     admin = testUserFactory(TestUserEnum.ADMIN);
     user = testUserFactory(TestUserEnum.GOOD);
     shoppingList =
-      new ShoppingList(shoppingListId, null, household, new HashSet<>(), new HashSet<>());
+      new ShoppingList(shoppingListId, null, household, new HashSet<>(), new HashSet<>(), null);
     customFoodItem =
-      new CustomFoodItem(customFoodItemId, "FoodItem", 1, false, shoppingList, household);
+      new CustomFoodItem(customFoodItemId, "FoodItem", 1, false, shoppingList, household, null);
   }
 
   @Test

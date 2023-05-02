@@ -13,6 +13,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundE
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.ShoppingListRepository;
+import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListServiceImpl;
 import java.util.Optional;
@@ -44,6 +45,9 @@ public class ShoppingListServiceTest {
 
   @MockBean
   private ShoppingListRepository shoppingListRepository;
+
+  @MockBean
+  private BasketService basketService;
 
   private Household household;
 

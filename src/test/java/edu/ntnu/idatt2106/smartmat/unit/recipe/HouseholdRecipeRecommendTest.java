@@ -111,7 +111,8 @@ public class HouseholdRecipeRecommendTest {
       tomato,
       null,
       false,
-      gram
+      gram,
+      null
     );
     FoodProduct carrotFoodProduct = new FoodProduct(
       1L,
@@ -124,7 +125,8 @@ public class HouseholdRecipeRecommendTest {
       carrot,
       null,
       false,
-      gram
+      gram,
+      null
     );
     FoodProduct potatoFoodProduct = new FoodProduct(
       2L,
@@ -137,7 +139,8 @@ public class HouseholdRecipeRecommendTest {
       potato,
       null,
       false,
-      gram
+      gram,
+      null
     );
     FoodProduct onionFoodProduct = new FoodProduct(
       3L,
@@ -150,7 +153,8 @@ public class HouseholdRecipeRecommendTest {
       onion,
       null,
       false,
-      gram
+      gram,
+      null
     );
 
     // Create household food products

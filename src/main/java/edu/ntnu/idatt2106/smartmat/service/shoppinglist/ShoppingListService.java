@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.service.shoppinglist;
 
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
@@ -34,4 +35,7 @@ public interface ShoppingListService {
 
   ShoppingList getCurrentShoppingList(@NonNull UUID householdId)
     throws ShoppingListNotFoundException, NullPointerException;
+
+  ShoppingList getShoppingListWithDiff(@NonNull UUID id)
+    throws ShoppingListNotFoundException, BasketNotFoundException, NullPointerException;
 }

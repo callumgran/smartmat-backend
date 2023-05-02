@@ -47,7 +47,8 @@ public class HouseholdFoodProductRepositoryTest {
       carrot,
       null,
       false,
-      unit
+      unit,
+      null
     );
     FoodProduct raisinFoodProduct = new FoodProduct(
       null,
@@ -60,7 +61,8 @@ public class HouseholdFoodProductRepositoryTest {
       raisin,
       null,
       false,
-      unit
+      unit,
+      null
     );
 
     entityManager.persist(carrotFoodProduct);

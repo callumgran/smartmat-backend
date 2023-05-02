@@ -1,9 +1,12 @@
 package edu.ntnu.idatt2106.smartmat.service.shoppinglist;
 
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.ShoppingListRepository;
+import edu.ntnu.idatt2106.smartmat.utils.UnitUtils;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,9 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
   @Autowired
   private ShoppingListRepository shoppinglistRepository;
+
+  @Autowired
+  private BasketService basketService;
 
   /**
    * Method to check whether the shopping list exists or not.
@@ -108,7 +114,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws NullPointerException if the shopping list id is null.
    */
-
+  @Override
   public void deleteShoppingListById(@NonNull UUID id)
     throws ShoppingListNotFoundException, NullPointerException {
     if (!shoppinglistRepository.existsById(id)) {
@@ -125,6 +131,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
    * @throws ShoppingListNotFoundException if no such shopping list exists.
    * @throws NullPointerException if the household id is null.
    */
+  @Override
   public ShoppingList getCurrentShoppingList(@NonNull UUID householdId)
     throws ShoppingListNotFoundException, NullPointerException {
     return shoppinglistRepository
@@ -133,5 +140,52 @@ public class ShoppingListServiceImpl implements ShoppingListService {
       .stream()
       .findFirst()
       .orElseThrow(ShoppingListNotFoundException::new);
+  }
+
+  /**
+   * Method to get the current shopping list with diff
+   * compared to the items in the basket.
+   * @param id The id of the shopping list.
+   * @return The shopping list with diff.
+   * @throws ShoppingListNotFoundException if no such shopping list exists.
+   * @throws BasketNotFoundException if no such basket exists.
+   * @throws NullPointerException if the shopping list id is null.
+   */
+  @Override
+  public ShoppingList getShoppingListWithDiff(@NonNull UUID id)
+    throws ShoppingListNotFoundException, BasketNotFoundException, NullPointerException {
+    ShoppingList shoppingList = getShoppingListById(id);
+    Basket basket = basketService.getBasketByShoppingListId(id);
+    shoppingList
+      .getShoppingListItems()
+      .stream()
+      .forEach(sli -> {
+        basket
+          .getBasketItems()
+          .stream()
+          .forEach(fp -> {
+            if (sli.getIngredient().getId().equals(fp.getFoodProduct().getIngredient().getId())) {
+              double shoppingListAmount = UnitUtils.getNormalizedUnit(sli);
+              double basketAmount = UnitUtils.getNormalizedUnit(fp);
+              sli.setAmount(UnitUtils.getOriginalUnit(shoppingListAmount - basketAmount, sli));
+            }
+          });
+      });
+
+    shoppingList
+      .getCustomFoodItems()
+      .stream()
+      .forEach(cfi -> {
+        basket
+          .getCustomFoodItems()
+          .stream()
+          .forEach(bcfi -> {
+            if (cfi.getId().equals(bcfi.getId())) {
+              cfi.setAmount(cfi.getAmount() - bcfi.getAmount());
+            }
+          });
+      });
+
+    return shoppingList;
   }
 }
