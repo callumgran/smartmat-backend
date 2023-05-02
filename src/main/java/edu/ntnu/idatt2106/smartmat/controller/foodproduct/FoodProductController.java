@@ -157,6 +157,7 @@ public class FoodProductController {
             .name(productName)
             .image(productImage)
             .amount(amount)
+            .isNotIngredient(false)
             .build();
 
         foodProductService.saveFoodProduct(foodProduct);
@@ -209,8 +210,7 @@ public class FoodProductController {
         foodProductDTO.getEAN(),
         foodProductDTO.getName(),
         foodProductDTO.getAmount(),
-        foodProductDTO.isLooseWeight(),
-        foodProductDTO.getIngredientId()
+        foodProductDTO.isLooseWeight()
       )
     ) throw new BadInputException("Ugyldig input for oppdatering av en matvare");
 
@@ -220,15 +220,16 @@ public class FoodProductController {
       foodProductDTO
     );
     foodProduct.setId(id);
-    foodProduct.setIngredient(
-      ingredientService.getIngredientById(foodProductDTO.getIngredientId())
-    );
+    if (foodProductDTO.getIngredientId() != null) {
+      foodProduct.setIngredient(
+        ingredientService.getIngredientById(foodProductDTO.getIngredientId())
+      );
+    }
 
     FoodProductDTO updatedFoodProductDTO = FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(
       foodProductService.updateFoodProduct(foodProduct)
     );
 
-    LOGGER.info("Updated and returning food product with id: {}", foodProductDTO.getId());
     return ResponseEntity.ok(updatedFoodProductDTO);
   }
 

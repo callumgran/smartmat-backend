@@ -39,7 +39,6 @@ public class FoodProductDTO {
   @NotBlank
   private String image;
 
-  @NotBlank
   private BareIngredientDTO ingredient;
 
   @NotBlank

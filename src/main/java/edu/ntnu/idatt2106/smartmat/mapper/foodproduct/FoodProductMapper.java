@@ -49,6 +49,7 @@ public interface FoodProductMapper {
     {
       @Mapping(target = "ingredient", ignore = true),
       @Mapping(target = "households", ignore = true),
+      @Mapping(target = "isNotIngredient", source = "notIngredient"),
     }
   )
   FoodProduct bareFoodProductDTOToFoodProduct(BareFoodProductDTO foodProductDTO);
@@ -65,6 +66,7 @@ public interface FoodProductMapper {
         source = "ingredient",
         qualifiedByName = "ingredientDTOToIngredient"
       ),
+      @Mapping(target = "isNotIngredient", source = "notIngredient"),
     }
   )
   FoodProductDTO foodProductToFoodProductDTO(FoodProduct foodProduct);
