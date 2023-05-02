@@ -72,8 +72,8 @@ public class FoodProduct {
   @OneToMany(mappedBy = "foodProduct")
   private Set<FoodProductHistory> foodProductHistories;
 
-  @Column(name = "`is_ingredient`")
-  private boolean foodProductIsIngredient;
+  @Column(name = "`is_not_ingredient`")
+  private boolean isNotIngredient;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "`unit`", nullable = false, referencedColumnName = "`unit_name`")
