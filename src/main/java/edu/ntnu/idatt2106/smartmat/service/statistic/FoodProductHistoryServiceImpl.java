@@ -174,18 +174,7 @@ public class FoodProductHistoryServiceImpl implements FoodProductHistoryService 
       .findAllByHouseholdId(householdId)
       .orElseThrow(NullPointerException::new)
       .stream()
-      .mapToDouble(fph -> {
-        return (
-          fph.getThrownAmount() *
-          fph.getFoodProduct().getAmount() *
-          fph
-            .getFoodProduct()
-            .getIngredient()
-            .getUnit()
-            .getUnitType()
-            .toKg(fph.getFoodProduct().getIngredient().getUnit().getToNormalFormConversionFactor())
-        );
-      })
+      .mapToDouble(fph -> fph.getAmount())
       .sum();
   }
 
@@ -207,18 +196,7 @@ public class FoodProductHistoryServiceImpl implements FoodProductHistoryService 
       .findAllByHouseholdIdAndDateBetween(householdId, startDate, endDate)
       .orElseThrow(NullPointerException::new)
       .stream()
-      .mapToDouble(fph -> {
-        return (
-          fph.getThrownAmount() *
-          fph.getFoodProduct().getAmount() *
-          fph
-            .getFoodProduct()
-            .getIngredient()
-            .getUnit()
-            .getUnitType()
-            .toKg(fph.getFoodProduct().getIngredient().getUnit().getToNormalFormConversionFactor())
-        );
-      })
+      .mapToDouble(fph -> fph.getAmount())
       .sum();
   }
 }
