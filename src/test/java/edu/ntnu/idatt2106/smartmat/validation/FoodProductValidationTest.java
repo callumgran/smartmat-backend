@@ -165,8 +165,7 @@ public class FoodProductValidationTest {
         eightEan,
         shortName,
         goodAmount,
-        loose,
-        goodId
+        loose
       )
     );
   }
@@ -174,14 +173,7 @@ public class FoodProductValidationTest {
   @Test
   public void testValidateUpdateFoodProductInvalidId() {
     assertFalse(
-      FoodProductValidation.validateUpdateFoodProduct(
-        badId,
-        eightEan,
-        shortName,
-        goodAmount,
-        loose,
-        goodId
-      )
+      FoodProductValidation.validateUpdateFoodProduct(badId, eightEan, shortName, goodAmount, loose)
     );
   }
 
@@ -193,8 +185,7 @@ public class FoodProductValidationTest {
         eightEan,
         emptyString,
         goodAmount,
-        loose,
-        goodId
+        loose
       )
     );
   }
@@ -202,28 +193,7 @@ public class FoodProductValidationTest {
   @Test
   public void testValidateUpdateFoodProductInvalidAmount() {
     assertFalse(
-      FoodProductValidation.validateUpdateFoodProduct(
-        goodId,
-        eightEan,
-        shortName,
-        badAmount,
-        loose,
-        goodId
-      )
-    );
-  }
-
-  @Test
-  public void testValidateUpdateFoodProductInvalidIngredientId() {
-    assertFalse(
-      FoodProductValidation.validateUpdateFoodProduct(
-        goodId,
-        eightEan,
-        shortName,
-        goodAmount,
-        loose,
-        badId
-      )
+      FoodProductValidation.validateUpdateFoodProduct(goodId, eightEan, shortName, badAmount, loose)
     );
   }
 
@@ -235,8 +205,7 @@ public class FoodProductValidationTest {
         shortEan,
         shortName,
         goodAmount,
-        loose,
-        goodId
+        loose
       )
     );
   }
@@ -249,8 +218,7 @@ public class FoodProductValidationTest {
         shortEan,
         shortName,
         goodAmount,
-        notLoose,
-        goodId
+        notLoose
       )
     );
   }

@@ -37,8 +37,6 @@ public class BareFoodProductDTO {
   @NotBlank
   private boolean looseWeight;
 
-  @NonNull
-  @NotBlank
   private Long ingredientId;
 
   @NonNull

@@ -99,15 +99,13 @@ public class FoodProductValidation extends BaseValidation {
     String ean,
     String name,
     Double amount,
-    boolean looseWeight,
-    Long ingredientId
+    boolean looseWeight
   ) {
     return (
       isLargerThanOrEqual(id, ValidationRules.DATABASE_MIN_INDEX.getValue()) &&
       (validateEan(ean) || looseWeight) &&
       validateName(name) &&
-      isLargerThan(amount, 0.0D) &&
-      isLargerThanOrEqual(ingredientId, ValidationRules.DATABASE_MIN_INDEX.getValue())
+      isLargerThan(amount, 0.0D)
     );
   }
 
