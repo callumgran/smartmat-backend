@@ -32,7 +32,7 @@ public class FoodProductHistoryDTO {
 
   @NotNull
   @NonNull
-  private Double thrownAmountInKg;
+  private Double amount;
 
   @NotNull
   @NonNull

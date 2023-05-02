@@ -20,6 +20,7 @@ import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
+import edu.ntnu.idatt2106.smartmat.utils.UnitUtils;
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
@@ -478,6 +479,13 @@ public class HouseholdFoodProductController {
         .foodProduct(householdFoodProduct.getFoodProduct())
         .household(householdFoodProduct.getHousehold())
         .thrownAmount(0)
+        .amount(
+          UnitUtils.getNormalizedUnit(
+            amountUsed,
+            householdFoodProduct.getFoodProduct().getUnit().getToNormalFormConversionFactor(),
+            householdFoodProduct.getFoodProduct().getUnit().getUnitType()
+          )
+        )
         .date(LocalDate.now())
         .build();
 
@@ -539,8 +547,9 @@ public class HouseholdFoodProductController {
       .builder()
       .foodProduct(householdFoodProduct.getFoodProduct())
       .household(householdFoodProduct.getHousehold())
-      .thrownAmount(householdFoodProduct.getAmountLeft())
+      .thrownAmount(1)
       .date(LocalDate.now())
+      .amount(UnitUtils.getNormalizedUnit(householdFoodProduct))
       .build();
 
     foodProductHistoryService.saveFoodProductHistory(foodProductHistory);

@@ -132,20 +132,31 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
               if (amount >= ingredientAmount) {
                 hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
                 householdFoodProductService.saveFoodProduct(hfp);
-                return;
-              } else {
-                ingredientAmount -= amount;
-                hfp.setAmountLeft(0);
-                householdFoodProductService.deleteFoodProductById(hfp.getId());
                 foodProductHistoryService.saveFoodProductHistory(
                   FoodProductHistory
                     .builder()
                     .household(weeklyRecipe.getHousehold())
                     .foodProduct(hfp.getFoodProduct())
                     .thrownAmount(0)
+                    .amount(ingredientAmount)
                     .date(LocalDate.now())
                     .build()
                 );
+                return;
+              } else {
+                foodProductHistoryService.saveFoodProductHistory(
+                  FoodProductHistory
+                    .builder()
+                    .household(weeklyRecipe.getHousehold())
+                    .foodProduct(hfp.getFoodProduct())
+                    .thrownAmount(0)
+                    .amount(amount)
+                    .date(LocalDate.now())
+                    .build()
+                );
+                ingredientAmount -= amount;
+                hfp.setAmountLeft(0);
+                householdFoodProductService.deleteFoodProductById(hfp.getId());
               }
             }
           }

@@ -19,31 +19,6 @@ public interface FoodProductHistoryMapper {
   FoodProductHistoryMapper INSTANCE = Mappers.getMapper(FoodProductHistoryMapper.class);
 
   /**
-   * Calculates the thrown amount in kg.
-   * @param foodProductHistory the food product history to calculate from.
-   * @return the thrown amount in kg.
-   */
-  @Named("thrownAmountInKg")
-  default Double thrownAmountInKg(FoodProductHistory foodProductHistory) {
-    return (
-      foodProductHistory.getThrownAmount() *
-      foodProductHistory.getFoodProduct().getAmount() *
-      foodProductHistory
-        .getFoodProduct()
-        .getIngredient()
-        .getUnit()
-        .getUnitType()
-        .toKg(
-          foodProductHistory
-            .getFoodProduct()
-            .getIngredient()
-            .getUnit()
-            .getToNormalFormConversionFactor()
-        )
-    );
-  }
-
-  /**
    * Gets the household id from the food product history.
    * @param foodProductHistory the food product history to get the household id from.
    * @return the household id.
@@ -60,7 +35,6 @@ public interface FoodProductHistoryMapper {
    */
   @Mappings(
     {
-      @Mapping(target = "thrownAmountInKg", source = ".", qualifiedByName = "thrownAmountInKg"),
       @Mapping(target = "thrownAmountInPercentage", source = "thrownAmount"),
       @Mapping(target = "householdId", source = ".", qualifiedByName = "householdId"),
     }

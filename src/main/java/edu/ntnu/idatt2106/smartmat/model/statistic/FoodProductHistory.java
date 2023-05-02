@@ -54,4 +54,7 @@ public class FoodProductHistory {
   @Column(name = "`date`")
   @NonNull
   private LocalDate date;
+
+  @Column(name = "`amount`")
+  private double amount;
 }
