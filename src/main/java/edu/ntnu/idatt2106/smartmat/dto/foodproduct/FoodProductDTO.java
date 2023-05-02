@@ -42,5 +42,5 @@ public class FoodProductDTO {
   private BareIngredientDTO ingredient;
 
   @NotBlank
-  private boolean foodProductIsIngredient;
+  private boolean isNotIngredient;
 }

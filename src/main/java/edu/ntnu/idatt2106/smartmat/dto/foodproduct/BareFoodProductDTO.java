@@ -42,4 +42,7 @@ public class BareFoodProductDTO {
   @NonNull
   @NotBlank
   private String image;
+
+  @NotBlank
+  private boolean isNotIngredient;
 }

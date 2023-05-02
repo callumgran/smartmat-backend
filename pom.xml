@@ -221,7 +221,6 @@
 				<version>0.8.10</version>
 				<configuration>
 					<excludes>
-						<exclude>edu/ntnu/idatt2106/smartmat/*</exclude>
 						<exclude>edu/ntnu/idatt2106/smartmat/dto/*</exclude>
 						<exclude>edu/ntnu/idatt2106/smartmat/dto/**/*</exclude>
 						<exclude>edu/ntnu/idatt2106/smartmat/exceptions/*</exclude>
