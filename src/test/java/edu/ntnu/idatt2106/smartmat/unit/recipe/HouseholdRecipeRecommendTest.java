@@ -241,14 +241,7 @@ public class HouseholdRecipeRecommendTest {
       )
       .stream()
       .toList();
-    assertEquals(3, recommendedRecipes.size());
-    List<Recipe> recipesReceived = recommendedRecipes
-      .stream()
-      .map(RecipeRecommendation::getRecipe)
-      .toList();
-    assertTrue(recipesReceived.contains(recipes.get(0)));
-    assertTrue(recipesReceived.contains(recipes.get(1)));
-    assertTrue(recipesReceived.contains(recipes.get(2)));
+    assertEquals(0, recommendedRecipes.size());
   }
 
   @Test

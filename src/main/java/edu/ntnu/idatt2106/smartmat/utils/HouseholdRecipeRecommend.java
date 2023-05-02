@@ -6,6 +6,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -228,7 +229,7 @@ public class HouseholdRecipeRecommend {
     );
 
     if (recipeIngredients.isEmpty()) {
-      return getAllList(recipes);
+      return new ArrayList<>();
     }
 
     return sortRecommendations(recipeIngredients, householdIngredients);
