@@ -102,7 +102,8 @@ public class WeeklyRecipeServiceIntegrationTest {
       "Cook carrot soup",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
@@ -115,7 +116,8 @@ public class WeeklyRecipeServiceIntegrationTest {
       "Cook tomato sauce",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeTomato);

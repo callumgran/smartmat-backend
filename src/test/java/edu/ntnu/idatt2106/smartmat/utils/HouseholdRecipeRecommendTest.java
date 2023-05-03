@@ -55,7 +55,8 @@ public class HouseholdRecipeRecommendTest {
       "Cook pasta, make sauce",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient pastaRecipePasta = new RecipeIngredient(pastaRecipe, pasta, 1.0);
     pastaRecipe.getIngredients().add(pastaRecipePasta);
@@ -69,7 +70,8 @@ public class HouseholdRecipeRecommendTest {
       "Cook tomato sauce",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
     RecipeIngredient tomatoSauceRecipeOnion = new RecipeIngredient(tomatoSauceRecipe, onion, 1.0);
@@ -87,7 +89,8 @@ public class HouseholdRecipeRecommendTest {
       "Cook carrot soup",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
     RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(carrotSoupRecipe, potato, 1.0);
@@ -258,7 +261,8 @@ public class HouseholdRecipeRecommendTest {
       "Cook carrot soup",
       50,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);

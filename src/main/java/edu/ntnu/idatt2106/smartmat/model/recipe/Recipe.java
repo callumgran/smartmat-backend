@@ -56,4 +56,7 @@ public class Recipe {
 
   @OneToMany(mappedBy = "recipe")
   private Set<WeeklyRecipe> weeklyRecipes;
+
+  @Column(name = "`image`", nullable = true)
+  private String image;
 }

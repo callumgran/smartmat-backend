@@ -41,7 +41,8 @@ public class RecipeRepositoryTest {
       "1: do this, 2...",
       30,
       RecipeDifficulty.EASY,
-      new HashSet<>()
+      new HashSet<>(),
+      null
     );
     RecipeIngredient recipeIngredient = new RecipeIngredient(recipe, ingredient, 3D);
     recipe.getIngredients().add(recipeIngredient);
