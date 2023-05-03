@@ -30,4 +30,6 @@ public interface BasketService {
 
   Basket getBasketByShoppingListId(@NonNull UUID id)
     throws BasketNotFoundException, NullPointerException;
+
+  void deleteBasketItem(@NonNull UUID itemId) throws BasketNotFoundException, NullPointerException;
 }

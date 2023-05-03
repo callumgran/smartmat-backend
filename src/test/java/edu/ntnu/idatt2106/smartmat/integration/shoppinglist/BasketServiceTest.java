@@ -10,6 +10,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketAlreadyExistsEx
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
+import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketItemRepository;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketRepository;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketServiceImpl;
@@ -41,6 +42,9 @@ public class BasketServiceTest {
 
   @MockBean
   private BasketRepository basketRepository;
+
+  @MockBean
+  private BasketItemRepository basketItemRepository;
 
   private Basket basket;
 

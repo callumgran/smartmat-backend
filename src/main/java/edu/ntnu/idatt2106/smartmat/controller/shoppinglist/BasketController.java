@@ -283,8 +283,7 @@ public class BasketController {
 
     LOGGER.info("User has permission to remove item from basket with id: {}", basketId);
 
-    basket.getBasketItems().removeIf(basketItem -> basketItem.getId().equals(basketItemId));
-    basketService.updateBasket(basket);
+    basketService.deleteBasketItem(basketItemId);
 
     LOGGER.info("Removed item from basket with id: {}", basketId);
 

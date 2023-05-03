@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.service.shoppinglist;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
+import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketItemRepository;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketRepository;
 import java.util.UUID;
 import lombok.NonNull;
@@ -20,6 +21,9 @@ public class BasketServiceImpl implements BasketService {
 
   @Autowired
   private BasketRepository basketRepository;
+
+  @Autowired
+  private BasketItemRepository basketItemRepository;
 
   /**
    * Checks if a basket exists in the database.
@@ -119,5 +123,20 @@ public class BasketServiceImpl implements BasketService {
     return basketRepository
       .findByShoppingListId(id)
       .orElseThrow(() -> new BasketNotFoundException());
+  }
+
+  /**
+   * Deletes a basket item from the database by its id.
+   * @param itemId The id of the basket item to delete.
+   * @throws BasketNotFoundException If the basket does not exist.
+   * @throws NullPointerException If the id is null.
+   */
+  @Override
+  public void deleteBasketItem(@NonNull UUID itemId)
+    throws BasketNotFoundException, NullPointerException {
+    if (!basketItemRepository.existsById(itemId)) {
+      throw new BasketNotFoundException();
+    }
+    basketItemRepository.deleteById(itemId);
   }
 }
