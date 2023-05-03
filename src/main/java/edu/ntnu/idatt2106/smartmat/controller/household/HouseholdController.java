@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.controller.household;
 
 import edu.ntnu.idatt2106.smartmat.dto.household.CreateHouseholdDTO;
+import edu.ntnu.idatt2106.smartmat.dto.household.CreateWeeklyRecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.HouseholdMemberDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
@@ -547,7 +548,7 @@ public class HouseholdController {
     @AuthenticationPrincipal Auth auth,
     @PathVariable UUID id,
     @PathVariable UUID recipeId,
-    @RequestBody @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+    @RequestBody CreateWeeklyRecipeDTO createWeeklyRecipeDTO
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException, RecipeNotFoundException {
     if (!isAdminOrHouseholdMember(auth, id)) {
@@ -562,11 +563,13 @@ public class HouseholdController {
     Household household = householdService.getHouseholdById(id);
     LOGGER.info("Found household with id: {}", id);
 
-    final int householdSize = household.getMembers().size();
-
-    recipe.getIngredients().forEach(i -> i.setAmount(i.getAmount() * householdSize));
-
-    final WeeklyRecipe weeklyRecipe = new WeeklyRecipe(household, date, recipe, false);
+    final WeeklyRecipe weeklyRecipe = new WeeklyRecipe(
+      household,
+      createWeeklyRecipeDTO.getDateToUse(),
+      recipe,
+      false,
+      createWeeklyRecipeDTO.getPortions()
+    );
 
     weeklyRecipeService.saveWeeklyRecipe(weeklyRecipe);
 

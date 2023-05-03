@@ -109,13 +109,12 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   @Override
   public void useRecipeDay(@NonNull WeeklyRecipe weeklyRecipe)
     throws FoodProductNotFoundException, NullPointerException {
-    final int householdSize = weeklyRecipe.getHousehold().getMembers().size();
     Collection<RecipeIngredient> ingredients = weeklyRecipe
       .getRecipe()
       .getIngredients()
       .stream()
       .map(ingredient -> {
-        ingredient.setAmount(ingredient.getAmount() * householdSize);
+        ingredient.setAmount(ingredient.getAmount() * weeklyRecipe.getPortions());
         return ingredient;
       })
       .toList();
@@ -216,17 +215,17 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   ) throws NullPointerException {
     final Collection<WeeklyRecipe> recipes = getRecipesForHouseholdWeek(householdId, monday);
     final Household household = recipes.stream().toList().get(0).getHousehold();
+    final int portions = recipes.stream().toList().get(0).getPortions();
     final Collection<HouseholdFoodProduct> householdFoodProducts = household
       .getFoodProducts()
       .stream()
       .collect(Collectors.toUnmodifiableList());
-    final int householdSize = household.getMembers().size();
 
     final Collection<RecipeIngredient> usedIngredients = recipes
       .stream()
       .flatMap(r -> r.getRecipe().getIngredients().stream())
       .map(ri -> {
-        ri.setAmount(ri.getAmount() * householdSize);
+        ri.setAmount(ri.getAmount() * portions);
         return ri;
       })
       .toList();

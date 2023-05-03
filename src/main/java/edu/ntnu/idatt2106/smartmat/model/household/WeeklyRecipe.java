@@ -49,4 +49,7 @@ public class WeeklyRecipe {
 
   @Column(name = "`used`")
   private boolean used;
+
+  @Column(name = "`portions`")
+  private int portions;
 }
