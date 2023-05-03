@@ -18,6 +18,7 @@ import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
@@ -98,6 +99,7 @@ public class ShoppingListControllerTest {
         .household(household)
         .shoppingListItems(Set.of())
         .customFoodItems(Set.of())
+        .basket(Basket.builder().id(UUID.randomUUID()).build())
         .build();
 
     try {
