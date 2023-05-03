@@ -2,26 +2,33 @@ package edu.ntnu.idatt2106.smartmat.controller.shoppinglist;
 
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.BasketDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.BasketItemDTO;
+import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.CreateBasketDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.CreateBasketItemDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.CustomFoodItemMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.BasketItem;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
+import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -59,6 +66,8 @@ public class BasketController {
 
   private final CustomFoodItemService customFoodItemService;
 
+  private final ShoppingListService shoppingListService;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(BasketController.class);
 
   private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
@@ -78,6 +87,58 @@ public class BasketController {
         HouseholdRole.PRIVILEGED_MEMBER
       ) ||
       isAdminOrHouseholdOwner(auth, householdId)
+    );
+  }
+
+  /**
+   * Creates a new shopping list basket.
+   * @param auth The auth object of the user.
+   * @param shoppingListId The id of the shopping list to create the basket for.
+   * @return The created shopping list basket.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws ShoppingListNotFoundException If the shopping list does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws BasketAlreadyExistsException If the basket already exists.
+   * @throws PermissionDeniedException If the user does not have permission to create a basket.
+   * @throws NullPointerException If the shoppingListId is null.
+   */
+  @PostMapping("/")
+  @Operation(
+    summary = "Creates a new shopping list basket.",
+    description = "Creates a new shopping list basket, can only be done by a privileged user or an admin.",
+    tags = { "basket" }
+  )
+  public ResponseEntity<BasketDTO> createBasket(
+    @AuthenticationPrincipal Auth auth,
+    @RequestBody CreateBasketDTO basketDTO
+  )
+    throws UserDoesNotExistsException, ShoppingListNotFoundException, HouseholdNotFoundException, BasketAlreadyExistsException, PermissionDeniedException, NullPointerException {
+    LOGGER.info("POST /api/v1/private/basket/" + basketDTO.getShoppingListId());
+    ShoppingList shoppingList = shoppingListService.getShoppingListById(
+      basketDTO.getShoppingListId()
+    );
+    if (!isAdminOrHouseholdPrivileged(auth, shoppingList.getHousehold().getId())) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å opprette en handleliste for denne husstanden."
+      );
+    }
+    Basket basket = basketService.createBasket(
+      Basket
+        .builder()
+        .shoppingList(shoppingList)
+        .basketItems(new ArrayList<>())
+        .customFoodItems(new HashSet<>())
+        .build()
+    );
+
+    return ResponseEntity.ok(
+      BasketDTO
+        .builder()
+        .id(basket.getId())
+        .shoppingListId(basket.getShoppingList().getId())
+        .customFoodItems(new ArrayList<>())
+        .basketItems(new ArrayList<>())
+        .build()
     );
   }
 
