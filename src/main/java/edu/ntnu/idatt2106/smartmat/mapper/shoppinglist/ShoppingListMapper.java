@@ -116,6 +116,9 @@ public abstract class ShoppingListMapper {
 
   @Named("getBasketId")
   public UUID getBasketId(Basket basket) {
+    if (basket == null) {
+      return null;
+    }
     return basket.getId();
   }
 
