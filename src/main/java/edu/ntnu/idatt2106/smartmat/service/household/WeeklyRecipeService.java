@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.service.household;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 /**
  * Service interface for the WeeklyRecipe entity
  * @author Callum G.
- * @version 1.0 - 28.04.2020
+ * @version 1.0 - 28.04.2023
  */
 @Service
 public interface WeeklyRecipeService {
@@ -34,6 +35,11 @@ public interface WeeklyRecipeService {
     throws NullPointerException;
 
   Collection<WeeklyRecipe> getRecipesForHouseholdWeek(
+    @NonNull UUID householdId,
+    @NonNull LocalDate monday
+  ) throws NullPointerException;
+
+  Collection<ShoppingListItem> getShoppingListItemsForHouseholdWeek(
     @NonNull UUID householdId,
     @NonNull LocalDate monday
   ) throws NullPointerException;

@@ -2,9 +2,11 @@ package edu.ntnu.idatt2106.smartmat.service.household;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
@@ -14,6 +16,7 @@ import io.micrometer.common.lang.NonNull;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.fauxpas.FauxPas;
@@ -196,5 +199,68 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
     return weeklyRecipeRepository
       .findAllRecipesByHouseholdAndWeek(household, monday, monday.plusDays(6))
       .orElseThrow(() -> new NullPointerException("Ingen oppskrifter funnet for denne uken"));
+  }
+
+  /**
+   * Gets the shopping list items needed for the household and week
+   * @param householdId the household to get the shopping list items for
+   * @param monday the monday of the week to get the shopping list items for
+   * @return the shopping list items needed for the household and week
+   * @throws NullPointerException if the household or monday is null
+   * @throws IllegalArgumentException if the household does not exist
+   */
+  @Override
+  public Collection<ShoppingListItem> getShoppingListItemsForHouseholdWeek(
+    @NonNull UUID householdId,
+    @NonNull LocalDate monday
+  ) throws NullPointerException {
+    final Collection<WeeklyRecipe> recipes = getRecipesForHouseholdWeek(householdId, monday);
+    final Household household = recipes.stream().toList().get(0).getHousehold();
+    final Collection<HouseholdFoodProduct> householdFoodProducts = household
+      .getFoodProducts()
+      .stream()
+      .collect(Collectors.toUnmodifiableList());
+    final int householdSize = household.getMembers().size();
+
+    final Collection<RecipeIngredient> usedIngredients = recipes
+      .stream()
+      .flatMap(r -> r.getRecipe().getIngredients().stream())
+      .map(ri -> {
+        ri.setAmount(ri.getAmount() * householdSize);
+        return ri;
+      })
+      .toList();
+
+    return usedIngredients
+      .stream()
+      .filter(ri -> {
+        householdFoodProducts.forEach(hfp -> {
+          if (ri.getIngredient().getId() == hfp.getFoodProduct().getIngredient().getId()) {
+            if (hfp.getAmountLeft() > 0) {
+              double amount = UnitUtils.removeRecipeIngredientAmountFromHouseholdFoodProductAmount(
+                ri,
+                hfp
+              );
+
+              if (amount > 0) {
+                ri.setAmount(0.0D);
+              } else {
+                ri.setAmount(UnitUtils.getOriginalUnit((-1.0 * amount), ri));
+              }
+            }
+          }
+        });
+
+        return ri.getAmount() > 0;
+      })
+      .map(ri -> {
+        return ShoppingListItem
+          .builder()
+          .ingredient(ri.getIngredient())
+          .amount(ri.getAmount())
+          .checked(false)
+          .build();
+      })
+      .toList();
   }
 }
