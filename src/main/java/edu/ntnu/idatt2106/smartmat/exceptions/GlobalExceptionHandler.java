@@ -7,6 +7,8 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.MemberAlreadyExistsExcep
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
@@ -103,6 +105,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       RecipeAlreadyExistsException.class,
       MemberAlreadyExistsException.class,
       ShoppingListAlreadyExistsException.class,
+      BasketAlreadyExistsException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleConflict(Exception ex, WebRequest request) {
@@ -128,6 +131,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       ShoppingListNotFoundException.class,
       ShoppingListItemNotFoundException.class,
       FoodProductNotFoundException.class,
+      BasketNotFoundException.class,
     }
   )
   public ResponseEntity<ExceptionResponse> handleSpecificObjectDoesNotExist(
