@@ -47,7 +47,5 @@ public class BareFoodProductDTO {
   @NotBlank
   private boolean isNotIngredient;
 
-  @NotBlank
-  @NonNull
   private UnitDTO unit;
 }

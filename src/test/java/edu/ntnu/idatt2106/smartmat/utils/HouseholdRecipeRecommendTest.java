@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.smartmat.unit.recipe;
+package edu.ntnu.idatt2106.smartmat.utils;
 
 import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdHelperFunctions.testHouseholdFactory;
 import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
@@ -21,7 +21,6 @@ import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
-import edu.ntnu.idatt2106.smartmat.utils.HouseholdRecipeRecommend;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +33,7 @@ public class HouseholdRecipeRecommendTest {
 
   private Household household;
 
-  List<Recipe> recipes;
+  private List<Recipe> recipes;
 
   @Before
   public void setUp() throws Exception {

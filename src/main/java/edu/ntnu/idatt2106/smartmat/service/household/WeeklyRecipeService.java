@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.service.household;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
-import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import java.time.LocalDate;
@@ -32,10 +31,10 @@ public interface WeeklyRecipeService {
     throws FoodProductNotFoundException, NullPointerException;
 
   Collection<WeeklyRecipe> getRecipesForHousehold(@NonNull UUID householdId)
-    throws NullPointerException, HouseholdNotFoundException;
+    throws NullPointerException;
 
   Collection<WeeklyRecipe> getRecipesForHouseholdWeek(
     @NonNull UUID householdId,
     @NonNull LocalDate monday
-  ) throws NullPointerException, HouseholdNotFoundException;
+  ) throws NullPointerException;
 }

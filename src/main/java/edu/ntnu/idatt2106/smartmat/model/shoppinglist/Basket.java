@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Set;
@@ -42,8 +41,7 @@ public class Basket {
   @Column(name = "`basket_id`", length = 16, nullable = false, updatable = false)
   private UUID id;
 
-  @OneToOne(optional = false)
-  @PrimaryKeyJoinColumn
+  @OneToOne(optional = true)
   private ShoppingList shoppingList;
 
   @OneToMany(

@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.service.household;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
-import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
@@ -175,10 +174,10 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
    */
   @Override
   public Collection<WeeklyRecipe> getRecipesForHousehold(@NonNull UUID household)
-    throws NullPointerException, HouseholdNotFoundException {
+    throws NullPointerException {
     return weeklyRecipeRepository
       .findAllRecipesByHousehold(household)
-      .orElseThrow(() -> new HouseholdNotFoundException("Husholdning ikke funnet"));
+      .orElseThrow(() -> new NullPointerException("Husholdning ikke funnet"));
   }
 
   /**
@@ -193,7 +192,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   public Collection<WeeklyRecipe> getRecipesForHouseholdWeek(
     @NonNull UUID household,
     @NonNull LocalDate monday
-  ) throws NullPointerException, HouseholdNotFoundException {
+  ) throws NullPointerException {
     return weeklyRecipeRepository
       .findAllRecipesByHouseholdAndWeek(household, monday, monday.plusDays(6))
       .orElseThrow(() -> new NullPointerException("Ingen oppskrifter funnet for denne uken"));

@@ -48,13 +48,16 @@ public class Household {
   @NonNull
   private String name;
 
-  @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @OneToMany(
+    mappedBy = "household",
+    cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE }
+  )
   private Set<HouseholdMember> members;
 
-  @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @OneToMany(mappedBy = "household", cascade = { CascadeType.REMOVE })
   private Set<HouseholdFoodProduct> foodProducts;
 
-  @OneToMany(mappedBy = "household", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  @OneToMany(mappedBy = "household", cascade = { CascadeType.REMOVE })
   private Set<ShoppingList> shoppingLists;
 
   @OneToMany(mappedBy = "household")
