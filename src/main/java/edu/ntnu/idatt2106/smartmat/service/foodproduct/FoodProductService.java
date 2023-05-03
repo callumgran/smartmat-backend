@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.service.foodproduct;
 import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,8 @@ public interface FoodProductService {
     throws NullPointerException;
 
   FoodProduct getFoodProductByEan(@NonNull String ean)
+    throws FoodProductNotFoundException, NullPointerException;
+
+  FoodProduct getLooseFoodProductByIngredient(@NonNull Ingredient id)
     throws FoodProductNotFoundException, NullPointerException;
 }

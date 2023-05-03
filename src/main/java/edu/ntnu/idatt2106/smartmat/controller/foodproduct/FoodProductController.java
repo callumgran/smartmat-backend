@@ -358,7 +358,7 @@ public class FoodProductController {
   public ResponseEntity<List<FoodProductDTO>> searchFoodProducts(
     @AuthenticationPrincipal Auth auth,
     @RequestBody SearchRequest searchRequest
-  ) throws BadInputException, NullPointerException, BadInputException {
+  ) throws BadInputException, NullPointerException {
     if (SearchRequestValidation.validateSearchRequest(searchRequest)) throw new BadInputException(
       "Ugyldig søkeforespørsel."
     );
@@ -373,5 +373,46 @@ public class FoodProductController {
 
     LOGGER.info("Found and returning {} food products", foodProductDTOs.size());
     return ResponseEntity.ok(foodProductDTOs);
+  }
+
+  /**
+   * Gets an ingredient by as a food product with loose weight.
+   *
+   * @param ingredientId The id of the ingredient.
+   * @return a 200 OK response with the found food product.
+   * @throws IngredientNotFoundException If the ingredient is not found.
+   * @throws NullPointerException        If the id is null.
+   * @throws BadInputException           If the input is invalid.
+   * @throws DatabaseException           If something goes wrong with the database.
+   */
+  @GetMapping(
+    value = "/loose-ingredient/{ingredient-id}",
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(
+    summary = "Get food products with loose ingredient",
+    description = "Get food products with loose ingredient, requires authentication.",
+    tags = { "foodproduct" }
+  )
+  public ResponseEntity<FoodProductDTO> getLooseFoodProductByIngredient(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable("ingredient-id") Long ingredientId
+  )
+    throws FoodProductNotFoundException, IngredientNotFoundException, NullPointerException, BadInputException, DatabaseException {
+    LOGGER.info("GET /api/v1/private/foodproducts/loose-ingredient/{}", ingredientId);
+
+    Ingredient ingredient = ingredientService.getIngredientById(ingredientId);
+
+    LOGGER.info("Found ingredient with id: {}", ingredient.getId());
+
+    FoodProduct foodProduct = foodProductService.getLooseFoodProductByIngredient(ingredient);
+
+    LOGGER.info("Found and returning food product with id: {}", foodProduct.getId());
+
+    FoodProductDTO foodProductDTO = FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(
+      foodProduct
+    );
+
+    return ResponseEntity.ok(foodProductDTO);
   }
 }

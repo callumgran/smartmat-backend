@@ -4,7 +4,9 @@ import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundExc
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.repository.foodproduct.FoodProductRepository;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +120,35 @@ public class FoodProductServiceImpl implements FoodProductService {
   public FoodProduct getFoodProductByEan(@NonNull String ean)
     throws FoodProductNotFoundException, NullPointerException {
     return foodProductRepository.findByEAN(ean).orElseThrow(FoodProductNotFoundException::new);
+  }
+
+  /**
+   * Get an ingredient as a FoodProduct from the database by its id.
+   * @param id The id of the Ingredient to be retrieved.
+   * @return The retrieved FoodProduct.
+   * @throws NullPointerException If the id is null.
+   */
+  @Override
+  public FoodProduct getLooseFoodProductByIngredient(@NonNull Ingredient ingredient)
+    throws NullPointerException {
+    Optional<FoodProduct> foodProduct = foodProductRepository.findByIngredientId(
+      ingredient.getId(),
+      true
+    );
+    if (foodProduct.isPresent()) {
+      return foodProduct.get();
+    } else {
+      return foodProductRepository.save(
+        FoodProduct
+          .builder()
+          .amount(1.0D)
+          .ingredient(ingredient)
+          .looseWeight(true)
+          .unit(ingredient.getUnit())
+          .image("")
+          .name(ingredient.getName())
+          .build()
+      );
+    }
   }
 }
