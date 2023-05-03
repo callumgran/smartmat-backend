@@ -33,6 +33,8 @@ public class ShoppingListDTO {
   @NonNull
   private UUID household;
 
+  private UUID basket;
+
   @NotBlank
   @NonNull
   private Set<ShoppingListItemDTO> shoppingListItems;

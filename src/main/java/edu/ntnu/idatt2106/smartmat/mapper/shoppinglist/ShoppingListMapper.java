@@ -8,6 +8,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundExcepti
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.CustomFoodItemMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
@@ -113,6 +114,11 @@ public abstract class ShoppingListMapper {
       .collect(Collectors.toSet());
   }
 
+  @Named("getBasketId")
+  public UUID getBasketId(Basket basket) {
+    return basket.getId();
+  }
+
   @Mappings(
     {
       @Mapping(target = "household", source = "household", qualifiedByName = "householdToUUID"),
@@ -126,6 +132,7 @@ public abstract class ShoppingListMapper {
         source = "customFoodItems",
         qualifiedByName = "customFoodItemsToCustomFoodItemDTOs"
       ),
+      @Mapping(target = "basket", source = "basket", qualifiedByName = "getBasketId"),
     }
   )
   public abstract ShoppingListDTO shoppingListToDTO(ShoppingList shoppingList);
@@ -143,6 +150,7 @@ public abstract class ShoppingListMapper {
         source = "customFoodItems",
         qualifiedByName = "customFoodItemDTOsToCustomFoodItems"
       ),
+      @Mapping(target = "basket", ignore = true),
     }
   )
   public abstract ShoppingList shoppingListDTOToShoppingList(ShoppingListDTO shoppingListDTO);
@@ -156,6 +164,7 @@ public abstract class ShoppingListMapper {
       @Mapping(target = "household", ignore = true),
       @Mapping(target = "shoppingListItems", ignore = true),
       @Mapping(target = "customFoodItems", ignore = true),
+      @Mapping(target = "basket", ignore = true),
     }
   )
   public abstract ShoppingList listingShoppingListDTOToShoppingList(
