@@ -21,7 +21,8 @@ public class RecipeTest {
         "instructions",
         1,
         RecipeDifficulty.EASY,
-        new HashSet<>()
+        new HashSet<>(),
+        null
       )
     );
   }
@@ -30,7 +31,18 @@ public class RecipeTest {
   public void testRecipeConstructorWithNulls() {
     assertThrows(
       NullPointerException.class,
-      () -> new Recipe(null, null, null, null, null, 0, RecipeDifficulty.ADVANCED, new HashSet<>())
+      () ->
+        new Recipe(
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          RecipeDifficulty.ADVANCED,
+          new HashSet<>(),
+          null
+        )
     );
   }
 

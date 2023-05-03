@@ -46,4 +46,6 @@ public class RecipeDTO {
   @NotBlank
   @NonNull
   private RecipeDifficulty recipeDifficulty;
+
+  private String image;
 }

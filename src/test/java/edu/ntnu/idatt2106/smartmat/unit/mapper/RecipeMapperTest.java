@@ -24,7 +24,8 @@ public class RecipeMapperTest {
     "instructions",
     1,
     RecipeDifficulty.EASY,
-    new HashSet<>()
+    new HashSet<>(),
+    null
   );
   private final RecipeDTO recipeDTO = new RecipeDTO(
     UUID_1.toString(),
@@ -33,7 +34,8 @@ public class RecipeMapperTest {
     new ArrayList<>(),
     "instructions",
     1,
-    RecipeDifficulty.EASY
+    RecipeDifficulty.EASY,
+    null
   );
 
   @Before
