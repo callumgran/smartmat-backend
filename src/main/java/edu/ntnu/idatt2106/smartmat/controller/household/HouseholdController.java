@@ -7,6 +7,7 @@ import edu.ntnu.idatt2106.smartmat.dto.household.UpdateHouseholdDTO;
 import edu.ntnu.idatt2106.smartmat.dto.household.WeeklyRecipeDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeRecommendationDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.ShoppingListDTO;
+import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.WeeklyShoppingListItemDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
@@ -17,6 +18,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundE
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.household.HouseholdMemberMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.ingredient.IngredientMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.recipe.RecipeMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
@@ -27,6 +29,7 @@ import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeRecommendation;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
@@ -656,6 +659,57 @@ public class HouseholdController {
             .used(r.isUsed())
             .dateToUse(r.getDateToUse())
             .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(r.getRecipe()))
+            .build()
+        )
+        .collect(Collectors.toList())
+    );
+  }
+
+  /**
+   * Method to get the shopping list items needed for a household
+   * based on the weekly recipes for a specific week.
+   * @param auth The authentication of the user.
+   * @param householdId The id of the household.
+   * @param monday The monday date of the weekly recipe.
+   * @return 200 OK if the shopping list items were found.
+   * @throws NullPointerException If any values are null.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @GetMapping(value = "/{id}/recipes/{monday}/items", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Gets the shopping list items for a household from a specific monday",
+    description = "Gets the shopping list items for a household from a specific monday. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<Collection<WeeklyShoppingListItemDTO>> getShoppingListItems(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate monday
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!isAdminOrHouseholdMember(auth, id)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å hente handlelisten for denne husholdningen."
+      );
+    }
+
+    Collection<ShoppingListItem> items = weeklyRecipeService.getShoppingListItemsForHouseholdWeek(
+      id,
+      monday
+    );
+
+    LOGGER.info("Found shopping list items for household with id: {} on date: {}", id, monday);
+
+    return ResponseEntity.ok(
+      items
+        .stream()
+        .map(i ->
+          WeeklyShoppingListItemDTO
+            .builder()
+            .ingredient(IngredientMapper.INSTANCE.ingredientToBareIngredientDTO(i.getIngredient()))
+            .amount(i.getAmount())
             .build()
         )
         .collect(Collectors.toList())
