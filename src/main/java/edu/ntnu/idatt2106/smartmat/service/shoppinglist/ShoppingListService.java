@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface ShoppingListService {
-  boolean shoppingListExists(@NonNull UUID id)
-    throws ShoppingListNotFoundException, NullPointerException;
+  boolean shoppingListExists(@NonNull UUID id) throws NullPointerException;
 
   ShoppingList getShoppingListById(@NonNull UUID id)
     throws ShoppingListNotFoundException, NullPointerException;

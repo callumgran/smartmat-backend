@@ -225,11 +225,14 @@ public class ShoppingListController {
   )
     throws ShoppingListNotFoundException, BasketNotFoundException, NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
     LOGGER.info("GET request for shopping list: {}", id);
-    ShoppingList shoppingList = shoppinglistService.getShoppingListWithDiff(id);
+
+    ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
     if (!isAdminOrHouseholdMember(auth, shoppingList.getHousehold().getId())) {
       throw new PermissionDeniedException("Du har ikke tilgang til handlelisten");
     }
+
+    shoppingList = shoppinglistService.getShoppingListWithDiff(id);
 
     ShoppingListDTO shoppingListDTO = ShoppingListMapper.INSTANCE.shoppingListToDTO(shoppingList);
     LOGGER.info("Mapped shopping list to ShoppingListDTO {}", shoppingListDTO);
@@ -344,6 +347,7 @@ public class ShoppingListController {
           .foodProduct(bi.getFoodProduct())
           .household(shoppingList.getHousehold())
           .amountLeft(bi.getAmount())
+          .expirationDate(LocalDate.now().plusDays(14))
           .build();
       })
       .toList();

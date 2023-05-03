@@ -45,8 +45,6 @@ public class FoodProductDTO {
   @NotBlank
   private boolean isNotIngredient;
 
-  @NotBlank
-  @NonNull
   private UnitDTO unit;
 
   private boolean isFirstTime;

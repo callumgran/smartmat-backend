@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.smartmat.dto.shoppinglist;
 
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class BasketItemDTO {
 
   @NotBlank
   @NonNull
-  private Long foodProductId;
+  private FoodProductDTO foodProduct;
 
   @NotBlank
   private double amount;

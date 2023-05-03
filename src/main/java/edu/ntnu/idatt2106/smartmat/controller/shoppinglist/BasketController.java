@@ -13,6 +13,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFo
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.CustomFoodItemMapper;
+import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.FoodProductMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -102,7 +104,11 @@ public class BasketController {
    * @throws PermissionDeniedException If the user does not have permission to create a basket.
    * @throws NullPointerException If the shoppingListId is null.
    */
-  @PostMapping("/")
+  @PostMapping(
+    value = "/",
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
   @Operation(
     summary = "Creates a new shopping list basket.",
     description = "Creates a new shopping list basket, can only be done by a privileged user or an admin.",
@@ -117,11 +123,15 @@ public class BasketController {
     ShoppingList shoppingList = shoppingListService.getShoppingListById(
       basketDTO.getShoppingListId()
     );
+
+    LOGGER.info("Checking if user has permission to create a basket.");
     if (!isAdminOrHouseholdPrivileged(auth, shoppingList.getHousehold().getId())) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å opprette en handleliste for denne husstanden."
       );
     }
+
+    LOGGER.info("Creating basket.");
     Basket basket = basketService.createBasket(
       Basket
         .builder()
@@ -131,15 +141,21 @@ public class BasketController {
         .build()
     );
 
-    return ResponseEntity.ok(
-      BasketDTO
-        .builder()
-        .id(basket.getId())
-        .shoppingListId(basket.getShoppingList().getId())
-        .customFoodItems(new ArrayList<>())
-        .basketItems(new ArrayList<>())
-        .build()
-    );
+    shoppingList.setBasket(basket);
+    shoppingListService.updateShoppingList(shoppingList.getId(), shoppingList);
+
+    LOGGER.info("Returning created basket.");
+    return ResponseEntity
+      .status(HttpStatus.CREATED)
+      .body(
+        BasketDTO
+          .builder()
+          .id(basket.getId())
+          .shoppingListId(basket.getShoppingList().getId())
+          .customFoodItems(new ArrayList<>())
+          .basketItems(new ArrayList<>())
+          .build()
+      );
   }
 
   /**
@@ -361,8 +377,11 @@ public class BasketController {
           .map(basketItem ->
             BasketItemDTO
               .builder()
+              .basketId(basketId)
               .id(basketItem.getId())
-              .foodProductId(basketItem.getFoodProduct().getId())
+              .foodProduct(
+                FoodProductMapper.INSTANCE.foodProductToFoodProductDTO(basketItem.getFoodProduct())
+              )
               .amount(basketItem.getAmount())
               .build()
           )

@@ -45,5 +45,5 @@ public class BasketItem {
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "`basket_id`", nullable = false, referencedColumnName = "`basket_id`")
-  Basket basket;
+  private Basket basket;
 }

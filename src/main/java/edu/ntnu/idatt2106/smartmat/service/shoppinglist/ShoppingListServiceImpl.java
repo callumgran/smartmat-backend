@@ -33,15 +33,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
    * Method to check whether the shopping list exists or not.
    * @param id the id for the shopping list.
    * @return the shopping list if it exists, an exception if it does not.
-   * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws NullPointerException if the shopping list id is null.
    */
   @Override
-  public boolean shoppingListExists(@NonNull UUID id)
-    throws ShoppingListNotFoundException, NullPointerException {
-    if (!shoppinglistRepository.existsById(id)) {
-      throw new ShoppingListNotFoundException();
-    }
+  public boolean shoppingListExists(@NonNull UUID id) throws NullPointerException {
     return shoppinglistRepository.existsById(id);
   }
 
@@ -87,7 +82,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
   @Override
   public ShoppingList saveShoppingList(@NonNull ShoppingList shoppingList)
     throws ShoppingListAlreadyExistsException, NullPointerException {
-    if (shoppinglistRepository.existsById(shoppingList.getId())) {
+    if (shoppingList.getId() != null && shoppinglistRepository.existsById(shoppingList.getId())) {
       throw new ShoppingListAlreadyExistsException();
     }
     return shoppinglistRepository.save(shoppingList);
@@ -164,10 +159,14 @@ public class ShoppingListServiceImpl implements ShoppingListService {
           .getBasketItems()
           .stream()
           .forEach(fp -> {
-            if (sli.getIngredient().getId().equals(fp.getFoodProduct().getIngredient().getId())) {
-              double shoppingListAmount = UnitUtils.getNormalizedUnit(sli);
-              double basketAmount = UnitUtils.getNormalizedUnit(fp);
-              sli.setAmount(UnitUtils.getOriginalUnit(shoppingListAmount - basketAmount, sli));
+            if (!fp.getFoodProduct().isNotIngredient()) {
+              if (sli.getIngredient().getId().equals(fp.getFoodProduct().getIngredient().getId())) {
+                double shoppingListAmount = UnitUtils.getNormalizedUnit(sli);
+                double basketAmount = UnitUtils.getNormalizedUnit(fp);
+                System.out.println("shoppingListAmount: " + shoppingListAmount);
+                System.out.println("basketAmount: " + basketAmount);
+                sli.setAmount(UnitUtils.getOriginalUnit(shoppingListAmount - basketAmount, sli));
+              }
             }
           });
       });

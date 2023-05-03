@@ -27,6 +27,9 @@ public class UnitUtils {
     double conversionFactor,
     UnitTypeEnum unitType
   ) {
+    System.out.println("Amount: " + amount);
+    System.out.println("Conversion factor: " + conversionFactor);
+    System.out.println("Unit type: " + unitType);
     return amount * unitType.toKg(conversionFactor);
   }
 
@@ -58,8 +61,8 @@ public class UnitUtils {
 
   /**
    * Method to get the normalized unit of a shopping list item
-   * @param ingredient The recipe ingredient to get the normalized unit of
-   * @return The normalized unit of the recipe ingredient
+   * @param shoppingListItem The shopping list item to get the normalized unit of
+   * @return The normalized unit of the shopping list item
    */
   public static double getNormalizedUnit(ShoppingListItem shoppingListItem) {
     return getNormalizedUnit(
@@ -71,13 +74,13 @@ public class UnitUtils {
 
   /**
    * Method to get the normalized unit of a shopping list item
-   * @param ingredient The recipe ingredient to get the normalized unit of
-   * @return The normalized unit of the recipe ingredient
+   * @param basketItem The basket item to get the normalized unit of
+   * @return The normalized unit of the basket item
    */
   public static double getNormalizedUnit(BasketItem basketItem) {
     return getNormalizedUnit(
       basketItem.getAmount() * basketItem.getFoodProduct().getAmount(),
-      basketItem.getFoodProduct().getIngredient().getUnit().getToNormalFormConversionFactor(),
+      basketItem.getFoodProduct().getUnit().getToNormalFormConversionFactor(),
       basketItem.getFoodProduct().getUnit().getUnitType()
     );
   }

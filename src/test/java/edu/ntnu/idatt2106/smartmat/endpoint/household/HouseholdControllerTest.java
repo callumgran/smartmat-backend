@@ -231,6 +231,7 @@ public class HouseholdControllerTest {
   public void testDeleteHousehold() {
     try {
       doNothing().when(householdService).deleteHouseholdById(household.getId());
+      doNothing().when(householdService).deleteAllHouseholdMembers(newHousehold.getId());
       when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
         .thenReturn(true);
       mvc

@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.model.shoppinglist;
 
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +50,7 @@ public class ShoppingList {
   @ManyToOne(optional = false)
   private Household household;
 
-  @OneToMany(mappedBy = "shoppingList")
+  @OneToMany(mappedBy = "shoppingList", cascade = { CascadeType.REMOVE })
   private Set<ShoppingListItem> shoppingListItems;
 
   @OneToMany(mappedBy = "shoppingList")

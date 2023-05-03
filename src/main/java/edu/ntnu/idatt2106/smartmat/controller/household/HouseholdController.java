@@ -251,6 +251,8 @@ public class HouseholdController {
     }
     LOGGER.info("Deleting household with id: {}", id);
 
+    householdService.deleteAllHouseholdMembers(id);
+
     householdService.deleteHouseholdById(id);
 
     LOGGER.info("Deleted household with id: {}", id);

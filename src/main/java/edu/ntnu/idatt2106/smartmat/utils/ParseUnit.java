@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.utils;
 
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ public class ParseUnit {
     String productName,
     Unit defaultUnit
   ) {
+    units.add(new Unit("stk", "pk", Collections.emptySet(), 1, UnitTypeEnum.BY_PIECE));
     final List<UnitStringTuple> unitNames = new ArrayList<>();
     final String lowerProductName = productName.toLowerCase();
     LOGGER.info("Parsing unit from product name: " + productName);
@@ -77,10 +79,20 @@ public class ParseUnit {
                 .getString()
                 .charAt(entry.getString().length() - 1 - entry.getUnit().getAbbreviation().length())
             ) ||
-            Character.isDigit(
+            (
+              Character.isDigit(
+                entry
+                  .getString()
+                  .charAt(
+                    entry.getString().length() - 2 - entry.getUnit().getAbbreviation().length()
+                  )
+              ) &&
               entry
                 .getString()
-                .charAt(entry.getString().length() - 2 - entry.getUnit().getAbbreviation().length())
+                .charAt(
+                  entry.getString().length() - 1 - entry.getUnit().getAbbreviation().length()
+                ) ==
+              ' '
             )
           );
         })
@@ -152,6 +164,9 @@ public class ParseUnit {
             return ret;
           })
           .toList();
+        if (sortedAbbreviation.get(0).getUnit().getAbbreviation().equals("pk")) {
+          return new UnitAmountTuple(defaultUnit, sortedAbbreviation.get(0).getAmount());
+        }
         return sortedAbbreviation.get(0);
       }
     }

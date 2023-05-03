@@ -6,10 +6,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipe;
 import edu.ntnu.idatt2106.smartmat.model.household.WeeklyRecipeId;
@@ -17,6 +20,9 @@ import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import edu.ntnu.idatt2106.smartmat.repository.household.WeeklyRecipeRepository;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
@@ -24,6 +30,9 @@ import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeServiceImpl;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,35 +71,13 @@ public class WeeklyRecipeServiceIntegrationTest {
   @MockBean
   private FoodProductHistoryService foodProductHistoryService;
 
-  // private final UUID EXISTING_UUID = UUID.randomUUID();
-
-  // private final UUID NON_EXISTING_UUID = UUID.randomUUID();
-
-  // private final UUID NULL_UUID = null;
-
   private Ingredient carrot;
 
   private Ingredient tomato;
 
-  // private Ingredient nullIngredient;
-
   private Household household;
 
   private Household noneHousehold;
-
-  // private Household nullHousehold;
-
-  // private FoodProduct foodProduct;
-
-  // private FoodProduct foodProduct2;
-
-  // private FoodProduct nullFoodProduct;
-
-  // private HouseholdFoodProduct hfp;
-
-  // private HouseholdFoodProduct noneHfp;
-
-  // private HouseholdFoodProduct nullHfp;
 
   private WeeklyRecipe weeklyRecipe;
 
@@ -100,9 +87,10 @@ public class WeeklyRecipeServiceIntegrationTest {
 
   @Before
   public void setUp() {
-    carrot = Ingredient.builder().id(1L).name("Carrot").build();
-    tomato = Ingredient.builder().id(2L).name("Tomato").build();
-    // nullIngredient = null;
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
+    carrot = new Ingredient(1L, "Carrot", null, null, unit);
+    tomato = new Ingredient(5L, "Tomato", null, null, unit);
 
     household = testHouseholdFactory(TestHouseholdEnum.GOOD_HOUSEHOLD);
     noneHousehold = testHouseholdFactory(TestHouseholdEnum.BAD_HOUSEHOLD);
@@ -132,25 +120,6 @@ public class WeeklyRecipeServiceIntegrationTest {
     RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeTomato);
 
-    // nullHousehold = null;
-
-    // foodProduct =
-    //   new FoodProduct(1L, "Carrot", "1234567890123", 4.0D, true, new HashSet<>(), carrot);
-    // foodProduct2 =
-    //   new FoodProduct(2L, "Tomato", "1234567890124", 4.0D, true, new HashSet<>(), tomato);
-    // nullFoodProduct = null;
-
-    // hfp = new HouseholdFoodProduct(NULL_UUID, foodProduct, household, LocalDate.now(), 1.0D);
-    // noneHfp =
-    //   new HouseholdFoodProduct(
-    //     NON_EXISTING_UUID,
-    //     foodProduct2,
-    //     noneHousehold,
-    //     LocalDate.now(),
-    //     1.0D
-    //   );
-    // nullHfp = null;
-
     weeklyRecipe = new WeeklyRecipe(LocalDate.of(2023, 2, 1));
     weeklyRecipe.setHousehold(household);
     weeklyRecipe.setRecipe(tomatoSauceRecipe);
@@ -166,6 +135,51 @@ public class WeeklyRecipeServiceIntegrationTest {
       weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
     )
       .thenReturn(false);
+
+    FoodProduct tomatoFoodProduct = new FoodProduct(
+      1L,
+      "Bama Tomato",
+      "123456789123",
+      1000.0D,
+      false,
+      null,
+      null,
+      tomato,
+      null,
+      false,
+      gram,
+      null
+    );
+    FoodProduct carrotFoodProduct = new FoodProduct(
+      1L,
+      "Bama Carrot",
+      "123456789123",
+      1000.0D,
+      false,
+      null,
+      null,
+      carrot,
+      null,
+      false,
+      gram,
+      null
+    );
+    HouseholdFoodProduct householdFoodProductTomato = new HouseholdFoodProduct(
+      UUID.randomUUID(),
+      tomatoFoodProduct,
+      household,
+      LocalDate.now().plusDays(10),
+      4.0
+    );
+    HouseholdFoodProduct householdFoodProductCarrot = new HouseholdFoodProduct(
+      UUID.randomUUID(),
+      carrotFoodProduct,
+      household,
+      LocalDate.now().plusDays(10),
+      10.0
+    );
+    household.getFoodProducts().add(householdFoodProductTomato);
+    household.getFoodProducts().add(householdFoodProductCarrot);
   }
 
   @Test
@@ -225,7 +239,7 @@ public class WeeklyRecipeServiceIntegrationTest {
   }
 
   @Test
-  public void deleteByIdExisting() {
+  public void deleteExisting() {
     when(weeklyRecipeRepository.existsById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
       .thenReturn(true);
     doNothing()
@@ -235,7 +249,7 @@ public class WeeklyRecipeServiceIntegrationTest {
   }
 
   @Test
-  public void deleteByIdNonExisting() {
+  public void deleteNonExisting() {
     when(
       weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
     )
@@ -250,7 +264,7 @@ public class WeeklyRecipeServiceIntegrationTest {
   }
 
   @Test
-  public void deleteByIdNull() {
+  public void deleteNull() {
     assertThrows(
       NullPointerException.class,
       () -> weeklyRecipeService.deleteWeeklyRecipe(nullWeeklyRecipe)
@@ -258,11 +272,87 @@ public class WeeklyRecipeServiceIntegrationTest {
   }
 
   @Test
-  public void deleteByIdNullHousehold() {
+  public void deleteNullHousehold() {
     weeklyRecipe.setHousehold(null);
     assertThrows(
       NullPointerException.class,
       () -> weeklyRecipeService.deleteWeeklyRecipe(weeklyRecipe)
     );
+  }
+
+  @Test
+  public void deleteByIdExisting() {
+    when(weeklyRecipeRepository.existsById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
+      .thenReturn(true);
+    doNothing()
+      .when(weeklyRecipeRepository)
+      .deleteById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1)));
+    assertDoesNotThrow(() ->
+      weeklyRecipeService.deleteWeeklyRecipeById(
+        new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))
+      )
+    );
+  }
+
+  @Test
+  public void deleteByIdNonExisting() {
+    when(
+      weeklyRecipeRepository.existsById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)))
+    )
+      .thenReturn(false);
+    doNothing()
+      .when(weeklyRecipeRepository)
+      .deleteById(new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1)));
+    assertThrows(
+      IllegalArgumentException.class,
+      () ->
+        weeklyRecipeService.deleteWeeklyRecipeById(
+          new WeeklyRecipeId(noneHousehold, LocalDate.of(2023, 2, 1))
+        )
+    );
+  }
+
+  @Test
+  public void testGetRecipesForHouseholdWeek() throws Exception {
+    when(
+      weeklyRecipeRepository.findAllRecipesByHouseholdAndWeek(
+        household.getId(),
+        LocalDate.of(2023, 2, 1),
+        LocalDate.of(2023, 2, 1).plusDays(6)
+      )
+    )
+      .thenReturn(Optional.of(List.of(weeklyRecipe)));
+    assertEquals(
+      weeklyRecipeService
+        .getRecipesForHouseholdWeek(household.getId(), LocalDate.of(2023, 2, 1))
+        .stream()
+        .toList()
+        .get(0),
+      weeklyRecipe
+    );
+  }
+
+  @Test
+  public void testGetRecipesForHousehold() throws Exception {
+    when(weeklyRecipeRepository.findAllRecipesByHousehold(household.getId()))
+      .thenReturn(Optional.of(List.of(weeklyRecipe)));
+    assertEquals(
+      weeklyRecipeService.getRecipesForHousehold(household.getId()).stream().toList().get(0),
+      weeklyRecipe
+    );
+  }
+
+  @Test
+  public void testUseRecipe() throws Exception {
+    doNothing().when(householdFoodProductService).deleteFoodProductById(any(UUID.class));
+    when(householdFoodProductService.saveFoodProduct(any(HouseholdFoodProduct.class)))
+      .thenReturn(new HouseholdFoodProduct());
+    when(weeklyRecipeRepository.findById(new WeeklyRecipeId(household, LocalDate.of(2023, 2, 1))))
+      .thenReturn(Optional.of(weeklyRecipe));
+    when(foodProductHistoryService.saveFoodProductHistory(any(FoodProductHistory.class)))
+      .thenReturn(new FoodProductHistory());
+    when(weeklyRecipeRepository.save(any(WeeklyRecipe.class))).thenReturn(weeklyRecipe);
+    assertDoesNotThrow(() -> weeklyRecipeService.useRecipeDay(weeklyRecipe));
+    assertEquals(weeklyRecipe.isUsed(), true);
   }
 }
