@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.smartmat.dto.statistic.FoodProductHistoryDTO;
 import edu.ntnu.idatt2106.smartmat.dto.statistic.MonthWasteDTO;
 import edu.ntnu.idatt2106.smartmat.dto.statistic.UpdateFoodProductHistoryDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
+import edu.ntnu.idatt2106.smartmat.exceptions.foodproduct.FoodProductNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.statistic.FoodProductHistoryNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
@@ -442,5 +443,42 @@ public class FoodProductHistoryController {
     }
 
     return ResponseEntity.ok(monthWasteDTOList);
+  }
+
+  /**
+   * Method for getting the first thrown food product for a household.
+   * @param auth The authentication of the user.
+   * @param householdId The id of the household.
+   * @return The first thrown food product for a household.
+   * @throws PermissionDeniedException If the user is not an admin or a member of the household.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws NullPointerException   If the household id is null.
+   * @throws FoodProductNotFoundException If the food product history entry does not exists
+   */
+  @GetMapping("/household/{householdId}/first-waste")
+  @Operation(
+    summary = "Get the first waste for a household.",
+    description = "Returns the first food product history for a household. If the user is not an admin, the householdId must be the id of the household the user is a member of.",
+    tags = { "stats" }
+  )
+  public ResponseEntity<FoodProductHistoryDTO> getFirstWasteForHousehold(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID householdId
+  )
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException, FoodProductNotFoundException {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
+
+    FoodProductHistory firstProduct = foodProductHistoryService
+      .getAllFoodProductHistoryByHouseholdId(householdId)
+      .stream()
+      .sorted((f1, f2) -> f1.getDate().compareTo(f2.getDate()))
+      .findFirst()
+      .orElseThrow(FoodProductNotFoundException::new);
+    return ResponseEntity.ok(
+      FoodProductHistoryMapper.INSTANCE.foodProductHistoryToFoodProductHistoryDTO(firstProduct)
+    );
   }
 }
