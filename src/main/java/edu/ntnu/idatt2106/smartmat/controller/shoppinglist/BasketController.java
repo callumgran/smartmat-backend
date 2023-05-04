@@ -15,18 +15,16 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.CustomFoodItemMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.FoodProductMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.BasketItem;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
-import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,26 +70,6 @@ public class BasketController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BasketController.class);
 
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
-  private boolean isAdminOrHouseholdPrivileged(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      ) ||
-      isAdminOrHouseholdOwner(auth, householdId)
-    );
-  }
-
   /**
    * Creates a new shopping list basket.
    * @param auth The auth object of the user.
@@ -125,7 +103,13 @@ public class BasketController {
     );
 
     LOGGER.info("Checking if user has permission to create a basket.");
-    if (!isAdminOrHouseholdPrivileged(auth, shoppingList.getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å opprette en handleliste for denne husstanden."
       );
@@ -185,7 +169,13 @@ public class BasketController {
     LOGGER.info("Received request to add item to basket with id: {}", basketId);
 
     Basket basket = basketService.getBasketById(basketId);
-    if (!isAdminOrHouseholdPrivileged(auth, basket.getShoppingList().getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        basket.getShoppingList().getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("User does not exist.");
     }
 
@@ -233,7 +223,13 @@ public class BasketController {
     LOGGER.info("Received request to add item to basket with id: {}", basketId);
 
     Basket basket = basketService.getBasketById(basketId);
-    if (!isAdminOrHouseholdPrivileged(auth, basket.getShoppingList().getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        basket.getShoppingList().getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("User does not exist.");
     }
 
@@ -277,7 +273,13 @@ public class BasketController {
     LOGGER.info("Received request to remove item from basket with id: {}", basketId);
 
     Basket basket = basketService.getBasketById(basketId);
-    if (!isAdminOrHouseholdPrivileged(auth, basket.getShoppingList().getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        basket.getShoppingList().getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("User does not exist.");
     }
 
@@ -316,7 +318,13 @@ public class BasketController {
     LOGGER.info("Received request to remove item from basket with id: {}", basketId);
 
     Basket basket = basketService.getBasketById(basketId);
-    if (!isAdminOrHouseholdPrivileged(auth, basket.getShoppingList().getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        basket.getShoppingList().getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("User does not exist.");
     }
 
@@ -360,7 +368,13 @@ public class BasketController {
     LOGGER.info("Received request to get basket with id: {}", basketId);
 
     Basket basket = basketService.getBasketById(basketId);
-    if (!isAdminOrHouseholdPrivileged(auth, basket.getShoppingList().getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        basket.getShoppingList().getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("User does not exist.");
     }
 

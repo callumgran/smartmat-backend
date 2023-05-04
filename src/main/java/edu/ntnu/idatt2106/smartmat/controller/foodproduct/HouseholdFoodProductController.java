@@ -12,18 +12,16 @@ import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.HouseholdFoodProductMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.utils.UnitUtils;
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
-import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.List;
@@ -67,34 +65,6 @@ public class HouseholdFoodProductController {
 
   private final FoodProductHistoryService foodProductHistoryService;
 
-  private boolean isAdminOrHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdMember(householdId, auth.getUsername())
-    );
-  }
-
-  private boolean isAdminOrHouseholdPrivileged(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      ) ||
-      isAdminOrHouseholdOwner(auth, householdId)
-    );
-  }
-
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
   /**
    * Get a household food product by id.
    * @param auth The authentication object.
@@ -122,7 +92,7 @@ public class HouseholdFoodProductController {
     @PathVariable("id") UUID id
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
@@ -165,7 +135,7 @@ public class HouseholdFoodProductController {
     @PathVariable("ean") String ean
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
@@ -219,7 +189,7 @@ public class HouseholdFoodProductController {
       "Søkeverdiene er ikke gyldige."
     );
 
-    if (!isAdminOrHouseholdMember(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å hente ut matvarene i husstanden."
       );
@@ -260,7 +230,7 @@ public class HouseholdFoodProductController {
     @RequestBody CreateHouseholdFoodProductDTO createHouseholdFoodProductDTO
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
-    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å opprette matvarene i husstanden."
       );
@@ -342,7 +312,7 @@ public class HouseholdFoodProductController {
     @RequestBody UpdateHouseholdFoodProductDTO householdFoodProductDTO
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException, BadInputException {
-    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å oppdatere matvarene i husstanden."
       );
@@ -419,7 +389,7 @@ public class HouseholdFoodProductController {
     @PathVariable("id") UUID id
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å slette matvarene i husstanden."
       );
@@ -461,7 +431,7 @@ public class HouseholdFoodProductController {
     @RequestBody Double amountUsed
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å bruke matvarene i husstanden."
       );
@@ -533,7 +503,7 @@ public class HouseholdFoodProductController {
     @PathVariable("id") UUID id
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, FoodProductNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdPrivileged(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å bruke matvarene i husstanden."
       );

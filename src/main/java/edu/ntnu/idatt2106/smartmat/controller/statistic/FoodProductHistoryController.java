@@ -12,6 +12,7 @@ import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Max;
@@ -39,14 +40,6 @@ public class FoodProductHistoryController {
 
   private final HouseholdService householdService;
 
-  private boolean isAdminOrHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdMember(householdId, auth.getUsername())
-    );
-  }
-
   /**
    * Method for getting a single stat entry for a food product.
    * @param auth The auth object of the user.
@@ -73,7 +66,11 @@ public class FoodProductHistoryController {
       foodProductHistoryId
     );
     if (
-      !isAdminOrHouseholdMember(auth, foodProductHistory.getHousehold().getId())
+      !PrivilegeUtil.isAdminOrHouseholdMember(
+        auth,
+        foodProductHistory.getHousehold().getId(),
+        householdService
+      )
     ) throw new PermissionDeniedException(
       "Du har ikke tilgang til å se statistikken for denne matvaren."
     );
@@ -112,7 +109,11 @@ public class FoodProductHistoryController {
       foodProductHistoryId
     );
     if (
-      !isAdminOrHouseholdMember(auth, foodProductHistory.getHousehold().getId())
+      !PrivilegeUtil.isAdminOrHouseholdMember(
+        auth,
+        foodProductHistory.getHousehold().getId(),
+        householdService
+      )
     ) throw new PermissionDeniedException(
       "Du har ikke tilgang til å endre statistikken for denne matvaren."
     );
@@ -161,7 +162,11 @@ public class FoodProductHistoryController {
       foodProductHistoryId
     );
     if (
-      !isAdminOrHouseholdMember(auth, foodProductHistory.getHousehold().getId())
+      !PrivilegeUtil.isAdminOrHouseholdMember(
+        auth,
+        foodProductHistory.getHousehold().getId(),
+        householdService
+      )
     ) throw new PermissionDeniedException(
       "Du har ikke tilgang til å slette statistikken for denne matvaren."
     );
@@ -224,9 +229,9 @@ public class FoodProductHistoryController {
     @PathVariable UUID householdId
   )
     throws PermissionDeniedException, FoodProductHistoryNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) throw new PermissionDeniedException(
-      "Du har ikke tilgang til å se statistikk for matvarer."
-    );
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
     return ResponseEntity.ok(
       foodProductHistoryService
         .getAllFoodProductHistoryByHouseholdIdAndFoodProductId(householdId, foodProductId)
@@ -257,9 +262,9 @@ public class FoodProductHistoryController {
     @PathVariable UUID householdId
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) throw new PermissionDeniedException(
-      "Du har ikke tilgang til å se statistikk for matvarer."
-    );
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
     return ResponseEntity.ok(
       foodProductHistoryService
         .getAllFoodProductHistoryByHouseholdId(householdId)
@@ -290,9 +295,9 @@ public class FoodProductHistoryController {
     @PathVariable UUID householdId
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) throw new PermissionDeniedException(
-      "Du har ikke tilgang til å se statistikk for matvarer."
-    );
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
     return ResponseEntity.ok(foodProductHistoryService.getTotalWaste(householdId));
   }
 
@@ -318,9 +323,9 @@ public class FoodProductHistoryController {
     @PathVariable @Min(2000) Integer year
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) throw new PermissionDeniedException(
-      "Du har ikke tilgang til å se statistikk for matvarer."
-    );
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
     return ResponseEntity.ok(
       foodProductHistoryService.getWasteByInPeriod(
         householdId,
@@ -354,9 +359,9 @@ public class FoodProductHistoryController {
     @PathVariable @Min(1) @Max(12) Integer month
   )
     throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    if (!isAdminOrHouseholdMember(auth, householdId)) throw new PermissionDeniedException(
-      "Du har ikke tilgang til å se statistikk for matvarer."
-    );
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
     return ResponseEntity.ok(
       foodProductHistoryService.getWasteByInPeriod(
         householdId,

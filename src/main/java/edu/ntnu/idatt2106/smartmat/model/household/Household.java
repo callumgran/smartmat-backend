@@ -57,10 +57,7 @@ public class Household {
   @OneToMany(mappedBy = "household", cascade = { CascadeType.REMOVE })
   private Set<HouseholdFoodProduct> foodProducts;
 
-  @OneToMany(
-    mappedBy = "household",
-    cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE }
-  )
+  @OneToMany(mappedBy = "household", cascade = { CascadeType.REMOVE })
   private Set<ShoppingList> shoppingLists;
 
   @OneToMany(mappedBy = "household")

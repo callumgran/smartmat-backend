@@ -25,7 +25,7 @@ public class Unit {
   @NonNull
   private String name;
 
-  @Column(name = "`abbreviation`", length = 16, nullable = true)
+  @Column(name = "`abbreviation`", unique = true, length = 16, nullable = false)
   private String abbreviation;
 
   @OneToMany(mappedBy = "unit")

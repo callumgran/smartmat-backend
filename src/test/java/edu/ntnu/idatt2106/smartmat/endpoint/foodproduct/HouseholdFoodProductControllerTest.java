@@ -29,7 +29,7 @@ import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
-import java.lang.reflect.Method;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -90,12 +90,6 @@ public class HouseholdFoodProductControllerTest {
 
   private HouseholdFoodProduct carrotHouseholdProduct;
 
-  private Method isAdminOrHouseholdMember;
-
-  private Method isAdminOrHouseholdPrivileged;
-
-  private Method isAdminOrHouseholdOwner;
-
   @Before
   public void setUp() throws NoSuchMethodException, SecurityException {
     Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
@@ -121,45 +115,16 @@ public class HouseholdFoodProductControllerTest {
     household.setId(HOUSEHOLD_ID);
     carrotHouseholdProduct =
       new HouseholdFoodProduct(FOOD_PRODUCT_ID, carrotProduct, household, LocalDate.now(), 1D);
-
-    isAdminOrHouseholdMember =
-      HouseholdFoodProductController.class.getDeclaredMethod(
-          "isAdminOrHouseholdMember",
-          Auth.class,
-          UUID.class
-        );
-    isAdminOrHouseholdMember.setAccessible(true);
-
-    isAdminOrHouseholdPrivileged =
-      HouseholdFoodProductController.class.getDeclaredMethod(
-          "isAdminOrHouseholdPrivileged",
-          Auth.class,
-          UUID.class
-        );
-    isAdminOrHouseholdPrivileged.setAccessible(true);
-
-    isAdminOrHouseholdOwner =
-      HouseholdFoodProductController.class.getDeclaredMethod(
-          "isAdminOrHouseholdOwner",
-          Auth.class,
-          UUID.class
-        );
-    isAdminOrHouseholdOwner.setAccessible(true);
   }
 
   @Test
   public void testGetHouseholdFoodProductExistingProductAndHouseholdAndUserIsHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -180,15 +145,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductExistingProductAndHouseholdAndUserIsNotHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -226,15 +186,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductNonExistingProductAndUserIsHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -255,15 +210,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductNonExistingProductAndUserIsNotHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -284,15 +234,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductByEanExistingAndUserIsHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -319,15 +264,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductByEanExistingAndUserIsNotHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -376,15 +316,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductByEanNonExistingAndUserIsHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -411,15 +346,10 @@ public class HouseholdFoodProductControllerTest {
   public void testGetHouseholdFoodProductByEanNonExistingAndUserIsNotHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdMember.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdMember(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -446,15 +376,10 @@ public class HouseholdFoodProductControllerTest {
   public void testCreateHouseholdFoodProductUserIsPrivilegedMember() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdPrivileged(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -485,15 +410,10 @@ public class HouseholdFoodProductControllerTest {
   public void testCreateHouseholdFoodProductUserIsNotPrivilegedMember() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdPrivileged(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -524,15 +444,10 @@ public class HouseholdFoodProductControllerTest {
   public void testCreateHouseholdFoodProductUserIsOwner() {
     try {
       when(
-        isAdminOrHouseholdOwner.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -563,15 +478,10 @@ public class HouseholdFoodProductControllerTest {
   public void testCreateHouseholdFoodProductUserIsNotHouseholdMember() {
     try {
       when(
-        isAdminOrHouseholdOwner.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -601,19 +511,6 @@ public class HouseholdFoodProductControllerTest {
   @Test
   public void testCreateHouseholdFoodProductUserIsNotMemberButIsAdmin() {
     try {
-      when(
-        isAdminOrHouseholdOwner.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
-          new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
-        )
-      )
-        .thenReturn(false);
       when(householdFoodProductService.saveFoodProduct(any(HouseholdFoodProduct.class)))
         .thenReturn(carrotHouseholdProduct);
       when(foodProductService.getFoodProductById(carrotProduct.getId())).thenReturn(carrotProduct);
@@ -641,15 +538,10 @@ public class HouseholdFoodProductControllerTest {
   public void testUpdateHouseholdFoodProductUserIsPrivilegedMemberAndProductExists() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdPrivileged(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -682,15 +574,10 @@ public class HouseholdFoodProductControllerTest {
   public void testUpdateHouseholdFoodProductUserIsPrivilegedMemberAndProductDoesNotExist() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -724,15 +611,10 @@ public class HouseholdFoodProductControllerTest {
   public void testUpdateHouseholdFoodProductUserIsMemberAndProductExists() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -765,15 +647,10 @@ public class HouseholdFoodProductControllerTest {
   public void testUpdateHouseholdFoodProductUserIsMemberAndProductDoesNotExist() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -835,15 +712,10 @@ public class HouseholdFoodProductControllerTest {
   public void testDeleteHouseholdFoodProductUserIsPrivilegedMemberAndProductExists() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -870,15 +742,10 @@ public class HouseholdFoodProductControllerTest {
   public void testDeleteHouseholdFoodProductUserIsPrivilegedMemberAndProductDoesNotExist() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(true);
@@ -905,15 +772,10 @@ public class HouseholdFoodProductControllerTest {
   public void testDeleteHouseholdFoodProductUserIsNotPrivilegedMemberAndProductExists() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);
@@ -940,15 +802,10 @@ public class HouseholdFoodProductControllerTest {
   public void testDeleteHouseholdFoodProductUserIsNotPrivilegedMemberAndProductDoesNotExist() {
     try {
       when(
-        isAdminOrHouseholdPrivileged.invoke(
-          new HouseholdFoodProductController(
-            foodProductService,
-            householdFoodProductService,
-            householdService,
-            foodProductHistoryService
-          ),
+        PrivilegeUtil.isAdminOrHouseholdOwner(
           new Auth(user.getUsername(), user.getRole()),
-          HOUSEHOLD_ID
+          HOUSEHOLD_ID,
+          householdService
         )
       )
         .thenReturn(false);

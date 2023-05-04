@@ -12,15 +12,13 @@ import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListMapper;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
-import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.List;
@@ -54,53 +52,6 @@ public class ShoppingListController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingListController.class);
 
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
-  /**
-   * Method to check whether the user is Admin or member.
-   * @param auth authentication for user
-   * @param householdId the id of the household.
-   * @return admin or member.
-   * @throws UserDoesNotExistsException if the user is not found.
-   * @throws HouseholdNotFoundException if the household is not found.
-   * @throws NullPointerException if any value are null.
-   */
-
-  private boolean isAdminOrHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdMember(householdId, auth.getUsername())
-    );
-  }
-
-  /**
-   * Method to check whether the user is Admin or privileged member.
-   * @param auth authentication for user
-   * @param householdId the id of the household.
-   * @return admin or privileged member.
-   * @throws UserDoesNotExistsException if the user is not found.
-   * @throws HouseholdNotFoundException if the household is not found.
-   * @throws NullPointerException if any value are null.
-   */
-  private boolean isAdminOrPrivilegedHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      isAdminOrHouseholdOwner(auth, householdId) ||
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      )
-    );
-  }
-
   /**
    * Method to create a shopping list.
    * @param auth authentication for user
@@ -131,10 +82,7 @@ public class ShoppingListController {
 
     UUID householdId = shoppingListDTO.getHousehold();
 
-    boolean hasCreateAccess = isAdminOrHouseholdOwner(auth, householdId);
-    LOGGER.info("User has create access: {}", hasCreateAccess);
-
-    if (!hasCreateAccess) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å lage en handleliste for denne hustanden"
       );
@@ -147,6 +95,7 @@ public class ShoppingListController {
     } catch (ShoppingListNotFoundException e) {
       LOGGER.info("No open shopping list for household {}.", household);
     }
+
     ShoppingList shoppingList = ShoppingList
       .builder()
       .id(UUID.randomUUID())
@@ -189,8 +138,13 @@ public class ShoppingListController {
     LOGGER.info("GET request for shopping list: {}", id);
     ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
-    boolean hasAccess = isAdminOrHouseholdMember(auth, shoppingList.getHousehold().getId());
-    if (!hasAccess) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("Du har ikke tilgang til handlelisten");
     }
 
@@ -228,7 +182,13 @@ public class ShoppingListController {
 
     ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
-    if (!isAdminOrHouseholdMember(auth, shoppingList.getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("Du har ikke tilgang til handlelisten");
     }
 
@@ -271,11 +231,18 @@ public class ShoppingListController {
     ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
     Household currenHousehold = shoppingList.getHousehold();
 
-    boolean hasUpdateAccess = isAdminOrHouseholdOwner(auth, currenHousehold.getId());
-    LOGGER.info("User has access to update: {}", hasUpdateAccess);
-    if (!hasUpdateAccess) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdOwner(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("Du kan ikke oppdatere denne handlelisten");
     }
+
+    LOGGER.info("User has access to update");
+
     shoppingList.setDateCompleted(shoppingListDTO.getDateCompleted());
 
     Household potentialNewHousehold = householdService.getHouseholdById(
@@ -283,7 +250,7 @@ public class ShoppingListController {
     );
     if (
       !potentialNewHousehold.equals(currenHousehold) &&
-      isAdminOrHouseholdOwner(auth, potentialNewHousehold.getId())
+      !PrivilegeUtil.isAdminOrHouseholdOwner(auth, potentialNewHousehold.getId(), householdService)
     ) {
       shoppingList.setHousehold(potentialNewHousehold);
     }
@@ -324,11 +291,13 @@ public class ShoppingListController {
 
     final ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
-    boolean hasUpdateAccess = isAdminOrPrivilegedHouseholdMember(
-      auth,
-      shoppingList.getHousehold().getId()
-    );
-    if (!hasUpdateAccess) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("Du kan ikke fullføre denne handlelisten");
     }
 
@@ -394,8 +363,13 @@ public class ShoppingListController {
 
     ShoppingList shoppingList = shoppinglistService.getShoppingListById(id);
 
-    boolean hasAccess = isAdminOrHouseholdOwner(auth, shoppingList.getHousehold().getId());
-    if (!hasAccess) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdOwner(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException("Du kan ikke slette denne handlelisten");
     }
 

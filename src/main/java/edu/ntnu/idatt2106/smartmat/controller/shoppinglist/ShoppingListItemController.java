@@ -10,18 +10,16 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundE
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.shoppinglist.ShoppingListItemMapper;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
-import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListItemService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.validation.foodproduct.FoodProductValidation;
-import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -62,35 +60,6 @@ public class ShoppingListItemController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingListItemController.class);
 
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
-  /**
-   * Method to check whether the user is Admin or privileged member.
-   * @param auth authentication for user
-   * @param householdId the id of the household.
-   * @return admin or privileged member.
-   * @throws UserDoesNotExistsException if the user is not found.
-   * @throws HouseholdNotFoundException if the household is not found.
-   * @throws NullPointerException if any value are null.
-   */
-  private boolean isAdminOrPrivilegedHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      isAdminOrHouseholdOwner(auth, householdId) ||
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      )
-    );
-  }
-
   /**
    * Method to add an an item to a shopping list.
    * @param auth authentication for user.
@@ -124,7 +93,13 @@ public class ShoppingListItemController {
 
     LOGGER.info("Adding item to shopping list");
 
-    if (!isAdminOrPrivilegedHouseholdMember(auth, shoppingList.getHousehold().getId())) {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        auth,
+        shoppingList.getHousehold().getId(),
+        householdService
+      )
+    ) {
       throw new PermissionDeniedException(
         "You do not have permission to add an item to this shopping list."
       );
@@ -203,7 +178,7 @@ public class ShoppingListItemController {
     @PathVariable("id") UUID id
   )
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
-    if (!isAdminOrPrivilegedHouseholdMember(auth, householdId)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "You do not have permission to delete an item from this shopping list."
       );
@@ -243,9 +218,10 @@ public class ShoppingListItemController {
     ShoppingListItem shoppingListItem = shoppingListItemService.getItemById(id);
 
     if (
-      !isAdminOrPrivilegedHouseholdMember(
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
         auth,
-        shoppingListItem.getShoppingList().getHousehold().getId()
+        shoppingListItem.getShoppingList().getHousehold().getId(),
+        householdService
       )
     ) throw new PermissionDeniedException("Du har ikke tilgang til å sjekke av denne matvaren");
 

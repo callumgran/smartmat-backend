@@ -15,7 +15,6 @@ import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.mapper.ingredient.IngredientMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.recipe.RecipeMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
@@ -25,6 +24,7 @@ import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,26 +59,6 @@ public class RecipeController {
   private final IngredientService ingredientService;
   private final HouseholdService householdService;
   private static final Logger LOGGER = LoggerFactory.getLogger(RecipeController.class);
-
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
-  private boolean isAdminOrHouseholdPrivileged(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      ) ||
-      isAdminOrHouseholdOwner(auth, householdId)
-    );
-  }
 
   /**
    * Method to get all recipes.
@@ -347,7 +327,7 @@ public class RecipeController {
     );
 
     Household household = householdService.getHouseholdById(recipeUseDTO.getHouseholdId());
-    if (!isAdminOrHouseholdPrivileged(auth, household.getId())) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, household.getId(), householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å bruke oppskrifter i dette husholdet"
       );
@@ -386,7 +366,7 @@ public class RecipeController {
     @PathVariable int portions
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente handlelisten for denne husholdningen."
       );

@@ -41,6 +41,7 @@ import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.utils.HouseholdRecipeRecommend;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
@@ -85,51 +86,13 @@ public class HouseholdController {
 
   private final WeeklyRecipeService weeklyRecipeService;
 
-  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdOwner(householdId, auth.getUsername())
-    );
-  }
-
-  /**
-   * Checks if a authenticated user is a member of a household
-   * or if the user is an admin.
-   * @param auth The authentication of the user.
-   * @param householdId The id of the household.
-   * @return True if the user is a member of the household or an admin.
-   * @throws UserDoesNotExistsException If the user does not exist.
-   * @throws HouseholdNotFoundException If the household does not exist.
-   * @throws NullPointerException if auth is null or if the household id is ull
-   */
-  private boolean isAdminOrHouseholdMember(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
-      householdService.isHouseholdMember(householdId, auth.getUsername())
-    );
-  }
-
-  private boolean isAdminOrHouseholdPrivileged(Auth auth, UUID householdId)
-    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
-    return (
-      householdService.isHouseholdMemberWithRole(
-        householdId,
-        auth.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
-      ) ||
-      isAdminOrHouseholdOwner(auth, householdId)
-    );
-  }
-
   /**
    * Get a household by id.
    * @param id The id of the household.
    * @return 200 if the household was found and the household.
-   * @throws UserDoesNotExistsException
-   * @throws NullPointerException
+   * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdDoesNotExistsException If the household does not exist.
+   * @throws NullPointerException If the id is null.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -137,8 +100,14 @@ public class HouseholdController {
     description = "Get a household by id, if the household does not exist, an error is thrown. Requires authentication.",
     tags = { "household" }
   )
-  public ResponseEntity<HouseholdDTO> getHousehold(@PathVariable String id)
-    throws HouseholdNotFoundException {
+  public ResponseEntity<HouseholdDTO> getHousehold(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable String id
+  )
+    throws HouseholdNotFoundException, UserDoesNotExistsException, PermissionDeniedException, NullPointerException {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, UUID.fromString(id), householdService)) {
+      throw new PermissionDeniedException("Du har ikke tilgang til denne ressursen");
+    }
     LOGGER.info("Getting household with id: {}", id);
     Household household = householdService.getHouseholdById(UUID.fromString(id));
 
@@ -155,6 +124,9 @@ public class HouseholdController {
    * @param householdDTO The household to create.
    * @return 201 if the household was created.
    * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdAlreadyExistsException If the household already exists.
+   * @throws ShoppingListAlreadyExistsException If the shopping list already exists.
+   * @throws NullPointerException If the householdDTO is null.
    */
   @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -166,7 +138,7 @@ public class HouseholdController {
     @AuthenticationPrincipal Auth auth,
     @RequestBody CreateHouseholdDTO householdDTO
   )
-    throws UserDoesNotExistsException, HouseholdAlreadyExistsException, ShoppingListAlreadyExistsException {
+    throws UserDoesNotExistsException, HouseholdAlreadyExistsException, ShoppingListAlreadyExistsException, NullPointerException {
     LOGGER.info("Creating household with name: {}", householdDTO.getName());
     Household household = Household.builder().name(householdDTO.getName()).build();
 
@@ -181,7 +153,8 @@ public class HouseholdController {
     household.setMembers(Set.of(userHousehold));
 
     ShoppingList shoppingList = ShoppingList.builder().household(household).build();
-    household.setShoppingLists(Set.of(shoppingList));
+
+    shoppingListService.saveShoppingList(shoppingList);
 
     LOGGER.info("Added owner to household with username: {}", auth.getUsername());
 
@@ -211,23 +184,19 @@ public class HouseholdController {
   )
   public ResponseEntity<HouseholdDTO> updateHouseholdName(
     @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
     @RequestBody UpdateHouseholdDTO updateDTO
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    boolean ownerOrAdmin = isAdminOrHouseholdOwner(auth, UUID.fromString(updateDTO.getId()));
-
-    if (!ownerOrAdmin) {
+    if (!PrivilegeUtil.isAdminOrHouseholdOwner(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å endre navnet på denne husholdningen."
       );
     }
 
-    LOGGER.info("Updating name of household with id: {}", updateDTO.getId());
+    LOGGER.info("Updating name of household with id: {}", id);
 
-    Household updated = householdService.updateHouseholdName(
-      UUID.fromString(updateDTO.getId()),
-      updateDTO.getName()
-    );
+    Household updated = householdService.updateHouseholdName(id, updateDTO.getName());
 
     LOGGER.info("Updated name of household with id: {}", updateDTO.getId());
     HouseholdDTO retDto = HouseholdMapper.INSTANCE.householdToHouseholdDTO(updated);
@@ -254,7 +223,7 @@ public class HouseholdController {
     @PathVariable UUID id
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdOwner(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdOwner(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å slette denne husholdningen."
       );
@@ -325,7 +294,7 @@ public class HouseholdController {
     @PathVariable String username
   )
     throws NullPointerException, PermissionDeniedException, MemberAlreadyExistsException, UserDoesNotExistsException, HouseholdNotFoundException {
-    if (!isAdminOrHouseholdOwner(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdOwner(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å legge til brukere i denne husholdningen."
       );
@@ -369,7 +338,7 @@ public class HouseholdController {
     @PathVariable String username
   )
     throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
-    if (!isAdminOrHouseholdOwner(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdOwner(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å fjerne brukere fra denne husholdningen."
       );
@@ -413,7 +382,7 @@ public class HouseholdController {
     @RequestBody HouseholdRole householdRole
   )
     throws NullPointerException, PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException {
-    if (!isAdminOrHouseholdOwner(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdOwner(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Brukeren har ikke tilgang til å oppdatere brukere i denne husholdningen."
       );
@@ -458,7 +427,7 @@ public class HouseholdController {
     @PathVariable UUID id
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdMember(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente handlelisten til denne husholdningen."
       );
@@ -499,7 +468,7 @@ public class HouseholdController {
     @PathVariable UUID id
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdMember(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente anbefalte oppskrifter for denne husholdningen."
       );
@@ -557,7 +526,7 @@ public class HouseholdController {
     @RequestBody CreateWeeklyRecipeDTO createWeeklyRecipeDTO
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException, RecipeNotFoundException {
-    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å legge til en ukentlig oppskrift for denne husholdningen."
       );
@@ -607,7 +576,7 @@ public class HouseholdController {
     @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å slette planlagte oppskrifter for denne husholdningen."
       );
@@ -649,7 +618,7 @@ public class HouseholdController {
     @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate monday
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdMember(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente en ukentlig oppskrift for denne husholdningen."
       );
@@ -699,7 +668,7 @@ public class HouseholdController {
     @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate monday
   )
     throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
-    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å hente handlelisten for denne husholdningen."
       );
@@ -753,7 +722,7 @@ public class HouseholdController {
     throws PermissionDeniedException, RecipeNotFoundException, HouseholdNotFoundException, FoodProductNotFoundException, UserDoesNotExistsException, NullPointerException {
     LOGGER.info("Request to use recipe on day: {} in household: {}", date, id);
 
-    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, id, householdService)) {
       throw new PermissionDeniedException(
         "Du har ikke tilgang til å bruke oppskrifter i dette husholdet"
       );

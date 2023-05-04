@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.smartmat.service.unit;
 
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import java.util.Collection;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public interface UnitService {
   Collection<Unit> getAllUnits();
 
-  Unit getUnit(String name);
+  Unit getUnit(@NonNull String name) throws NullPointerException;
 
-  Unit getUnitByAbbreviation(String abbreviation);
+  Unit getUnitByAbbreviation(@NonNull String abbreviation) throws NullPointerException;
 }
