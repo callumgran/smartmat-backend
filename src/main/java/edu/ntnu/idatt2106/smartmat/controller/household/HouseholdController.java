@@ -645,6 +645,49 @@ public class HouseholdController {
   }
 
   /**
+   * Method to get a weekly recipe for a household on a specific date.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
+   * @return 200 OK if the weekly recipe was found.
+   * @throws PermissionDeniedException If the user does not have access to the household.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   */
+  @GetMapping(value = "/{id}/recipes/today", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+    summary = "Gets the planned recipe for today for a household",
+    description = "Gets the planned recipe for a household today. Requires authentication.",
+    tags = { "household" }
+  )
+  public ResponseEntity<WeeklyRecipeDTO> getWeeklyRecipeToday(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id
+  ) throws PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!PrivilegeUtil.isAdminOrHouseholdMember(auth, id, householdService)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å hente en ukentlig oppskrift for denne husholdningen."
+      );
+    }
+
+    try {
+      WeeklyRecipe recipe = weeklyRecipeService.getRecipeForHouseholdDay(id, LocalDate.now());
+      LOGGER.info("Found recipe for household with id: {}", id);
+      return ResponseEntity.ok(
+        WeeklyRecipeDTO
+          .builder()
+          .used(recipe.isUsed())
+          .dateToUse(recipe.getDateToUse())
+          .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe.getRecipe()))
+          .portions(recipe.getPortions())
+          .build()
+      );
+    } catch (NullPointerException e) {
+      LOGGER.info("No recipe found for household with id: {}", id);
+      return ResponseEntity.noContent().build();
+    }
+  }
+
+  /**
    * Method to get the shopping list items needed for a household
    * based on the weekly recipes for a specific week.
    * @param auth The authentication of the user.

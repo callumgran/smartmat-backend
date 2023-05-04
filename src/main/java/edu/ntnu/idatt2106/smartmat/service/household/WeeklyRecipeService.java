@@ -41,6 +41,9 @@ public interface WeeklyRecipeService {
     @NonNull LocalDate monday
   ) throws NullPointerException;
 
+  WeeklyRecipe getRecipeForHouseholdDay(@NonNull UUID householdId, @NonNull LocalDate day)
+    throws NullPointerException;
+
   Collection<ShoppingListItem> getShoppingListItemsForHouseholdWeek(
     @NonNull UUID householdId,
     @NonNull LocalDate monday
