@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.JwtTokenSingleton;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
@@ -16,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +51,7 @@ public class TokenController {
    * @param authenticate The user to generate a token for.
    * @return The generated token.
    * @throws UserDoesNotExistsException if the user does not exist.
-   * @throws BadCredentialsException if the user credentials are wrong.
+   * @throws WrongPasswordException if the user credentials are wrong.
    */
   @PostMapping(value = "")
   @Operation(
@@ -60,7 +60,7 @@ public class TokenController {
   )
   @ResponseStatus(value = HttpStatus.CREATED)
   public String generateToken(@RequestBody AuthenticateDTO authenticate)
-    throws UserDoesNotExistsException, BadCredentialsException, ResponseStatusException {
+    throws UserDoesNotExistsException, WrongPasswordException, ResponseStatusException {
     LOGGER.info("Authenticating user: {}", authenticate.getUsername());
 
     if (userService.authenticateUser(authenticate.getUsername(), authenticate.getPassword())) {
@@ -70,7 +70,7 @@ public class TokenController {
     }
 
     LOGGER.info("Wrong credentials: {}", authenticate.getUsername());
-    throw new BadCredentialsException("Feil brukernavn eller passord...");
+    throw new WrongPasswordException("Feil brukernavn eller passord...");
   }
 
   /**

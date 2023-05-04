@@ -4,13 +4,13 @@ import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
 import java.util.Collection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
    * @param oldPassword the old password.
    * @param newPassword the new password.
    * @return the updated user.
-   * @throws BadCredentialsException if the old password is incorrect.
+   * @throws WrongPasswordException if the old password is incorrect.
    * @throws UserDoesNotExistsException if the user does not exist.
    * @throws NullPointerException if user is null.
    */
@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService {
     String lastName,
     String oldPassword,
     String newPassword
-  ) throws UserDoesNotExistsException, BadCredentialsException, NullPointerException {
+  ) throws UserDoesNotExistsException, WrongPasswordException, NullPointerException {
     if (!userRepository.existsById(user.getUsername())) throw new UserDoesNotExistsException();
     if (email != null) user.setEmail(email);
     if (firstName != null) user.setFirstName(firstName);
@@ -164,10 +164,8 @@ public class UserServiceImpl implements UserService {
     if (oldPassword != null && newPassword != null) {
       if (PasswordService.checkPassword(oldPassword, user.getPassword())) user.setPassword(
         PasswordService.hashPassword(newPassword)
-      ); else throw new BadCredentialsException("Invalid password");
-    } else if (newPassword != null) throw new BadCredentialsException(
-      "Old password is required to update password"
-    );
+      ); else throw new WrongPasswordException();
+    } else if (newPassword != null) throw new WrongPasswordException();
     return userRepository.save(user);
   }
 
@@ -190,15 +188,15 @@ public class UserServiceImpl implements UserService {
    * @param password the password of the user.
    * @return true if the user is authenticated.
    * @throws UserDoesNotExistsException if the user does not exist.
-   * @throws BadCredentialsException if the password is incorrect.
+   * @throws WrongPasswordException if the password is incorrect.
    */
   @Override
   public boolean authenticateUser(String username, String password)
-    throws UserDoesNotExistsException, BadCredentialsException {
+    throws UserDoesNotExistsException, WrongPasswordException {
     User user = getUserByUsername(username);
 
     if (!PasswordService.checkPassword(password, user.getPassword())) {
-      throw new BadCredentialsException("Invalid password");
+      throw new WrongPasswordException("Invalid password");
     }
 
     return true;

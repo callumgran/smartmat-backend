@@ -109,7 +109,7 @@ public class UserValidation extends BaseValidation {
    */
   public static boolean validatePasswordChange(String oldPassword, String newPassword) {
     boolean valid = true;
-    valid &= validatePassword(oldPassword);
+    // valid &= validatePassword(oldPassword);
     valid &= validatePassword(newPassword);
 
     return valid;
@@ -135,12 +135,15 @@ public class UserValidation extends BaseValidation {
     if (isNotNullOrEmpty(email)) {
       valid &= validateEmail(email);
     }
+
     if (isNotNullOrEmpty(firstName)) {
       valid &= validateName(firstName);
     }
+
     if (isNotNullOrEmpty(lastName)) {
       valid &= validateName(lastName);
     }
+
     if (isNotNullOrEmpty(newPassword)) {
       valid &= validatePasswordChange(password, newPassword);
     }

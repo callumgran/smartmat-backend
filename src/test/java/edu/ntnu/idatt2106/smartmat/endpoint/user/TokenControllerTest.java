@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import edu.ntnu.idatt2106.smartmat.controller.user.TokenController;
 import edu.ntnu.idatt2106.smartmat.dto.user.AuthenticateDTO;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -48,11 +48,11 @@ public class TokenControllerTest {
     when(userService.authenticateUser(goodAuthDTO.getUsername(), goodAuthDTO.getPassword()))
       .thenReturn(true);
     when(userService.authenticateUser(badAuthDTO.getUsername(), badAuthDTO.getPassword()))
-      .thenThrow(BadCredentialsException.class);
+      .thenThrow(WrongPasswordException.class);
     when(userService.authenticateUser(badUsernameDTO.getUsername(), badUsernameDTO.getPassword()))
-      .thenThrow(BadCredentialsException.class);
+      .thenThrow(WrongPasswordException.class);
     when(userService.authenticateUser(badPasswordDTO.getUsername(), badPasswordDTO.getPassword()))
-      .thenThrow(BadCredentialsException.class);
+      .thenThrow(WrongPasswordException.class);
     when(userService.getUserByUsername(goodAuthDTO.getUsername())).thenReturn(goodUser);
   }
 
@@ -82,7 +82,7 @@ public class TokenControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"username\": \"bad\", \"password\": \"test\"}")
         )
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isBadRequest());
     } catch (Exception e) {
       fail();
     }
@@ -98,7 +98,7 @@ public class TokenControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"username\": \"test\", \"password\": \"bad\"}")
         )
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isBadRequest());
     } catch (Exception e) {
       fail();
     }
@@ -114,7 +114,7 @@ public class TokenControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"username\": \"bad\", \"password\": \"bad\"}")
         )
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isBadRequest());
     } catch (Exception e) {
       fail();
     }
