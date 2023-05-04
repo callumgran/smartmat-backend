@@ -2,18 +2,27 @@ package edu.ntnu.idatt2106.smartmat.controller.recipe;
 
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeCreateDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
+import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeUseDTO;
+import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.RecipeShoppingListItemDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
+import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.ingredient.IngredientNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
+import edu.ntnu.idatt2106.smartmat.mapper.ingredient.IngredientMapper;
 import edu.ntnu.idatt2106.smartmat.mapper.recipe.RecipeMapper;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
+import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
+import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
@@ -48,7 +57,28 @@ public class RecipeController {
 
   private final RecipeService recipeService;
   private final IngredientService ingredientService;
+  private final HouseholdService householdService;
   private static final Logger LOGGER = LoggerFactory.getLogger(RecipeController.class);
+
+  private boolean isAdminOrHouseholdOwner(Auth auth, UUID householdId)
+    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
+    return (
+      AuthValidation.hasRole(auth, UserRole.ADMIN) ||
+      householdService.isHouseholdOwner(householdId, auth.getUsername())
+    );
+  }
+
+  private boolean isAdminOrHouseholdPrivileged(Auth auth, UUID householdId)
+    throws UserDoesNotExistsException, HouseholdNotFoundException, NullPointerException {
+    return (
+      householdService.isHouseholdMemberWithRole(
+        householdId,
+        auth.getUsername(),
+        HouseholdRole.PRIVILEGED_MEMBER
+      ) ||
+      isAdminOrHouseholdOwner(auth, householdId)
+    );
+  }
 
   /**
    * Method to get all recipes.
@@ -281,5 +311,114 @@ public class RecipeController {
     LOGGER.info("Mapped recipes to recipeDTOs: {}", recipeDTOs);
 
     return ResponseEntity.ok(recipeDTOs);
+  }
+
+  /**
+   * Method for using a recipe to use ingredients.
+   * @param id The id of the recipe to use.
+   * @param recipeUseDTO The recipe use request.
+   * @return A response entity with status code 200.
+   * @throws PermissionDeniedException If the user does not have permission to use a recipe.
+   * @throws RecipeNotFoundException If the recipe does not exist.
+   * @throws HouseNotFoundException If the house does not exist.
+   * @throws BadInputException If the recipe use request is invalid.
+   * @throws NullPointerException If any of the parameters are null.
+   */
+  @PutMapping(
+    value = "/{id}/use",
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(
+    summary = "Use a recipe",
+    description = "Use a recipe with the given id. The id in the path must match the id in the request body. Requires valid JWT token in header.",
+    tags = { "recipe" }
+  )
+  public ResponseEntity<Void> useRecipe(
+    @PathVariable UUID id,
+    @RequestBody RecipeUseDTO recipeUseDTO,
+    @AuthenticationPrincipal Auth auth
+  )
+    throws PermissionDeniedException, RecipeNotFoundException, HouseholdNotFoundException, BadInputException, UserDoesNotExistsException, NullPointerException {
+    LOGGER.info(
+      "Request to use recipe with id: {} in household: {}",
+      id,
+      recipeUseDTO.getHouseholdId()
+    );
+
+    Household household = householdService.getHouseholdById(recipeUseDTO.getHouseholdId());
+    if (!isAdminOrHouseholdPrivileged(auth, household.getId())) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å bruke oppskrifter i dette husholdet"
+      );
+    }
+
+    recipeService.useRecipe(id, household, recipeUseDTO.getPortions());
+
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Method for getting the shopping list items for a recipe.
+   * @param id The id of the recipe to get shopping list items for.
+   * @param householdId The id of the household to get shopping list items for.
+   * @param portions The number of portions to get shopping list items for.
+   * @return A response entity with status code 200 and a collection of shopping list items.
+   * @throws PermissionDeniedException If the user does not have permission to get shopping list items for a recipe.
+   * @throws RecipeNotFoundException If the recipe does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws NullPointerException If any of the parameters are null.
+   */
+  @GetMapping(
+    value = "/{id}/items/{householdId}/{portions}",
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(
+    summary = "Gets the shopping list items for a household from a recipe",
+    description = "Gets the shopping list items for a household from a recipe. Requires authentication.",
+    tags = { "recipe" }
+  )
+  public ResponseEntity<Collection<RecipeShoppingListItemDTO>> getShoppingListItems(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID id,
+    @PathVariable UUID householdId,
+    @PathVariable int portions
+  )
+    throws NullPointerException, PermissionDeniedException, HouseholdNotFoundException, UserDoesNotExistsException {
+    if (!isAdminOrHouseholdPrivileged(auth, id)) {
+      throw new PermissionDeniedException(
+        "Du har ikke tilgang til å hente handlelisten for denne husholdningen."
+      );
+    }
+
+    Household household = householdService.getHouseholdById(householdId);
+
+    LOGGER.info(
+      "Request to get shopping list items for recipe with id: {} in household: {}",
+      id,
+      householdId
+    );
+
+    Collection<ShoppingListItem> items = recipeService.getShoppingListItems(
+      id,
+      household,
+      portions
+    );
+
+    LOGGER.info("Found shopping list items for household with id: {}", id);
+
+    return ResponseEntity.ok(
+      items
+        .stream()
+        .map(i ->
+          RecipeShoppingListItemDTO
+            .builder()
+            .ingredient(IngredientMapper.INSTANCE.ingredientToBareIngredientDTO(i.getIngredient()))
+            .amount(i.getAmount())
+            .build()
+        )
+        .collect(Collectors.toList())
+    );
   }
 }

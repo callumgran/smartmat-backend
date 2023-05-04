@@ -4,17 +4,28 @@ import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsExceptio
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchSpecification;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.HouseholdFoodProduct;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
+import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeIngredientRepository;
 import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeRepository;
+import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
+import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
+import edu.ntnu.idatt2106.smartmat.utils.UnitUtils;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.zalando.fauxpas.FauxPas;
 
 /**
  * Implementation of the recipe service.
@@ -31,6 +42,12 @@ public class RecipeServiceImpl implements RecipeService {
 
   @Autowired
   private RecipeIngredientRepository recipeIngredientRepository;
+
+  @Autowired
+  private HouseholdFoodProductService householdFoodProductService;
+
+  @Autowired
+  private FoodProductHistoryService foodProductHistoryService;
 
   /**
    * Method to check if a recipe with the specified id exists in the repository.
@@ -144,5 +161,145 @@ public class RecipeServiceImpl implements RecipeService {
       new SearchSpecification<Recipe>(searchRequest),
       SearchSpecification.getPageable(searchRequest)
     );
+  }
+
+  /**
+   * Method to use a recipe.
+   * @param recipeId the id of the recipe to use.
+   * @param household the household to use the recipe for.
+   * @param portions the number of portions to use the recipe for.
+   * @throws RecipeNotFoundException if the recipe with the specified id does not exist.
+   * @throws NullPointerException if the recipe id or household is null.
+   */
+  @Override
+  public void useRecipe(@NonNull UUID recipeId, @NonNull Household household, int portions)
+    throws RecipeNotFoundException, NullPointerException {
+    if (!existsById(recipeId)) {
+      throw new RecipeNotFoundException();
+    }
+
+    Recipe recipe = findRecipeById(recipeId);
+
+    Collection<RecipeIngredient> ingredients = recipe
+      .getIngredients()
+      .stream()
+      .map(ingredient -> {
+        ingredient.setAmount(ingredient.getAmount() * portions);
+        return ingredient;
+      })
+      .toList();
+
+    ingredients
+      .stream()
+      .forEach(i -> {
+        FauxPas.throwingRunnable(() -> {
+          double ingredientAmount = UnitUtils.getNormalizedUnit(i);
+
+          for (HouseholdFoodProduct hfp : household.getFoodProducts()) {
+            if (
+              hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) && ingredientAmount > 0
+            ) {
+              double amount = UnitUtils.getNormalizedUnit(hfp);
+              if (amount >= ingredientAmount) {
+                hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
+                householdFoodProductService.saveFoodProduct(hfp);
+                foodProductHistoryService.saveFoodProductHistory(
+                  FoodProductHistory
+                    .builder()
+                    .household(household)
+                    .foodProduct(hfp.getFoodProduct())
+                    .thrownAmount(0)
+                    .amount(ingredientAmount)
+                    .date(LocalDate.now())
+                    .build()
+                );
+                return;
+              } else {
+                foodProductHistoryService.saveFoodProductHistory(
+                  FoodProductHistory
+                    .builder()
+                    .household(household)
+                    .foodProduct(hfp.getFoodProduct())
+                    .thrownAmount(0)
+                    .amount(amount)
+                    .date(LocalDate.now())
+                    .build()
+                );
+                ingredientAmount -= amount;
+                hfp.setAmountLeft(0);
+                householdFoodProductService.deleteFoodProductById(hfp.getId());
+              }
+            }
+          }
+        });
+      });
+  }
+
+  /**
+   * Method to get the shopping list items for a recipe.
+   * @param recipeId the id of the recipe to get the shopping list items for.
+   * @param household the household to get the shopping list items for.
+   * @param portions the number of portions to get the shopping list items for.
+   * @return a collection of shopping list items for the recipe.
+   * @throws RecipeNotFoundException if the recipe with the specified id does not exist.
+   * @throws NullPointerException if the recipe id or household is null.
+   */
+  @Override
+  public Collection<ShoppingListItem> getShoppingListItems(
+    @NonNull UUID recipeId,
+    @NonNull Household household,
+    int portions
+  ) throws NullPointerException, RecipeNotFoundException {
+    if (!existsById(recipeId)) {
+      throw new RecipeNotFoundException();
+    }
+
+    Recipe recipe = findRecipeById(recipeId);
+
+    final Collection<HouseholdFoodProduct> householdFoodProducts = household
+      .getFoodProducts()
+      .stream()
+      .collect(Collectors.toUnmodifiableList());
+
+    final Collection<RecipeIngredient> usedIngredients = recipe
+      .getIngredients()
+      .stream()
+      .map(ri -> {
+        ri.setAmount(ri.getAmount() * portions);
+        return ri;
+      })
+      .toList();
+
+    return usedIngredients
+      .stream()
+      .filter(ri -> {
+        householdFoodProducts.forEach(hfp -> {
+          if (ri.getIngredient().getId() == hfp.getFoodProduct().getIngredient().getId()) {
+            if (hfp.getAmountLeft() > 0) {
+              double amount = UnitUtils.removeRecipeIngredientAmountFromHouseholdFoodProductAmount(
+                ri,
+                hfp
+              );
+
+              if (amount > 0) {
+                ri.setAmount(0.0D);
+              } else {
+                ri.setAmount(UnitUtils.getOriginalUnit((-1.0 * amount), ri));
+              }
+            }
+          }
+        });
+
+        return ri.getAmount() > 0;
+      })
+      .map(ri -> {
+        return ShoppingListItem
+          .builder()
+          .ingredient(ri.getIngredient())
+          .amount(ri.getAmount())
+          .checked(false)
+          .build();
+      })
+      .toList();
   }
 }

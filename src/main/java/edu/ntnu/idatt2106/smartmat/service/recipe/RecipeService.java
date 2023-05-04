@@ -3,7 +3,9 @@ package edu.ntnu.idatt2106.smartmat.service.recipe;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.recipe.RecipeNotFoundException;
 import edu.ntnu.idatt2106.smartmat.filtering.SearchRequest;
+import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingListItem;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.NonNull;
@@ -34,4 +36,13 @@ public interface RecipeService {
   Collection<Recipe> findRecipesByName(@NonNull String name) throws NullPointerException;
 
   Page<Recipe> searchRecipes(@NonNull SearchRequest searchRequest) throws NullPointerException;
+
+  void useRecipe(@NonNull UUID id, @NonNull Household household, int portions)
+    throws RecipeNotFoundException, NullPointerException;
+
+  Collection<ShoppingListItem> getShoppingListItems(
+    @NonNull UUID recipeId,
+    @NonNull Household household,
+    int portions
+  ) throws RecipeNotFoundException, NullPointerException;
 }
