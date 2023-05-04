@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeeklyShoppingListItemDTO {
+public class RecipeShoppingListItemDTO {
 
   @NotBlank
   private double amount;

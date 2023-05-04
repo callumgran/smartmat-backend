@@ -22,6 +22,7 @@ import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
+import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import java.util.HashSet;
@@ -49,6 +50,9 @@ public class RecipeControllerTest {
 
   @MockBean
   private IngredientService ingredientService;
+
+  @MockBean
+  private HouseholdService householdService;
 
   private static final String BASE_URL = "/api/v1/private/recipes";
 

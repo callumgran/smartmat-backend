@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 public interface WeeklyRecipeService {
   boolean existsById(@NonNull WeeklyRecipe WeeklyRecipe) throws NullPointerException;
 
+  WeeklyRecipe getWeeklyRecipeById(@NonNull WeeklyRecipeId id) throws NullPointerException;
+
   WeeklyRecipe saveWeeklyRecipe(@NonNull WeeklyRecipe WeeklyRecipe)
     throws NullPointerException, IllegalArgumentException;
 

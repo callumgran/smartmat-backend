@@ -52,6 +52,19 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   }
 
   /**
+   * Gets the WeeklyRecipe by id
+   * @param id the id of the WeeklyRecipe to get
+   * @return the WeeklyRecipe
+   * @throws NullPointerException if the id is null or the WeeklyRecipe does not exist
+   */
+  @Override
+  public WeeklyRecipe getWeeklyRecipeById(@NonNull WeeklyRecipeId id) throws NullPointerException {
+    return weeklyRecipeRepository
+      .findById(id)
+      .orElseThrow(() -> new NullPointerException("Ukentlig oppskrift finnes ikke"));
+  }
+
+  /**
    * Saves the WeeklyRecipe
    * @param weeklyRecipe the WeeklyRecipe to save
    * @return the saved WeeklyRecipe
