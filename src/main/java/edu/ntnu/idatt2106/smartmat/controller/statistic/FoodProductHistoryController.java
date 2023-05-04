@@ -1,11 +1,13 @@
 package edu.ntnu.idatt2106.smartmat.controller.statistic;
 
 import edu.ntnu.idatt2106.smartmat.dto.statistic.FoodProductHistoryDTO;
+import edu.ntnu.idatt2106.smartmat.dto.statistic.MonthWasteDTO;
 import edu.ntnu.idatt2106.smartmat.dto.statistic.UpdateFoodProductHistoryDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.statistic.FoodProductHistoryNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.statistic.FoodProductHistoryMapper;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
@@ -18,9 +20,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -369,5 +374,73 @@ public class FoodProductHistoryController {
         LocalDate.of(year, month, 1).withDayOfMonth(LocalDate.of(year, month, 1).lengthOfMonth())
       )
     );
+  }
+
+  /**
+   * Method for getting the total waste for a household.
+   * @param householdId The id of the household.
+   * @param year The year to get the total waste for.
+   * @param month The month to get the total waste for.
+   * @return The total waste for a household.
+   * @throws PermissionDeniedException If the user is not an admin or a member of the household.
+   * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws NullPointerException If the household id is null.
+   */
+  @GetMapping("/household/{householdId}/by-month/{start-date}:{end-date}")
+  @Operation(
+    summary = "Get the total waste for a household.",
+    description = "Returns the total waste for a household for a month. If the user is not an admin, the householdId must be the id of the household the user is a member of.",
+    tags = { "stats" }
+  )
+  public ResponseEntity<List<MonthWasteDTO>> getWasteByMonthInPeriod(
+    @AuthenticationPrincipal Auth auth,
+    @PathVariable UUID householdId,
+    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+  )
+    throws PermissionDeniedException, UserDoesNotExistsException, HouseholdNotFoundException, BadInputException, NullPointerException {
+    if (
+      !PrivilegeUtil.isAdminOrHouseholdMember(auth, householdId, householdService)
+    ) throw new PermissionDeniedException("Du har ikke tilgang til å se statistikk for matvarer.");
+    if (startDate.isAfter(endDate)) throw new BadInputException(
+      "Startdato kan ikke være etter sluttdato."
+    );
+    if (startDate.isAfter(LocalDate.now())) throw new BadInputException(
+      "Startdato kan ikke være etter dagens dato."
+    );
+
+    List<MonthWasteDTO> monthWasteDTOList = new ArrayList<>();
+    monthWasteDTOList.add(
+      MonthWasteDTO
+        .builder()
+        .waste(
+          foodProductHistoryService.getWasteByInPeriod(
+            householdId,
+            startDate,
+            LocalDate.of(startDate.getYear(), startDate.getMonth(), startDate.lengthOfMonth())
+          )
+        )
+        .month(startDate.getMonthValue())
+        .build()
+    );
+    for (
+      LocalDate date = startDate.plusMonths(1).withDayOfMonth(1);
+      date.isBefore(endDate.plusDays(1));
+      date = date.plusMonths(1)
+    ) {
+      monthWasteDTOList.add(
+        new MonthWasteDTO(
+          date.getMonthValue(),
+          foodProductHistoryService.getWasteByInPeriod(
+            householdId,
+            date,
+            date.withDayOfMonth(date.lengthOfMonth())
+          )
+        )
+      );
+    }
+
+    return ResponseEntity.ok(monthWasteDTOList);
   }
 }
