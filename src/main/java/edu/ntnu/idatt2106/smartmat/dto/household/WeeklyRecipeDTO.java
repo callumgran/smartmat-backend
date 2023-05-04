@@ -32,4 +32,7 @@ public class WeeklyRecipeDTO {
 
   @NotBlank
   private boolean used;
+
+  @NotBlank
+  private int portions;
 }
