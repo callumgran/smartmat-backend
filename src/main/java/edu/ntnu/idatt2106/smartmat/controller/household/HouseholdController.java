@@ -58,14 +58,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for household endpoints.
@@ -746,11 +739,7 @@ public class HouseholdController {
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws NullPointerException If any values are null.
    */
-  @PutMapping(
-    value = "/{id}/recipes/{date}/use",
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
+  @PatchMapping(value = "/{id}/recipes/{date}/use", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Uses a recipe for a household on a specific date",
     description = "Uses a recipe for a household on a specific date. Requires authentication.",
