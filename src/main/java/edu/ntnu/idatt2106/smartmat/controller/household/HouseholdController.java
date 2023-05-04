@@ -675,6 +675,7 @@ public class HouseholdController {
             .used(r.isUsed())
             .dateToUse(r.getDateToUse())
             .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(r.getRecipe()))
+            .portions(r.getPortions())
             .build()
         )
         .collect(Collectors.toList())
