@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import edu.ntnu.idatt2106.smartmat.exceptions.DatabaseException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.repository.user.UserRepository;
@@ -31,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -284,7 +284,7 @@ public class UserServiceIntegrationTest {
   @Test
   public void testPartialUpdateOnlyNewPassword() {
     assertThrows(
-      BadCredentialsException.class,
+      WrongPasswordException.class,
       () -> userService.partialUpdate(updateUser, null, null, null, null, "newPassword")
     );
   }
@@ -302,7 +302,7 @@ public class UserServiceIntegrationTest {
         .thenReturn(false);
 
       assertThrows(
-        BadCredentialsException.class,
+        WrongPasswordException.class,
         () ->
           userService.partialUpdate(
             updateUser,
@@ -388,7 +388,7 @@ public class UserServiceIntegrationTest {
         .thenReturn(false);
 
       assertThrows(
-        BadCredentialsException.class,
+        WrongPasswordException.class,
         () -> userService.authenticateUser(existingUser.getUsername(), "wrongPassword")
       );
     }

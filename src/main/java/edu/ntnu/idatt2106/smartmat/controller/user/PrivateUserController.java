@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.smartmat.dto.user.UserDTO;
 import edu.ntnu.idatt2106.smartmat.dto.user.UserPatchDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import edu.ntnu.idatt2106.smartmat.mapper.user.UserMapper;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,7 +77,7 @@ public class PrivateUserController {
    * @return The updated user.
    * @throws PermissionDeniedException If the user is not authorized to update the user.
    * @throws UserDoesNotExistsException If the user does not exist.
-   * @throws BadCredentialsException If the old password is incorrect.
+   * @throws WrongPasswordException If the old password is incorrect.
    * @throws BadInputException If the input is invalid.
    */
   @PatchMapping(
@@ -95,7 +95,7 @@ public class PrivateUserController {
     @NonNull @PathVariable String username,
     @NonNull @RequestBody UserPatchDTO userUpdateDTO
   )
-    throws PermissionDeniedException, UserDoesNotExistsException, BadCredentialsException, BadInputException {
+    throws PermissionDeniedException, UserDoesNotExistsException, WrongPasswordException, BadInputException {
     if (
       !AuthValidation.hasRoleOrIsUser(auth, UserRole.ADMIN, username)
     ) throw new PermissionDeniedException("Brukeren har ikke tilgang til å oppdatere brukeren.");
@@ -106,7 +106,7 @@ public class PrivateUserController {
         userUpdateDTO.getFirstName(),
         userUpdateDTO.getLastName(),
         userUpdateDTO.getOldPassword(),
-        userUpdateDTO.getOldPassword()
+        userUpdateDTO.getNewPassword()
       )
     ) throw new BadInputException("Dårlig input, sjekk over feltene.");
 

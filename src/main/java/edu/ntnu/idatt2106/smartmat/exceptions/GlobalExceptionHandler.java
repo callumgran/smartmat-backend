@@ -15,6 +15,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundE
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.WrongPasswordException;
 import edu.ntnu.idatt2106.smartmat.exceptions.validation.BadInputException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -185,7 +186,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * @return A response entity with the exception message
    */
   @ExceptionHandler(
-    value = { NullPointerException.class, IllegalArgumentException.class, BadInputException.class }
+    value = {
+      NullPointerException.class,
+      IllegalArgumentException.class,
+      BadInputException.class,
+      WrongPasswordException.class,
+    }
   )
   public ResponseEntity<ExceptionResponse> handleNullPointerException(
     Exception ex,
