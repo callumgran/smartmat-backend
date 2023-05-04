@@ -127,54 +127,64 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
       .getIngredients()
       .stream()
       .map(ingredient -> {
-        ingredient.setAmount(ingredient.getAmount() * weeklyRecipe.getPortions());
-        return ingredient;
+        return new RecipeIngredient(
+          ingredient.getRecipe(),
+          ingredient.getIngredient(),
+          ingredient.getAmount() * weeklyRecipe.getPortions()
+        );
       })
       .toList();
 
     ingredients
       .stream()
       .forEach(i -> {
-        FauxPas.throwingRunnable(() -> {
-          double ingredientAmount = UnitUtils.getNormalizedUnit(i);
-
-          for (HouseholdFoodProduct hfp : weeklyRecipe.getHousehold().getFoodProducts()) {
-            if (
-              hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) && ingredientAmount > 0
-            ) {
-              double amount = UnitUtils.getNormalizedUnit(hfp);
-              if (amount >= ingredientAmount) {
-                hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
-                householdFoodProductService.saveFoodProduct(hfp);
-                foodProductHistoryService.saveFoodProductHistory(
-                  FoodProductHistory
-                    .builder()
-                    .household(weeklyRecipe.getHousehold())
-                    .foodProduct(hfp.getFoodProduct())
-                    .thrownAmount(0)
-                    .amount(ingredientAmount)
-                    .date(LocalDate.now())
-                    .build()
-                );
-                return;
-              } else {
-                foodProductHistoryService.saveFoodProductHistory(
-                  FoodProductHistory
-                    .builder()
-                    .household(weeklyRecipe.getHousehold())
-                    .foodProduct(hfp.getFoodProduct())
-                    .thrownAmount(0)
-                    .amount(amount)
-                    .date(LocalDate.now())
-                    .build()
-                );
-                ingredientAmount -= amount;
-                hfp.setAmountLeft(0);
-                householdFoodProductService.deleteFoodProductById(hfp.getId());
+        FauxPas
+          .throwingRunnable(() -> {
+            double ingredientAmount = UnitUtils.getNormalizedUnit(i);
+            for (HouseholdFoodProduct hfp : weeklyRecipe
+              .getHousehold()
+              .getFoodProducts()
+              .stream()
+              .sorted((hfp1, hfp2) -> hfp1.getExpirationDate().compareTo(hfp2.getExpirationDate()))
+              .toList()) {
+              if (
+                hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) &&
+                ingredientAmount > 0
+              ) {
+                double amount = UnitUtils.getNormalizedUnit(hfp);
+                if (amount >= ingredientAmount) {
+                  hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
+                  householdFoodProductService.updateFoodProduct(hfp);
+                  foodProductHistoryService.saveFoodProductHistory(
+                    FoodProductHistory
+                      .builder()
+                      .household(weeklyRecipe.getHousehold())
+                      .foodProduct(hfp.getFoodProduct())
+                      .thrownAmount(0)
+                      .amount(ingredientAmount)
+                      .date(LocalDate.now())
+                      .build()
+                  );
+                  return;
+                } else {
+                  foodProductHistoryService.saveFoodProductHistory(
+                    FoodProductHistory
+                      .builder()
+                      .household(weeklyRecipe.getHousehold())
+                      .foodProduct(hfp.getFoodProduct())
+                      .thrownAmount(0)
+                      .amount(amount)
+                      .date(LocalDate.now())
+                      .build()
+                  );
+                  ingredientAmount -= amount;
+                  hfp.setAmountLeft(0);
+                  householdFoodProductService.deleteFoodProductById(hfp.getId());
+                }
               }
             }
-          }
-        });
+          })
+          .run();
       });
     weeklyRecipe.setUsed(true);
     weeklyRecipeRepository.save(weeklyRecipe);
@@ -228,7 +238,6 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   ) throws NullPointerException {
     final Collection<WeeklyRecipe> recipes = getRecipesForHouseholdWeek(householdId, monday);
     final Household household = recipes.stream().toList().get(0).getHousehold();
-    final int portions = recipes.stream().toList().get(0).getPortions();
     final Collection<HouseholdFoodProduct> householdFoodProducts = household
       .getFoodProducts()
       .stream()
@@ -236,10 +245,17 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
 
     final Collection<RecipeIngredient> usedIngredients = recipes
       .stream()
-      .flatMap(r -> r.getRecipe().getIngredients().stream())
-      .map(ri -> {
-        ri.setAmount(ri.getAmount() * portions);
-        return ri;
+      .filter(wr -> !wr.isUsed())
+      .flatMap(r -> {
+        final int portions = r.getPortions();
+        return r
+          .getRecipe()
+          .getIngredients()
+          .stream()
+          .map(ri -> {
+            ri.setAmount(ri.getAmount() * portions);
+            return ri;
+          });
       })
       .toList();
 
@@ -265,6 +281,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
 
         return ri.getAmount() > 0;
       })
+      .distinct()
       .map(ri -> {
         return ShoppingListItem
           .builder()

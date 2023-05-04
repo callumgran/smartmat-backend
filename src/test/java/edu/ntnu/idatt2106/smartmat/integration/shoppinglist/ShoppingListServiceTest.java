@@ -391,9 +391,6 @@ public class ShoppingListServiceTest {
     assertEquals(1, customFoodItems.get(1).getAmount());
 
     assertEquals(3, shoppingListItems.size());
-    System.out.println(shoppingListItems.get(0).getAmount());
-    System.out.println(shoppingListItems.get(1).getAmount());
-    System.out.println(shoppingListItems.get(2).getAmount());
     assertTrue(2 == shoppingListItems.get(0).getAmount());
     assertTrue(2 == shoppingListItems.get(1).getAmount());
     assertTrue(4 == shoppingListItems.get(2).getAmount());

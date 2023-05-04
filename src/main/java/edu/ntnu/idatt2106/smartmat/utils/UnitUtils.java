@@ -27,9 +27,6 @@ public class UnitUtils {
     double conversionFactor,
     UnitTypeEnum unitType
   ) {
-    System.out.println("Amount: " + amount);
-    System.out.println("Conversion factor: " + conversionFactor);
-    System.out.println("Unit type: " + unitType);
     return amount * unitType.toKg(conversionFactor);
   }
 
