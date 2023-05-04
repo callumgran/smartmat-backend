@@ -184,54 +184,64 @@ public class RecipeServiceImpl implements RecipeService {
       .getIngredients()
       .stream()
       .map(ingredient -> {
-        ingredient.setAmount(ingredient.getAmount() * portions);
-        return ingredient;
+        return new RecipeIngredient(
+          ingredient.getRecipe(),
+          ingredient.getIngredient(),
+          ingredient.getAmount() * portions
+        );
       })
       .toList();
 
     ingredients
       .stream()
       .forEach(i -> {
-        FauxPas.throwingRunnable(() -> {
-          double ingredientAmount = UnitUtils.getNormalizedUnit(i);
+        FauxPas
+          .throwingRunnable(() -> {
+            double ingredientAmount = UnitUtils.getNormalizedUnit(i);
 
-          for (HouseholdFoodProduct hfp : household.getFoodProducts()) {
-            if (
-              hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) && ingredientAmount > 0
-            ) {
-              double amount = UnitUtils.getNormalizedUnit(hfp);
-              if (amount >= ingredientAmount) {
-                hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
-                householdFoodProductService.saveFoodProduct(hfp);
-                foodProductHistoryService.saveFoodProductHistory(
-                  FoodProductHistory
-                    .builder()
-                    .household(household)
-                    .foodProduct(hfp.getFoodProduct())
-                    .thrownAmount(0)
-                    .amount(ingredientAmount)
-                    .date(LocalDate.now())
-                    .build()
-                );
-                return;
-              } else {
-                foodProductHistoryService.saveFoodProductHistory(
-                  FoodProductHistory
-                    .builder()
-                    .household(household)
-                    .foodProduct(hfp.getFoodProduct())
-                    .thrownAmount(0)
-                    .amount(amount)
-                    .date(LocalDate.now())
-                    .build()
-                );
-                ingredientAmount -= amount;
-                hfp.setAmountLeft(0);
-                householdFoodProductService.deleteFoodProductById(hfp.getId());
+            for (HouseholdFoodProduct hfp : household
+              .getFoodProducts()
+              .stream()
+              .sorted((hfp1, hfp2) -> hfp1.getExpirationDate().compareTo(hfp2.getExpirationDate()))
+              .toList()) {
+              if (
+                hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) &&
+                ingredientAmount > 0
+              ) {
+                double amount = UnitUtils.getNormalizedUnit(hfp);
+                if (amount >= ingredientAmount) {
+                  hfp.setAmountLeft(UnitUtils.getOriginalUnit(amount - ingredientAmount, hfp));
+                  householdFoodProductService.saveFoodProduct(hfp);
+                  foodProductHistoryService.saveFoodProductHistory(
+                    FoodProductHistory
+                      .builder()
+                      .household(household)
+                      .foodProduct(hfp.getFoodProduct())
+                      .thrownAmount(0)
+                      .amount(ingredientAmount)
+                      .date(LocalDate.now())
+                      .build()
+                  );
+                  return;
+                } else {
+                  foodProductHistoryService.saveFoodProductHistory(
+                    FoodProductHistory
+                      .builder()
+                      .household(household)
+                      .foodProduct(hfp.getFoodProduct())
+                      .thrownAmount(0)
+                      .amount(amount)
+                      .date(LocalDate.now())
+                      .build()
+                  );
+                  ingredientAmount -= amount;
+                  hfp.setAmountLeft(0);
+                  householdFoodProductService.deleteFoodProductById(hfp.getId());
+                }
               }
             }
-          }
-        });
+          })
+          .run();
       });
   }
 

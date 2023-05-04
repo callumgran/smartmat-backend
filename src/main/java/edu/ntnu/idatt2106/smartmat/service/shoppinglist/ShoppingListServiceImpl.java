@@ -163,8 +163,6 @@ public class ShoppingListServiceImpl implements ShoppingListService {
               if (sli.getIngredient().getId().equals(fp.getFoodProduct().getIngredient().getId())) {
                 double shoppingListAmount = UnitUtils.getNormalizedUnit(sli);
                 double basketAmount = UnitUtils.getNormalizedUnit(fp);
-                System.out.println("shoppingListAmount: " + shoppingListAmount);
-                System.out.println("basketAmount: " + basketAmount);
                 sli.setAmount(UnitUtils.getOriginalUnit(shoppingListAmount - basketAmount, sli));
               }
             }
