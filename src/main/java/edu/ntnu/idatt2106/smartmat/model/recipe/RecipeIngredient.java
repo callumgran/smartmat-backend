@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.recipe;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -48,4 +49,8 @@ public class RecipeIngredient {
   @Column(name = "`amount`", nullable = false)
   @NonNull
   private Double amount;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "`unit`", nullable = false, referencedColumnName = "`unit_name`")
+  private Unit unit;
 }

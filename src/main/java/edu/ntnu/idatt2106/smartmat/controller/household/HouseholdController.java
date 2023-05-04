@@ -46,6 +46,7 @@ import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -140,7 +141,11 @@ public class HouseholdController {
   )
     throws UserDoesNotExistsException, HouseholdAlreadyExistsException, ShoppingListAlreadyExistsException, NullPointerException {
     LOGGER.info("Creating household with name: {}", householdDTO.getName());
-    Household household = Household.builder().name(householdDTO.getName()).build();
+    Household household = Household
+      .builder()
+      .name(householdDTO.getName())
+      .shoppingLists(new HashSet<>())
+      .build();
 
     User user = userService.getUserByUsername(auth.getUsername());
 
@@ -154,11 +159,12 @@ public class HouseholdController {
 
     ShoppingList shoppingList = ShoppingList.builder().household(household).build();
 
-    shoppingListService.saveShoppingList(shoppingList);
-
     LOGGER.info("Added owner to household with username: {}", auth.getUsername());
 
+    household.getShoppingLists().add(shoppingList);
     household = householdService.saveHousehold(household);
+
+    shoppingListService.saveShoppingList(shoppingList);
 
     LOGGER.info("Created household with name: {}", householdDTO.getName());
     HouseholdDTO householdDTORet = HouseholdMapper.INSTANCE.householdToHouseholdDTO(household);

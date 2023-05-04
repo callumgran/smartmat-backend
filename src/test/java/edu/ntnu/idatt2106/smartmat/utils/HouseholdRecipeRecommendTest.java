@@ -37,8 +37,8 @@ public class HouseholdRecipeRecommendTest {
 
   @Before
   public void setUp() throws Exception {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
     Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
@@ -58,7 +58,7 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       null
     );
-    RecipeIngredient pastaRecipePasta = new RecipeIngredient(pastaRecipe, pasta, 1.0);
+    RecipeIngredient pastaRecipePasta = new RecipeIngredient(pastaRecipe, pasta, 1.0, unit);
     pastaRecipe.getIngredients().add(pastaRecipePasta);
 
     // Create tomato sauce recipe
@@ -73,9 +73,24 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       null
     );
-    RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
-    RecipeIngredient tomatoSauceRecipeOnion = new RecipeIngredient(tomatoSauceRecipe, onion, 1.0);
-    RecipeIngredient tomatoSauceRecipeGarlic = new RecipeIngredient(tomatoSauceRecipe, garlic, 1.0);
+    RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(
+      tomatoSauceRecipe,
+      tomato,
+      2.0,
+      unit
+    );
+    RecipeIngredient tomatoSauceRecipeOnion = new RecipeIngredient(
+      tomatoSauceRecipe,
+      onion,
+      1.0,
+      unit
+    );
+    RecipeIngredient tomatoSauceRecipeGarlic = new RecipeIngredient(
+      tomatoSauceRecipe,
+      garlic,
+      1.0,
+      unit
+    );
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeTomato);
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeOnion);
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeGarlic);
@@ -92,9 +107,24 @@ public class HouseholdRecipeRecommendTest {
       new HashSet<>(),
       null
     );
-    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
-    RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(carrotSoupRecipe, potato, 1.0);
-    RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(carrotSoupRecipe, onion, 1.0);
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(
+      carrotSoupRecipe,
+      carrot,
+      5.0,
+      unit
+    );
+    RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(
+      carrotSoupRecipe,
+      potato,
+      1.0,
+      unit
+    );
+    RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(
+      carrotSoupRecipe,
+      onion,
+      1.0,
+      unit
+    );
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipePotato);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeOnion);
@@ -252,7 +282,7 @@ public class HouseholdRecipeRecommendTest {
 
   @Test
   public void testHouseholdRecipeRecommendRecipesCorrectlyWhenRecipesAreUsed() {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
     Recipe carrotSoupRecipe = new Recipe(
       null,
       "Carrot soup",
@@ -267,9 +297,24 @@ public class HouseholdRecipeRecommendTest {
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
     Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);
-    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
-    RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(carrotSoupRecipe, potato, 1.0);
-    RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(carrotSoupRecipe, onion, 1.0);
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(
+      carrotSoupRecipe,
+      carrot,
+      5.0,
+      unit
+    );
+    RecipeIngredient carrotSoupRecipePotato = new RecipeIngredient(
+      carrotSoupRecipe,
+      potato,
+      1.0,
+      unit
+    );
+    RecipeIngredient carrotSoupRecipeOnion = new RecipeIngredient(
+      carrotSoupRecipe,
+      onion,
+      1.0,
+      unit
+    );
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipePotato);
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeOnion);

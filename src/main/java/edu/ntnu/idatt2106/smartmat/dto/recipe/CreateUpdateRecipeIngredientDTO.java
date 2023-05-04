@@ -23,4 +23,7 @@ public class CreateUpdateRecipeIngredientDTO {
 
   @NotBlank
   private double amount;
+
+  @NotBlank
+  private String unitName;
 }

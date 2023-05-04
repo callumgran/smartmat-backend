@@ -6,6 +6,8 @@ import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
+import edu.ntnu.idatt2106.smartmat.model.unit.UnitTypeEnum;
 import java.util.HashSet;
 import java.util.List;
 import org.junit.Test;
@@ -32,7 +34,8 @@ public class RecipeRepositoryTest {
 
   @Test
   public void testFindByNameContainingIgnoreCase() {
-    Ingredient ingredient = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Ingredient ingredient = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), unit);
     Recipe recipe = new Recipe(
       null,
       "Carrot Cake",
@@ -42,12 +45,14 @@ public class RecipeRepositoryTest {
       30,
       RecipeDifficulty.EASY,
       new HashSet<>(),
-      null
+      ""
     );
-    RecipeIngredient recipeIngredient = new RecipeIngredient(recipe, ingredient, 3D);
+    RecipeIngredient recipeIngredient = new RecipeIngredient(recipe, ingredient, 3D, unit);
     recipe.getIngredients().add(recipeIngredient);
     ingredient.getRecipes().add(recipeIngredient);
+    unit.getRecipeIngredients().add(recipeIngredient);
 
+    entityManager.persist(unit);
     entityManager.persist(ingredient);
     entityManager.persist(recipe);
     entityManager.persist(recipeIngredient);

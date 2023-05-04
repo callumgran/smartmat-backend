@@ -31,7 +31,7 @@ public class HouseholdFoodProductRepositoryTest {
   public void findByEAN() {
     Ingredient carrot = new Ingredient(null, "Carrot", new HashSet<>(), new HashSet<>(), null);
     Ingredient raisin = new Ingredient(null, "Raisin", new HashSet<>(), new HashSet<>(), null);
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
     carrot = entityManager.persist(carrot);
     raisin = entityManager.persist(raisin);
     unit = entityManager.persist(unit);

@@ -87,8 +87,8 @@ public class WeeklyRecipeServiceIntegrationTest {
 
   @Before
   public void setUp() {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
     carrot = new Ingredient(1L, "Carrot", null, null, unit);
     tomato = new Ingredient(5L, "Tomato", null, null, unit);
 
@@ -105,7 +105,12 @@ public class WeeklyRecipeServiceIntegrationTest {
       new HashSet<>(),
       null
     );
-    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(carrotSoupRecipe, carrot, 5.0);
+    RecipeIngredient carrotSoupRecipeCarrot = new RecipeIngredient(
+      carrotSoupRecipe,
+      carrot,
+      5.0,
+      unit
+    );
     carrotSoupRecipe.getIngredients().add(carrotSoupRecipeCarrot);
 
     Recipe tomatoSauceRecipe = new Recipe(
@@ -119,7 +124,12 @@ public class WeeklyRecipeServiceIntegrationTest {
       new HashSet<>(),
       null
     );
-    RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(tomatoSauceRecipe, tomato, 2.0);
+    RecipeIngredient tomatoSauceRecipeTomato = new RecipeIngredient(
+      tomatoSauceRecipe,
+      tomato,
+      2.0,
+      unit
+    );
     tomatoSauceRecipe.getIngredients().add(tomatoSauceRecipeTomato);
 
     weeklyRecipe = new WeeklyRecipe(LocalDate.of(2023, 2, 1));
