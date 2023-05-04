@@ -30,11 +30,18 @@ public class ParseUnitTest {
 
   @Before
   public void setUp() {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
-    Unit stk = new Unit("stk", "stk", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    Unit ml = new Unit("milliliter", "ml", new HashSet<>(), 0.001, UnitTypeEnum.LIQUID);
-    Unit l = new Unit("liter", "l", new HashSet<>(), 1, UnitTypeEnum.LIQUID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit stk = new Unit("stk", "stk", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit ml = new Unit(
+      "milliliter",
+      "ml",
+      new HashSet<>(),
+      0.001,
+      UnitTypeEnum.LIQUID,
+      new HashSet<>()
+    );
+    Unit l = new Unit("liter", "l", new HashSet<>(), 1, UnitTypeEnum.LIQUID, new HashSet<>());
     units = new ArrayList<>(List.of(unit, gram, stk, ml, l));
     defaultUnit = stk;
   }

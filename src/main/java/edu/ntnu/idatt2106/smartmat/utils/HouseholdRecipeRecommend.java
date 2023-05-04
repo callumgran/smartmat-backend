@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * The recommendation is also based on how many of the ingredients the household has.
  * The recommendation also takes into account how much of the ingredients the household has planned to use.
  * @author Callum G.
- * @version 1.0 28.04.2023
+ * @version 1.2 04.05.2023
  */
 public class HouseholdRecipeRecommend {
 
@@ -100,8 +100,12 @@ public class HouseholdRecipeRecommend {
       .stream()
       .flatMap(r -> r.getIngredients().stream())
       .map(ri -> {
-        ri.setAmount(ri.getAmount() * householdSize);
-        return ri;
+        return new RecipeIngredient(
+          ri.getRecipe(),
+          ri.getIngredient(),
+          ri.getAmount() * householdSize,
+          ri.getUnit()
+        );
       })
       .toList();
 
@@ -164,9 +168,13 @@ public class HouseholdRecipeRecommend {
             .getIngredients()
             .stream()
             .map(ri -> {
-              ri.setAmount(ri.getAmount() * householdSize);
               System.out.println(ri.getIngredient().getName() + " : " + ri.getAmount());
-              return ri;
+              return new RecipeIngredient(
+                ri.getRecipe(),
+                ri.getIngredient(),
+                ri.getAmount() * householdSize,
+                ri.getUnit()
+              );
             })
             .collect(Collectors.toSet())
         );

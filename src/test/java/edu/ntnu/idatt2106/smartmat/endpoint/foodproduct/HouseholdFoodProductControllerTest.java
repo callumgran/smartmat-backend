@@ -92,7 +92,7 @@ public class HouseholdFoodProductControllerTest {
 
   @Before
   public void setUp() throws NoSuchMethodException, SecurityException {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
     user = testUserFactory(TestUserEnum.GOOD);
     admin = testUserFactory(TestUserEnum.ADMIN);
     carrot = new Ingredient(1L, "Carrot", null, null, null);

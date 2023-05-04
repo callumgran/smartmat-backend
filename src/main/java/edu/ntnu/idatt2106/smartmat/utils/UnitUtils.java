@@ -51,8 +51,8 @@ public class UnitUtils {
   public static double getNormalizedUnit(RecipeIngredient ingredient) {
     return getNormalizedUnit(
       ingredient.getAmount(),
-      ingredient.getIngredient().getUnit().getToNormalFormConversionFactor(),
-      ingredient.getIngredient().getUnit().getUnitType()
+      ingredient.getUnit().getToNormalFormConversionFactor(),
+      ingredient.getUnit().getUnitType()
     );
   }
 
@@ -150,6 +150,20 @@ public class UnitUtils {
       amount,
       basketItem.getFoodProduct().getUnit().getToNormalFormConversionFactor(),
       basketItem.getFoodProduct().getUnit().getUnitType()
+    );
+  }
+
+  /**
+   * Method to get the unit amount for an ingredient based
+   * on a recipe ingredient
+   * @param recipeIngredient The recipe ingredient to get the unit amount for
+   * @return The unit amount for the recipe ingredient
+   */
+  public static double getIngredientAmount(RecipeIngredient recipeIngredient) {
+    return getOriginalUnit(
+      getNormalizedUnit(recipeIngredient),
+      recipeIngredient.getIngredient().getUnit().getToNormalFormConversionFactor(),
+      recipeIngredient.getIngredient().getUnit().getUnitType()
     );
   }
 

@@ -187,7 +187,8 @@ public class RecipeServiceImpl implements RecipeService {
         return new RecipeIngredient(
           ingredient.getRecipe(),
           ingredient.getIngredient(),
-          ingredient.getAmount() * portions
+          ingredient.getAmount() * portions,
+          ingredient.getUnit()
         );
       })
       .toList();
@@ -306,7 +307,7 @@ public class RecipeServiceImpl implements RecipeService {
         return ShoppingListItem
           .builder()
           .ingredient(ri.getIngredient())
-          .amount(ri.getAmount())
+          .amount(UnitUtils.getIngredientAmount(ri))
           .checked(false)
           .build();
       })

@@ -34,7 +34,16 @@ public class ParseUnit {
     String productName,
     Unit defaultUnit
   ) {
-    units.add(new Unit("stk", "pk", Collections.emptySet(), 1, UnitTypeEnum.BY_PIECE));
+    units.add(
+      new Unit(
+        "stk",
+        "pk",
+        Collections.emptySet(),
+        1,
+        UnitTypeEnum.BY_PIECE,
+        Collections.emptySet()
+      )
+    );
     final List<UnitStringTuple> unitNames = new ArrayList<>();
     final String lowerProductName = productName.toLowerCase();
     LOGGER.info("Parsing unit from product name: " + productName);

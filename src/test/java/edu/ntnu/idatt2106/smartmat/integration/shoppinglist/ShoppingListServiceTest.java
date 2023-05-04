@@ -243,8 +243,8 @@ public class ShoppingListServiceTest {
 
   @Test
   public void testGetCurrentShoppingListWithDiff() throws Exception {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
     Ingredient carrot = new Ingredient(1L, "Carrot", null, null, unit);
     Ingredient potato = new Ingredient(2L, "Potato", null, null, unit);
     Ingredient onion = new Ingredient(3L, "Onion", null, null, unit);

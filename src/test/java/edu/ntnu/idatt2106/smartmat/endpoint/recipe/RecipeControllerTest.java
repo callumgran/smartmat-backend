@@ -21,10 +21,12 @@ import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
+import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
+import edu.ntnu.idatt2106.smartmat.service.unit.UnitService;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -53,6 +55,9 @@ public class RecipeControllerTest {
 
   @MockBean
   private HouseholdService householdService;
+
+  @MockBean
+  private UnitService unitService;
 
   private static final String BASE_URL = "/api/v1/private/recipes";
 
@@ -89,6 +94,8 @@ public class RecipeControllerTest {
     when(recipeService.saveRecipe(any(Recipe.class))).thenReturn(recipe);
 
     when(recipeService.updateRecipe(eq(recipe.getId()), any(Recipe.class))).thenReturn(recipe);
+
+    when(unitService.getUnit("kilogram")).thenReturn(new Unit());
 
     doNothing().when(recipeService).deleteRecipeById(recipe.getId());
   }
@@ -203,7 +210,8 @@ public class RecipeControllerTest {
               "    \"ingredient\": " +
               ingredient.getId() +
               "," +
-              "    \"amount\": 1" +
+              "    \"amount\": 1," +
+              "    \"unitName\": \"kilogram\"" +
               "}],\n" +
               "  \"instructions\": \"instructions\",\n" +
               "  \"estimatedMinutes\": 1,\n" +
@@ -234,7 +242,8 @@ public class RecipeControllerTest {
               "  \"description\": \"description\",\n" +
               "  \"ingredients\": [{" +
               "    \"ingredient\": 9999," +
-              "    \"amount\": 1" +
+              "    \"amount\": 1," +
+              "    \"unitName\": \"kilogram\"" +
               "}],\n" +
               "  \"instructions\": \"instructions\",\n" +
               "  \"estimatedMinutes\": 1,\n" +
@@ -264,7 +273,8 @@ public class RecipeControllerTest {
               "    \"ingredient\": " +
               ingredient.getId() +
               "," +
-              "    \"amount\": 1" +
+              "    \"amount\": 1," +
+              "    \"unitName\": \"kilogram\"" +
               "}],\n" +
               "  \"instructions\": \"instructions\",\n" +
               "  \"estimatedMinutes\": 50,\n" +

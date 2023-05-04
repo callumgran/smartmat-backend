@@ -24,6 +24,7 @@ import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
+import edu.ntnu.idatt2106.smartmat.service.unit.UnitService;
 import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import edu.ntnu.idatt2106.smartmat.validation.search.SearchRequestValidation;
 import edu.ntnu.idatt2106.smartmat.validation.user.AuthValidation;
@@ -58,6 +59,7 @@ public class RecipeController {
   private final RecipeService recipeService;
   private final IngredientService ingredientService;
   private final HouseholdService householdService;
+  private final UnitService unitService;
   private static final Logger LOGGER = LoggerFactory.getLogger(RecipeController.class);
 
   /**
@@ -161,7 +163,8 @@ public class RecipeController {
           new RecipeIngredient(
             recipe,
             ingredientService.getIngredientById(i.getIngredient()),
-            i.getAmount()
+            i.getAmount(),
+            unitService.getUnit(i.getUnitName())
           )
         )
       )
@@ -218,7 +221,14 @@ public class RecipeController {
     Set<RecipeIngredient> ingredients = recipeDTO
       .getIngredients()
       .stream()
-      .map(i -> new RecipeIngredient(recipe, getIngredient.apply(i.getIngredient()), i.getAmount()))
+      .map(i ->
+        new RecipeIngredient(
+          recipe,
+          getIngredient.apply(i.getIngredient()),
+          i.getAmount(),
+          unitService.getUnit(i.getUnitName())
+        )
+      )
       .collect(Collectors.toSet());
     LOGGER.info("Using ingredients in recipe: {}", ingredients);
     recipe.setIngredients(ingredients);

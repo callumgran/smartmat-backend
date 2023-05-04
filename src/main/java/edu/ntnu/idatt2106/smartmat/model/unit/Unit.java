@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.model.unit;
 
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
+import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeIngredient;
 import jakarta.persistence.*;
 import java.util.Set;
 import lombok.*;
@@ -42,4 +43,7 @@ public class Unit {
   @Enumerated(EnumType.STRING)
   @Column(name = "`unit_type`", length = 10, nullable = false)
   private UnitTypeEnum unitType;
+
+  @OneToMany(mappedBy = "unit")
+  private Set<RecipeIngredient> recipeIngredients;
 }

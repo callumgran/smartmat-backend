@@ -130,7 +130,8 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
         return new RecipeIngredient(
           ingredient.getRecipe(),
           ingredient.getIngredient(),
-          ingredient.getAmount() * weeklyRecipe.getPortions()
+          ingredient.getAmount() * weeklyRecipe.getPortions(),
+          ingredient.getUnit()
         );
       })
       .toList();
@@ -141,6 +142,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
         FauxPas
           .throwingRunnable(() -> {
             double ingredientAmount = UnitUtils.getNormalizedUnit(i);
+            System.out.println("INGREDIENT AMOUNT: " + ingredientAmount);
             for (HouseholdFoodProduct hfp : weeklyRecipe
               .getHousehold()
               .getFoodProducts()
@@ -304,7 +306,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
         return ShoppingListItem
           .builder()
           .ingredient(ri.getIngredient())
-          .amount(ri.getAmount())
+          .amount(UnitUtils.getIngredientAmount(ri))
           .checked(false)
           .build();
       })

@@ -71,7 +71,7 @@ public class FoodProductControllerTest {
 
   @Before
   public void setUp() {
-    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
+    Unit unit = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
     carrot = new Ingredient(1L, "Carrot", null, null, null);
     carrotProduct =
       new FoodProduct(

@@ -90,7 +90,13 @@ public class ShoppingListItemControllerTest {
     shoppingList = new ShoppingList(shoppingListId, null, household, new HashSet<>(), null, null);
     shoppingListItem = new ShoppingListItem(shoppingListItemId, 1, false, shoppingList, null);
     ingredient =
-      new Ingredient(ingredientId, "Test", null, null, new Unit("Test", "Test", null, 0.0, null));
+      new Ingredient(
+        ingredientId,
+        "Test",
+        null,
+        null,
+        new Unit("Test", "Test", null, 0.0, null, new HashSet<>())
+      );
   }
 
   @Test

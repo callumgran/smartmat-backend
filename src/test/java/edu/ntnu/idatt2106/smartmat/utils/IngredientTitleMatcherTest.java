@@ -25,7 +25,7 @@ public class IngredientTitleMatcherTest {
 
   @Before
   public void setUp() {
-    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
+    Unit gram = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
     Ingredient burger = new Ingredient(1L, "burger", null, null, gram);
     Ingredient salmon = new Ingredient(2L, "laks", null, null, gram);
     Ingredient soyaSauce = new Ingredient(3L, "soya saus", null, null, gram);

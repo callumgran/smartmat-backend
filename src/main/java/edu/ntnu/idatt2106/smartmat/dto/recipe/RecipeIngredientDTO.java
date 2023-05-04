@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.smartmat.dto.recipe;
 
 import edu.ntnu.idatt2106.smartmat.dto.ingredient.BareIngredientDTO;
+import edu.ntnu.idatt2106.smartmat.dto.unit.UnitDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +27,8 @@ public class RecipeIngredientDTO {
 
   @NotBlank
   private double amount;
+
+  @NotBlank
+  @NonNull
+  private UnitDTO unit;
 }

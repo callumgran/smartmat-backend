@@ -45,9 +45,9 @@ public class UnitServiceIntegrationTest {
 
   @Before
   public void setUp() {
-    kg = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID);
-    g = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID);
-    l = new Unit("liter", "l", new HashSet<>(), 1, UnitTypeEnum.LIQUID);
+    kg = new Unit("kilogram", "kg", new HashSet<>(), 1, UnitTypeEnum.SOLID, new HashSet<>());
+    g = new Unit("gram", "g", new HashSet<>(), 0.001, UnitTypeEnum.SOLID, new HashSet<>());
+    l = new Unit("liter", "l", new HashSet<>(), 1, UnitTypeEnum.LIQUID, new HashSet<>());
   }
 
   @Test
