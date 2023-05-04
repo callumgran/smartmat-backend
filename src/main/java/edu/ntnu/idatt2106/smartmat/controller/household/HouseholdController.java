@@ -48,6 +48,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -675,22 +676,22 @@ public class HouseholdController {
       );
     }
 
-    try {
-      WeeklyRecipe recipe = weeklyRecipeService.getRecipeForHouseholdDay(id, LocalDate.now());
-      LOGGER.info("Found recipe for household with id: {}", id);
-      return ResponseEntity.ok(
-        WeeklyRecipeDTO
-          .builder()
-          .used(recipe.isUsed())
-          .dateToUse(recipe.getDateToUse())
-          .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe.getRecipe()))
-          .portions(recipe.getPortions())
-          .build()
-      );
-    } catch (NullPointerException e) {
+    WeeklyRecipe recipe = weeklyRecipeService.getRecipeForHouseholdDay(id, LocalDate.now());
+    if (Objects.isNull(recipe)) {
       LOGGER.info("No recipe found for household with id: {}", id);
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     }
+
+    LOGGER.info("Found recipe for household with id: {}", id);
+    return ResponseEntity.ok(
+      WeeklyRecipeDTO
+        .builder()
+        .used(recipe.isUsed())
+        .dateToUse(recipe.getDateToUse())
+        .recipe(RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe.getRecipe()))
+        .portions(recipe.getPortions())
+        .build()
+    );
   }
 
   /**
