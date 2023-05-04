@@ -224,6 +224,24 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   }
 
   /**
+   * Gets the planned recipe for the household on a given day
+   * @param household the household to get the recipe for
+   * @param household the date to get the recipe for
+   * @param date the date to get the recipe for
+   * @return the planned recipe for the household on a given day
+   * @throws NullPointerException if the household or date is null
+   */
+  @Override
+  public WeeklyRecipe getRecipeForHouseholdDay(@NonNull UUID household, @NonNull LocalDate date)
+    throws NullPointerException {
+    // should be its own method in the repo, but due to time constraints, this will have to do
+    Collection<WeeklyRecipe> a = weeklyRecipeRepository
+      .findAllRecipesByHouseholdAndWeek(household, date, date.plusDays(1))
+      .orElseThrow(() -> new NullPointerException("Ingen oppskrifter funnet for denne dagen"));
+    return a.stream().toList().get(0);
+  }
+
+  /**
    * Gets the shopping list items needed for the household and week
    * @param householdId the household to get the shopping list items for
    * @param monday the monday of the week to get the shopping list items for
