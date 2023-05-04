@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.smartmat.service.unit;
 import edu.ntnu.idatt2106.smartmat.model.unit.Unit;
 import edu.ntnu.idatt2106.smartmat.repository.unit.UnitRepository;
 import java.util.Collection;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,10 @@ public class UnitServiceImpl implements UnitService {
    * Method for getting a unit by its name.
    * @param name the name of the unit.
    * @return the unit with the given name.
+   * @throws NullPointerException if the name is null.
    */
   @Override
-  public Unit getUnit(String name) {
+  public Unit getUnit(@NonNull String name) throws NullPointerException {
     return unitRepository.findById(name).orElseThrow(NullPointerException::new);
   }
 
@@ -43,7 +45,7 @@ public class UnitServiceImpl implements UnitService {
    * @return the unit with the given abbreviation.
    */
   @Override
-  public Unit getUnitByAbbreviation(String abbreviation) {
+  public Unit getUnitByAbbreviation(@NonNull String abbreviation) {
     return unitRepository.findByAbbreviation(abbreviation).orElseThrow(NullPointerException::new);
   }
 }

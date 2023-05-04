@@ -20,14 +20,15 @@ import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.foodproduct.CustomFoodItemService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.ingredient.IngredientService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import java.util.HashSet;
 import java.util.UUID;
 import org.junit.Before;
@@ -90,10 +91,10 @@ public class CustomFoodProductControllerTest {
   public void testAddItemToShoppingListUserIsPrivilegedMemberAndItemIsAdded() throws Exception {
     when(shoppingListService.getShoppingListById(shoppingListId)).thenReturn(shoppingList);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -127,10 +128,10 @@ public class CustomFoodProductControllerTest {
     throws Exception {
     when(shoppingListService.getShoppingListById(shoppingListId)).thenReturn(shoppingList);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -162,10 +163,10 @@ public class CustomFoodProductControllerTest {
   public void testAddItemToShoppingListUserIsNotPrivilegedMember() throws Exception {
     when(shoppingListService.getShoppingListById(shoppingListId)).thenReturn(shoppingList);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(false);
@@ -195,10 +196,10 @@ public class CustomFoodProductControllerTest {
   public void testAddItemToShoppingListUserIsNotMember() throws Exception {
     when(shoppingListService.getShoppingListById(shoppingListId)).thenReturn(shoppingList);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(false);
@@ -228,13 +229,13 @@ public class CustomFoodProductControllerTest {
   public void testAddItemToShoppingListUserIsAdmin() throws Exception {
     when(shoppingListService.getShoppingListById(shoppingListId)).thenReturn(shoppingList);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        admin.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
-      .thenReturn(false);
+      .thenReturn(true);
     when(customFoodItemService.saveCustomFoodItem(any(CustomFoodItem.class)))
       .thenReturn(customFoodItem);
     try {
@@ -263,10 +264,10 @@ public class CustomFoodProductControllerTest {
   public void testDeleteItemFromShoppingListUserIsPrivilegedAndItemExists() throws Exception {
     doNothing().when(customFoodItemService).deleteCustomFoodItem(customFoodItemId);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -290,10 +291,10 @@ public class CustomFoodProductControllerTest {
       .when(customFoodItemService)
       .deleteCustomFoodItem(customFoodItemId);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -315,10 +316,10 @@ public class CustomFoodProductControllerTest {
   public void testDeleteItemFromShoppingListUserIsNotPrivileged() throws Exception {
     doNothing().when(customFoodItemService).deleteCustomFoodItem(customFoodItemId);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(false);
@@ -340,13 +341,13 @@ public class CustomFoodProductControllerTest {
   public void testDeleteItemFromShoppingListUserIsNotInHouseholdButIsAdmin() throws Exception {
     doNothing().when(customFoodItemService).deleteCustomFoodItem(customFoodItemId);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        admin.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
-      .thenReturn(false);
+      .thenReturn(true);
     try {
       mvc
         .perform(
@@ -365,10 +366,10 @@ public class CustomFoodProductControllerTest {
   public void testCheckItemThatExistsUserIsPrivilegedMember() throws Exception {
     when(customFoodItemService.getItemById(customFoodItemId)).thenReturn(customFoodItem);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -390,10 +391,10 @@ public class CustomFoodProductControllerTest {
   public void testCheckItemThatExistsUserIsNotPrivilegedMember() throws Exception {
     when(customFoodItemService.getItemById(customFoodItemId)).thenReturn(customFoodItem);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(false);
@@ -415,10 +416,10 @@ public class CustomFoodProductControllerTest {
   public void testCheckItemThatDoesNotExistUserIsPrivilegedMember() throws Exception {
     when(customFoodItemService.getItemById(customFoodItemId)).thenReturn(customFoodItem);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(true);
@@ -440,10 +441,10 @@ public class CustomFoodProductControllerTest {
   public void testCheckItemThatDoesNotExistUserIsNotPrivilegedMember() throws Exception {
     when(customFoodItemService.getItemById(customFoodItemId)).thenReturn(customFoodItem);
     when(
-      householdService.isHouseholdMemberWithRole(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
         household.getId(),
-        user.getUsername(),
-        HouseholdRole.PRIVILEGED_MEMBER
+        householdService
       )
     )
       .thenReturn(false);

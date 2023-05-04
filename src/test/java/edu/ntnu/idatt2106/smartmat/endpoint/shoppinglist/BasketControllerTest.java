@@ -16,6 +16,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundExcepti
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
@@ -29,7 +30,7 @@ import edu.ntnu.idatt2106.smartmat.service.foodproduct.FoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
-import java.lang.reflect.Method;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,8 +77,6 @@ public class BasketControllerTest {
 
   private Basket basket;
 
-  private Method isAdminOrHouseholdPrivileged;
-
   private final UUID basketId = UUID.randomUUID();
 
   @Before
@@ -103,14 +102,6 @@ public class BasketControllerTest {
         .basketItems(new ArrayList<>())
         .customFoodItems(new HashSet<>())
         .build();
-
-    isAdminOrHouseholdPrivileged =
-      BasketController.class.getDeclaredMethod(
-          "isAdminOrHouseholdPrivileged",
-          Auth.class,
-          UUID.class
-        );
-    isAdminOrHouseholdPrivileged.setAccessible(true);
   }
 
   @Test
@@ -119,20 +110,13 @@ public class BasketControllerTest {
     when(shoppingListService.getShoppingListById(any(UUID.class))).thenReturn(shoppingList);
     when(householdService.getHouseholdById(any(UUID.class))).thenReturn(household);
     when(
-      isAdminOrHouseholdPrivileged.invoke(
-        new BasketController(
-          basketService,
-          householdService,
-          foodProductService,
-          customFoodItemService,
-          shoppingListService
-        ),
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
         new Auth(user.getUsername(), user.getRole()),
-        household.getId()
+        household.getId(),
+        householdService
       )
     )
       .thenReturn(true);
-
     try {
       mockMvc
         .perform(
@@ -154,16 +138,10 @@ public class BasketControllerTest {
       .thenThrow(new ShoppingListNotFoundException());
     when(householdService.getHouseholdById(any(UUID.class))).thenReturn(household);
     when(
-      isAdminOrHouseholdPrivileged.invoke(
-        new BasketController(
-          basketService,
-          householdService,
-          foodProductService,
-          customFoodItemService,
-          shoppingListService
-        ),
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
         new Auth(user.getUsername(), user.getRole()),
-        household.getId()
+        household.getId(),
+        householdService
       )
     )
       .thenReturn(true);
@@ -187,16 +165,10 @@ public class BasketControllerTest {
     when(basketService.createBasket(any(Basket.class))).thenReturn(basket);
     when(shoppingListService.getShoppingListById(any(UUID.class))).thenReturn(shoppingList);
     when(
-      isAdminOrHouseholdPrivileged.invoke(
-        new BasketController(
-          basketService,
-          householdService,
-          foodProductService,
-          customFoodItemService,
-          shoppingListService
-        ),
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
         new Auth(user.getUsername(), user.getRole()),
-        household.getId()
+        household.getId(),
+        householdService
       )
     )
       .thenThrow(new HouseholdNotFoundException());
@@ -220,16 +192,10 @@ public class BasketControllerTest {
     when(shoppingListService.getShoppingListById(any(UUID.class))).thenReturn(shoppingList);
     when(householdService.getHouseholdById(any(UUID.class))).thenReturn(household);
     when(
-      isAdminOrHouseholdPrivileged.invoke(
-        new BasketController(
-          basketService,
-          householdService,
-          foodProductService,
-          customFoodItemService,
-          shoppingListService
-        ),
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
         new Auth(user.getUsername(), user.getRole()),
-        household.getId()
+        household.getId(),
+        householdService
       )
     )
       .thenReturn(false);
@@ -247,36 +213,31 @@ public class BasketControllerTest {
       fail();
     }
   }
-  // @Test
-  // public void testAddItemToBasket() throws Exception {
-  //   when(basketService.getBasketById(any(UUID.class))).thenReturn(basket);
-  //   when(foodProductService.getFoodProductById(any(UUID.class))).thenReturn(testFoodProductFactory(TestFoodProductEnum.GOOD));
-  //   when(
-  //     isAdminOrHouseholdPrivileged.invoke(
-  //       new BasketController(
-  //         basketService,
-  //         householdService,
-  //         foodProductService,
-  //         customFoodItemService,
-  //         shoppingListService
-  //       ),
-  //       new Auth(user.getUsername(), user.getRole()),
-  //       household.getId()
-  //     )
-  //   )
-  //     .thenReturn(true);
 
-  //   try {
-  //     mockMvc
-  //       .perform(
-  //         post(BASE_URL + "/" + basketId + "/item")
-  //           .contentType(MediaType.APPLICATION_JSON)
-  //           .content("{ \"foodProductId\": \"" + basketId + "\" }")
-  //           .with(authentication(createAuthenticationToken(user)))
-  //       )
-  //       .andExpect(status().isCreated());
-  //   } catch (Exception e) {
-  //     fail();
-  //   }
-  // }
+  @Test
+  public void testAddItemToBasket() throws Exception {
+    when(basketService.getBasketById(any(UUID.class))).thenReturn(basket);
+    when(foodProductService.getFoodProductById(any(Long.class))).thenReturn(new FoodProduct());
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+
+    try {
+      mockMvc
+        .perform(
+          post(BASE_URL + "/" + basketId + "/add-item")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"foodProductId\": \"" + 1L + "\", \"amount\": 1 }")
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isCreated());
+    } catch (Exception e) {
+      fail();
+    }
+  }
 }

@@ -29,7 +29,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "`temp_used_ingredient`")
+@Table(name = "`weekly_recipe`")
 @IdClass(WeeklyRecipeId.class)
 public class WeeklyRecipe {
 

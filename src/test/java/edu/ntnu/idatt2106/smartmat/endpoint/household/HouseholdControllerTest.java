@@ -23,12 +23,14 @@ import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
+import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
 import edu.ntnu.idatt2106.smartmat.service.household.WeeklyRecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
+import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.Before;
@@ -133,6 +135,14 @@ public class HouseholdControllerTest {
   @Test
   public void testGetExistingHouseHold() {
     try {
+      when(
+        PrivilegeUtil.isAdminOrHouseholdMember(
+          new Auth(user.getUsername(), user.getRole()),
+          household.getId(),
+          householdService
+        )
+      )
+        .thenReturn(true);
       when(householdService.getHouseholdById(household.getId())).thenReturn(household);
       mvc
         .perform(
@@ -149,6 +159,14 @@ public class HouseholdControllerTest {
   @Test
   public void testGetNonExistingHouseHold() {
     try {
+      when(
+        PrivilegeUtil.isAdminOrHouseholdMember(
+          new Auth(user.getUsername(), user.getRole()),
+          household.getId(),
+          householdService
+        )
+      )
+        .thenThrow(new HouseholdNotFoundException());
       when(householdService.getHouseholdById(household.getId()))
         .thenThrow(new HouseholdNotFoundException());
       mvc
