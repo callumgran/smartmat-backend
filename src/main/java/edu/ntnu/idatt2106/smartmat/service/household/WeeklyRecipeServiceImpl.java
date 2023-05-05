@@ -170,7 +170,9 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
                       .date(LocalDate.now())
                       .build()
                   );
-                  return;
+                  if (hfp.getAmountLeft() == 0) {
+                    householdFoodProductService.deleteFoodProductById(hfp.getId());
+                  }
                 } else {
                   foodProductHistoryService.saveFoodProductHistory(
                     FoodProductHistory
