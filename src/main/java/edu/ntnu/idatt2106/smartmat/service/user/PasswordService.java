@@ -23,7 +23,7 @@ public class PasswordService {
    */
   public static String hashPassword(@NonNull String password) {
     if (password.isBlank()) {
-      throw new IllegalArgumentException("Password cannot be empty");
+      throw new IllegalArgumentException("Passord kan ikke være blankt.");
     }
     String salt = BCrypt.gensalt(); // generate a random salt value
     return salt + ":" + BCrypt.hashpw(password, salt);
@@ -39,7 +39,7 @@ public class PasswordService {
    */
   public static boolean checkPassword(@NonNull String password, @NonNull String hashedPassword) {
     if (password.isBlank() || hashedPassword.isBlank()) {
-      throw new IllegalArgumentException("Cannot have blank values.");
+      throw new IllegalArgumentException("Kan ikke sjekke blankt passord.");
     }
     LOGGER.info(password + " -> " + hashedPassword);
     String[] parts = hashedPassword.split(":");

@@ -75,9 +75,11 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   public WeeklyRecipe saveWeeklyRecipe(@NonNull WeeklyRecipe weeklyRecipe)
     throws NullPointerException {
     if (weeklyRecipe.getHousehold() == null || weeklyRecipe.getDateToUse() == null) {
-      throw new NullPointerException("Household and dateToUse cannot be null");
+      throw new NullPointerException("Husholdning og dato kan ikke være null");
     }
-    if (existsById(weeklyRecipe)) throw new IllegalArgumentException("WeeklyRecipe already exists");
+    if (existsById(weeklyRecipe)) throw new IllegalArgumentException(
+      "Ukentlig oppskrift finnes allerede"
+    );
     return weeklyRecipeRepository.save(weeklyRecipe);
   }
 
@@ -91,10 +93,10 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   public void deleteWeeklyRecipe(@NonNull WeeklyRecipe weeklyRecipe)
     throws NullPointerException, IllegalArgumentException {
     if (weeklyRecipe.getHousehold() == null || weeklyRecipe.getDateToUse() == null) {
-      throw new NullPointerException("Household and dateToUse cannot be null");
+      throw new NullPointerException("Husholdning og dato kan ikke være null");
     }
     if (!existsById(weeklyRecipe)) throw new IllegalArgumentException(
-      "WeeklyRecipe does not exist"
+      "Ukentlig oppskrift finnes ikke"
     );
     weeklyRecipeRepository.delete(weeklyRecipe);
   }
@@ -109,7 +111,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
   public void deleteWeeklyRecipeById(@NonNull WeeklyRecipeId id)
     throws NullPointerException, IllegalArgumentException {
     if (!weeklyRecipeRepository.existsById(id)) throw new IllegalArgumentException(
-      "WeeklyRecipe does not exist"
+      "Ukentlig oppskrift finnes ikke"
     );
     weeklyRecipeRepository.deleteById(id);
   }
@@ -143,7 +145,6 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
         FauxPas
           .throwingRunnable(() -> {
             double ingredientAmount = UnitUtils.getNormalizedUnit(i);
-            System.out.println("INGREDIENT AMOUNT: " + ingredientAmount);
             for (HouseholdFoodProduct hfp : weeklyRecipe
               .getHousehold()
               .getFoodProducts()
