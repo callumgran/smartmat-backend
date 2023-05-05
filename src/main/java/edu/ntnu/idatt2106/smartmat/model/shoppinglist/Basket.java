@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -33,7 +34,12 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @Entity
-@Table(name = "`basket`")
+@Table(
+  name = "`basket`",
+  uniqueConstraints = {
+    @UniqueConstraint(columnNames = { "`basket_id`", "`shopping_list_shopping_list_id`" }),
+  }
+)
 public class Basket {
 
   @Id

@@ -1,11 +1,13 @@
 package edu.ntnu.idatt2106.smartmat.repository.shoppinglist;
 
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
+import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Tobias O., Carl G.
  * @version 1.0 - 23.04.2023
  */
+@Transactional
 @Repository
 public interface ShoppingListRepository extends JpaRepository<ShoppingList, UUID> {
   /**
@@ -26,4 +29,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, UUID
     value = "SELECT sl FROM ShoppingList sl WHERE sl.household.id = ?1 AND sl.dateCompleted IS NULL"
   )
   Optional<Collection<ShoppingList>> getCurrentShoppingListByHousehold(@NonNull UUID household);
+
+  @Modifying
+  @Query(value = "DELETE FROM ShoppingListItem sli WHERE sli.shoppingList.id = ?1")
+  void deleteShoppingListItemsByShoppingList(@NonNull UUID shoppingListId);
 }

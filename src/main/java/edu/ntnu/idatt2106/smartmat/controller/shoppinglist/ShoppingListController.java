@@ -373,6 +373,8 @@ public class ShoppingListController {
       throw new PermissionDeniedException("Du kan ikke slette denne handlelisten");
     }
 
+    shoppinglistService.deleteAllShoppingListItems(id);
+
     shoppinglistService.deleteShoppingListById(id);
 
     LOGGER.info("Shopping list {} deleted", id);
