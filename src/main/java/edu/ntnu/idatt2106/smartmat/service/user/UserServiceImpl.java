@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
     try {
       userRepository.delete(user);
     } catch (Exception e) {
-      throw new DatabaseException("canNotDeleteUser");
+      throw new DatabaseException("Kan ikke slette bruker");
     }
   }
 
@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserService {
   public Collection<User> getAllUsers() throws DatabaseException {
     Collection<User> users = userRepository.findAll();
 
-    if (users.isEmpty()) throw new DatabaseException("No users found in the database.");
+    if (users.isEmpty()) throw new DatabaseException("Ingen brukere funnet");
 
     return users;
   }
@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
     User user = getUserByUsername(username);
 
     if (!PasswordService.checkPassword(password, user.getPassword())) {
-      throw new WrongPasswordException("Invalid password");
+      throw new WrongPasswordException("Ugyldig passord");
     }
 
     return true;

@@ -54,7 +54,7 @@ public class FoodProductHistoryServiceImpl implements FoodProductHistoryService 
       foodProductHistory.getId() != null &&
       foodProductHistoryRepository.existsById(foodProductHistory.getId())
     ) {
-      throw new IllegalArgumentException("Food product history already exists");
+      throw new IllegalArgumentException("Matvarehistorikk eksisterer allerede");
     }
     return foodProductHistoryRepository.save(foodProductHistory);
   }
