@@ -95,7 +95,7 @@ public class CustomFoodProductController {
       )
     ) {
       throw new PermissionDeniedException(
-        "You do not have permission to add an item to this shopping list."
+        "Du har ikke tilgang til å legge til en vare i denne handlelisten"
       );
     }
 
@@ -167,7 +167,7 @@ public class CustomFoodProductController {
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
     if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
-        "You do not have permission to delete an item from this shopping list."
+        "Du har ikke tilgang til å slette en vare i denne handlelisten"
       );
     }
 

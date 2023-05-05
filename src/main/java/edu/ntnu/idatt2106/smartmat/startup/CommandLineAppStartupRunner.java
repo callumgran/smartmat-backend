@@ -4,9 +4,13 @@ import edu.ntnu.idatt2106.smartmat.dto.user.RegisterDTO;
 import edu.ntnu.idatt2106.smartmat.mapper.user.RegisterMapper;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.model.user.UserRole;
 import edu.ntnu.idatt2106.smartmat.service.household.HouseholdService;
+import edu.ntnu.idatt2106.smartmat.service.shoppinglist.BasketService;
+import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,12 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 
   @Autowired
   private HouseholdService householdService;
+
+  @Autowired
+  private ShoppingListService shoppingListService;
+
+  @Autowired
+  private BasketService basketService;
 
   @Override
   public void run(String... args) throws Exception {
@@ -72,6 +82,11 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
         user3.getUsername(),
         HouseholdRole.MEMBER
       );
+
+      ShoppingList shoppingList = shoppingListService.saveShoppingList(
+        ShoppingList.builder().household(household).build()
+      );
+      basketService.createBasket(Basket.builder().shoppingList(shoppingList).build());
     }
   }
 }
