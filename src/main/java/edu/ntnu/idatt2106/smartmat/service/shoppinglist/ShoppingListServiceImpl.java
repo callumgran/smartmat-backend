@@ -185,4 +185,20 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     return shoppingList;
   }
+
+  /**
+   * Method to delete all shopping list items from a shopping list.
+   * @param id The id of the shopping list.
+   * @throws ShoppingListNotFoundException if no such shopping list exists.
+   * @throws NullPointerException if the shopping list id is null.
+   */
+  @Override
+  public void deleteAllShoppingListItems(@NonNull UUID id)
+    throws ShoppingListNotFoundException, NullPointerException {
+    if (!shoppinglistRepository.existsById(id)) {
+      throw new ShoppingListNotFoundException();
+    }
+
+    shoppinglistRepository.deleteShoppingListItemsByShoppingList(id);
+  }
 }

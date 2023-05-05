@@ -37,4 +37,7 @@ public interface ShoppingListService {
 
   ShoppingList getShoppingListWithDiff(@NonNull UUID id)
     throws ShoppingListNotFoundException, BasketNotFoundException, NullPointerException;
+
+  void deleteAllShoppingListItems(@NonNull UUID shoppingListId)
+    throws ShoppingListNotFoundException, NullPointerException;
 }
