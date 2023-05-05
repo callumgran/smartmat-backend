@@ -2,7 +2,6 @@ package edu.ntnu.idatt2106.smartmat.controller.recipe;
 
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeCreateDTO;
 import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeDTO;
-import edu.ntnu.idatt2106.smartmat.dto.recipe.RecipeUseDTO;
 import edu.ntnu.idatt2106.smartmat.dto.shoppinglist.RecipeShoppingListItemDTO;
 import edu.ntnu.idatt2106.smartmat.exceptions.PermissionDeniedException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
@@ -307,53 +306,6 @@ public class RecipeController {
     LOGGER.info("Mapped recipes to recipeDTOs: {}", recipeDTOs);
 
     return ResponseEntity.ok(recipeDTOs);
-  }
-
-  /**
-   * Method for using a recipe to use ingredients.
-   * @param id The id of the recipe to use.
-   * @param recipeUseDTO The recipe use request.
-   * @param auth The auth of the user.
-   * @return A response entity with status code 200.
-   * @throws PermissionDeniedException If the user does not have permission to use a recipe.
-   * @throws RecipeNotFoundException If the recipe does not exist.
-   * @throws HouseholdNotFoundException If the house does not exist.
-   * @throws BadInputException If the recipe use request is invalid.
-   * @throws NullPointerException If any of the parameters are null.
-   * @throws UserDoesNotExistsException If the user does not exist.
-   */
-  @PatchMapping(
-    value = "/{id}/use",
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  @Operation(
-    summary = "Use a recipe",
-    description = "Use a recipe with the given id. The id in the path must match the id in the request body. Requires valid JWT token in header.",
-    tags = { "recipe" }
-  )
-  public ResponseEntity<Void> useRecipe(
-    @PathVariable UUID id,
-    @RequestBody RecipeUseDTO recipeUseDTO,
-    @AuthenticationPrincipal Auth auth
-  )
-    throws PermissionDeniedException, RecipeNotFoundException, HouseholdNotFoundException, BadInputException, UserDoesNotExistsException, NullPointerException {
-    LOGGER.info(
-      "Request to use recipe with id: {} in household: {}",
-      id,
-      recipeUseDTO.getHouseholdId()
-    );
-
-    Household household = householdService.getHouseholdById(recipeUseDTO.getHouseholdId());
-    if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, household.getId(), householdService)) {
-      throw new PermissionDeniedException(
-        "Du har ikke tilgang til å bruke oppskrifter i dette husholdet"
-      );
-    }
-
-    recipeService.useRecipe(id, household, recipeUseDTO.getPortions());
-
-    return ResponseEntity.ok().build();
   }
 
   /**

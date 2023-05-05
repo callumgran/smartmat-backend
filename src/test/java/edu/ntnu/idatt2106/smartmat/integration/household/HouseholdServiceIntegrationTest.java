@@ -8,11 +8,13 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
@@ -489,5 +491,149 @@ public class HouseholdServiceIntegrationTest {
     assertEquals(2, tmp.size());
     assertTrue(tmp.contains(existingHousehold));
     assertTrue(tmp.contains(newHousehold));
+  }
+
+  @Test
+  public void testUpdateHouseholdName() {
+    when(householdRepository.findById(existingHousehold.getId()))
+      .thenReturn(Optional.of(existingHousehold));
+    when(householdRepository.save(existingHousehold)).thenReturn(existingHousehold);
+    try {
+      householdService.updateHouseholdName(existingHousehold.getId(), "newName");
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testAddHouseholdMember() throws Exception {
+    when(householdRepository.findById(existingHousehold.getId()))
+      .thenReturn(Optional.of(existingHousehold));
+    when(householdRepository.save(existingHousehold)).thenReturn(existingHousehold);
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(true);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertDoesNotThrow(() ->
+      householdService.addHouseholdMember(
+        existingHousehold.getId(),
+        member.getUser().getUsername(),
+        HouseholdRole.MEMBER
+      )
+    );
+  }
+
+  @Test
+  public void testAddHouseholdMemberCorruptedHousehold() throws Exception {
+    when(householdRepository.findById(corruptedHousehold.getId())).thenReturn(Optional.empty());
+    when(householdRepository.save(corruptedHousehold)).thenReturn(corruptedHousehold);
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(true);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.addHouseholdMember(
+          corruptedHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+    );
+  }
+
+  @Test
+  public void testAddHouseholdMemberUserNotFound() throws Exception {
+    when(householdRepository.findById(existingHousehold.getId()))
+      .thenReturn(Optional.of(existingHousehold));
+    when(householdRepository.save(existingHousehold)).thenReturn(existingHousehold);
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(false);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () ->
+        householdService.addHouseholdMember(
+          existingHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+    );
+  }
+
+  @Test
+  public void testUpdateHouseholdMemberRole() throws Exception {
+    when(householdRepository.findById(existingHousehold.getId()))
+      .thenReturn(Optional.of(existingHousehold));
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(
+      householdRepository.findHouseholdMemberByIdAndUsername(
+        existingHousehold.getId(),
+        member.getUser().getUsername()
+      )
+    )
+      .thenReturn(Optional.of(member));
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(true);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertDoesNotThrow(() ->
+      householdService.updateHouseholdMember(
+        existingHousehold.getId(),
+        member.getUser().getUsername(),
+        HouseholdRole.MEMBER
+      )
+    );
+  }
+
+  @Test
+  public void testUpdateHouseholdMemberRoleCorruptedHousehold() throws Exception {
+    when(householdRepository.findById(corruptedHousehold.getId())).thenReturn(Optional.empty());
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(
+      householdRepository.findHouseholdMemberByIdAndUsername(
+        corruptedHousehold.getId(),
+        member.getUser().getUsername()
+      )
+    )
+      .thenReturn(Optional.of(member));
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(true);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertThrows(
+      HouseholdNotFoundException.class,
+      () ->
+        householdService.updateHouseholdMember(
+          corruptedHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+    );
+  }
+
+  @Test
+  public void testUpdateHouseholdMemberRoleUserNotFound() throws Exception {
+    when(householdRepository.findById(existingHousehold.getId()))
+      .thenReturn(Optional.of(existingHousehold));
+    when(householdMemberRepository.save(any(HouseholdMember.class))).thenReturn(member);
+    when(
+      householdRepository.findHouseholdMemberByIdAndUsername(
+        existingHousehold.getId(),
+        member.getUser().getUsername()
+      )
+    )
+      .thenReturn(Optional.of(member));
+    when(userService.usernameExists(member.getUser().getUsername())).thenReturn(false);
+    when(userService.getUserByUsername(member.getUser().getUsername()))
+      .thenReturn(member.getUser());
+    assertThrows(
+      UserDoesNotExistsException.class,
+      () ->
+        householdService.updateHouseholdMember(
+          existingHousehold.getId(),
+          member.getUser().getUsername(),
+          HouseholdRole.MEMBER
+        )
+    );
   }
 }

@@ -5,21 +5,22 @@ import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunction
 import static edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserHelperFunctions.testUserFactory;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.ntnu.idatt2106.smartmat.controller.shoppinglist.BasketController;
 import edu.ntnu.idatt2106.smartmat.exceptions.household.HouseholdNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestHouseholdEnum;
 import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.CustomFoodItem;
 import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
-import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
@@ -236,6 +237,149 @@ public class BasketControllerTest {
             .with(authentication(createAuthenticationToken(user)))
         )
         .andExpect(status().isCreated());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testAddItemToBasketCustomFoodProduct() throws Exception {
+    final String customFoodItemName = "customFoodItemName";
+    final UUID customFoodItemUUID = UUID.randomUUID();
+    final int customFoodItemAmount = 10;
+    final boolean customFoodItemIsCheck = false;
+
+    CustomFoodItem customFoodItem = new CustomFoodItem(
+      customFoodItemUUID,
+      customFoodItemName,
+      customFoodItemAmount,
+      customFoodItemIsCheck,
+      shoppingList,
+      household,
+      basket
+    );
+    when(basketService.getBasketById(any(UUID.class))).thenReturn(basket);
+    when(customFoodItemService.getItemById(any(UUID.class))).thenReturn(customFoodItem);
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+
+    try {
+      mockMvc
+        .perform(
+          post(BASE_URL + "/" + basketId + "/add-custom")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("\"" + customFoodItemUUID.toString() + "\"}")
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isCreated());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testAddItemToBasketWithInvalidBasketId() throws Exception {
+    when(basketService.getBasketById(any(UUID.class))).thenThrow(new BasketNotFoundException());
+    when(foodProductService.getFoodProductById(any(Long.class))).thenReturn(new FoodProduct());
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+
+    try {
+      mockMvc
+        .perform(
+          post(BASE_URL + "/" + basketId + "/add-item")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{ \"foodProductId\": \"" + 1L + "\", \"amount\": 1 }")
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNotFound());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testRemoveItemFromBasket() throws Exception {
+    when(basketService.getBasketById(any(UUID.class))).thenReturn(basket);
+    when(foodProductService.getFoodProductById(any(Long.class))).thenReturn(new FoodProduct());
+    doNothing().when(basketService).deleteBasketItem(any(UUID.class));
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+
+    try {
+      mockMvc
+        .perform(
+          delete(BASE_URL + "/" + basketId + "/item/" + UUID.randomUUID())
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNoContent());
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testRemoveItemFromBasketCustomFoodItem() throws Exception {
+    final String customFoodItemName = "customFoodItemName";
+    final UUID customFoodItemUUID = UUID.randomUUID();
+    final int customFoodItemAmount = 10;
+    final boolean customFoodItemIsCheck = false;
+
+    CustomFoodItem customFoodItem = new CustomFoodItem(
+      customFoodItemUUID,
+      customFoodItemName,
+      customFoodItemAmount,
+      customFoodItemIsCheck,
+      shoppingList,
+      household,
+      basket
+    );
+    when(basketService.getBasketById(any(UUID.class))).thenReturn(basket);
+    when(customFoodItemService.getItemById(any(UUID.class))).thenReturn(customFoodItem);
+
+    doNothing().when(basketService).deleteBasketItem(any(UUID.class));
+    when(
+      PrivilegeUtil.isAdminOrHouseholdPrivileged(
+        new Auth(user.getUsername(), user.getRole()),
+        household.getId(),
+        householdService
+      )
+    )
+      .thenReturn(true);
+
+    try {
+      mockMvc
+        .perform(
+          delete(BASE_URL + "/" + basketId + "/custom-item/" + UUID.randomUUID())
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNoContent());
     } catch (Exception e) {
       fail();
     }
