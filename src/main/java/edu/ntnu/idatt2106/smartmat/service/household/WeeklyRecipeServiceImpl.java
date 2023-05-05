@@ -151,6 +151,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
               .sorted((hfp1, hfp2) -> hfp1.getExpirationDate().compareTo(hfp2.getExpirationDate()))
               .toList()) {
               if (
+                hfp.getFoodProduct().getIngredient() != null &&
                 hfp.getFoodProduct().getIngredient().equals(i.getIngredient()) &&
                 ingredientAmount > 0
               ) {
@@ -284,7 +285,10 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
       .stream()
       .filter(ri -> {
         householdFoodProducts.forEach(hfp -> {
-          if (ri.getIngredient().getId() == hfp.getFoodProduct().getIngredient().getId()) {
+          if (
+            hfp.getFoodProduct().getIngredient() != null &&
+            ri.getIngredient().getId() == hfp.getFoodProduct().getIngredient().getId()
+          ) {
             if (hfp.getAmountLeft() > 0) {
               double amount = UnitUtils.removeRecipeIngredientAmountFromHouseholdFoodProductAmount(
                 ri,

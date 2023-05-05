@@ -48,6 +48,7 @@ public class HouseholdRecipeRecommend {
         double householdAmount = householdIngredients
           .stream()
           .filter(hfp ->
+            hfp.getFoodProduct().getIngredient() != null &&
             hfp.getFoodProduct().getIngredient().getId() == ingredient.getIngredient().getId()
           )
           .map(hfp -> UnitUtils.getNormalizedUnit(hfp))
