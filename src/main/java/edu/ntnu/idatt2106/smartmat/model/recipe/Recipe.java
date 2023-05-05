@@ -35,14 +35,14 @@ public class Recipe {
   @NonNull
   private String name;
 
-  @Column(name = "`description`", nullable = false)
+  @Column(name = "`description`", nullable = false, columnDefinition = "LONGTEXT")
   @NonNull
   private String description;
 
   @OneToMany(mappedBy = "recipe")
   private Set<RecipeIngredient> ingredients;
 
-  @Column(name = "`instructions`", nullable = false)
+  @Column(name = "`instructions`", nullable = false, columnDefinition = "LONGTEXT")
   @NonNull
   private String instructions;
 
