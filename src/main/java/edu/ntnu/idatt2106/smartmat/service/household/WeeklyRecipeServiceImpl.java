@@ -173,6 +173,7 @@ public class WeeklyRecipeServiceImpl implements WeeklyRecipeService {
                   if (hfp.getAmountLeft() == 0) {
                     householdFoodProductService.deleteFoodProductById(hfp.getId());
                   }
+                  return;
                 } else {
                   foodProductHistoryService.saveFoodProductHistory(
                     FoodProductHistory
