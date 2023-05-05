@@ -56,6 +56,6 @@ public class ShoppingList {
   @OneToMany(mappedBy = "shoppingList")
   private Set<CustomFoodItem> customFoodItems;
 
-  @OneToOne(optional = true)
+  @OneToOne(optional = true, mappedBy = "shoppingList", cascade = { CascadeType.REMOVE })
   private Basket basket;
 }
