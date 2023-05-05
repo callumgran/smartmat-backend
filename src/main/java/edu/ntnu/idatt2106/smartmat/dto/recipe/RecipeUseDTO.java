@@ -10,7 +10,7 @@ import lombok.NonNull;
 
 /**
  * Data transfer object for using Recipe.
- * @author Simen G. & Callum G.
+ * @author Simen G. Callum G.
  * @version 1.0 - 03.05.2023
  */
 @Data

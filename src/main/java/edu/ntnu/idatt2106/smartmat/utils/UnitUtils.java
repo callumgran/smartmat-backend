@@ -179,8 +179,8 @@ public class UnitUtils {
 
   /**
    * Method to check if two household food products are the same unit type
-   * @param foodProduct1 The first household food product
-   * @param foodProduct2 The second household food product
+   * @param foodProduct The household food product
+   * @param ingredient The household ingredient
    * @return True if the household food products are the same unit type, false otherwise
    */
   public static boolean isSameUnitType(

@@ -13,6 +13,12 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * Mapper for mapping between food product DTOs and food products.
+ * Uses MapStruct to generate the implementation.
+ * @author Callum G.
+ * @version 1.0 05.05.2023
+ */
 @Mapper(componentModel = "spring")
 public interface HouseholdFoodProductMapper {
   static HouseholdFoodProductMapper INSTANCE = Mappers.getMapper(HouseholdFoodProductMapper.class);

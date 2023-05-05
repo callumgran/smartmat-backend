@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Rest controller for custom food items.
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to custom food items.
- * @auther Callum Gran
+ * @author Callum Gran
  * @version 1.2 - 26.04.2023
  */
 @RestController
@@ -145,14 +145,14 @@ public class CustomFoodProductController {
   /**
    * Method to delete an item from a shopping list.
    * @param auth authentication for user.
-   * @param id the id for the shopping list.
-   * @param itemId the id for the item that is being deleted.
+   * @param householdId the id for the household that the shopping list belongs to.
+   * @param id the id for the item that is being deleted.
    * @return the deleted item.
    * @throws NullPointerException if any values are null.
-   * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws UserDoesNotExistsException if the user does not exist.
    * @throws HouseholdNotFoundException if the household is not found.
    * @throws PermissionDeniedException if the user does not have permission to delete an item from the shopping list.
+   * @throws ShoppingListItemNotFoundException if the shopping list item is not found.
    */
   @DeleteMapping(value = "/household/{householdId}/item/{id}")
   @Operation(
@@ -183,10 +183,9 @@ public class CustomFoodProductController {
    * Method to check an item in a shopping list.
    * An item can be checked or unchecked.
    * @param auth authentication for user.
-   * @param itemId the id for the item that is being checked.
+   * @param id the id for the item that is being checked.
    * @return the item to be checked or unched.
    * @throws NullPointerException if any values are null.
-   * @throws ShoppingListNotFoundException if the shopping list the items is in is not found.
    * @throws UserDoesNotExistsException if the user does not exist.
    * @throws HouseholdNotFoundException if the household is not found.
    * @throws PermissionDeniedException if the user does not have permission to check an item on the shopping list.

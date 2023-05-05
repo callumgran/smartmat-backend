@@ -286,6 +286,7 @@ public class HouseholdFoodProductController {
    * Method to update a household food product.
    * @param auth The authentication object.
    * @param householdId The id of the household.
+   * @param id The id of the household food product.
    * @param householdFoodProductDTO The household food product to update.
    * @return The 200 OK response with the updated household food product or
    * 204 No Content if the household food product was deleted for having no quantity.
@@ -408,6 +409,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param id The id of the household food product to use.
+   * @param amountUsed The amount to use.
    * @return The 200 ok response or 204 No Content if the household food product was deleted for having no quantity.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.

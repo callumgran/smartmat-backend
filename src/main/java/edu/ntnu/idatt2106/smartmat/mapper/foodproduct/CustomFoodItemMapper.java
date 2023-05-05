@@ -94,6 +94,11 @@ public abstract class CustomFoodItemMapper {
     CustomFoodItem customFoodItem
   );
 
+  /**
+   * Maps custom food items DTO to custom food items.
+   * @param customFoodItemDTO the custom food DTO.
+   * @return the custom food item.
+   */
   @Mappings(
     {
       @Mapping(

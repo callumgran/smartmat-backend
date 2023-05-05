@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Data transfer object for a new item in a shopping list.
- * @author Carl G. & Callum G.
+ * @author Carl G. Callum G.
  * @version 1.1 - 26.04.2023.
  */
 

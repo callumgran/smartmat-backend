@@ -3,6 +3,11 @@ package edu.ntnu.idatt2106.smartmat.utils;
 import edu.ntnu.idatt2106.smartmat.model.ingredient.Ingredient;
 import java.util.Collection;
 
+/**
+ * Utility class for matching ingredient titles.
+ * @author Callum G.
+ * @version 1.0 05.05.2023
+ */
 public class IngredientTitleMatcher {
 
   /**

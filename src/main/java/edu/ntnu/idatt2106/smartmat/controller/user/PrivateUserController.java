@@ -42,7 +42,7 @@ public class PrivateUserController {
 
   /**
    * Get the authenticated user.
-   * @param username The username of the authenticated user.
+   * @param user The authenticated user.
    * @return The authenticated user.
    * @throws PermissionDeniedException If the user is not authorized to get the user.
    * @throws UserDoesNotExistsException If the user does not exist.

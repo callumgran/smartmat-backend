@@ -25,8 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * Class representing a user in the system.
  * Implements UserDetails to allow Spring Security to use this class for authentication.
  * @author Callum G.
- * @version 1.1
- * @date 20.4.2023
+ * @version 1.1 20.4.2023
  */
 @Setter
 @Getter

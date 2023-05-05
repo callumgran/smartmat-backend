@@ -11,7 +11,6 @@ import lombok.NonNull;
 
 /**
  * Data transfer object for a item in a basket.
- *
  * @author Callum G.
  * @version 1.0 - 02.05.2023.
  */

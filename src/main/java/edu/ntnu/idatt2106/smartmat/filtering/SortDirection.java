@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.Root;
 /**
  * Enum for sorting direction.
  * Based on the sort direction enum from the blog post below and IDATT2105 project.
- * @see https://blog.piinalpin.com/2022/04/searching-and-filtering-using-jpa-specification/
+ * @see <a href="https://blog.piinalpin.com/2022/04/searching-and-filtering-using-jpa-specification/">Piinalpin</a>
  * @author Callum G.
  * @version 1.0 - 21.04.2023
  */

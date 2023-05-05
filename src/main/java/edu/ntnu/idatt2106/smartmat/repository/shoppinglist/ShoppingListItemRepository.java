@@ -18,7 +18,7 @@ public interface ShoppingListItemRepository extends JpaRepository<ShoppingListIt
   /**
    * Checks if a shopping list item exists in a household.
    * @param id The id of the shopping list item.
-   * @param householdId The id of the household.
+   * @param shoppingListId The id of the shopping list.
    * @return True if the shopping list item exists in the household, false otherwise.
    */
   @Query("SELECT sli FROM ShoppingListItem sli WHERE sli.id = ?1 AND sli.shoppingList.id = ?2")

@@ -12,6 +12,8 @@ public abstract class BaseValidation {
 
   /**
    * Checks if the given string is null or empty.
+   * @param string The string to check.
+   * @return True if the string is null or empty, false otherwise.
    */
   public static boolean isNotNullOrEmpty(String string) {
     return !(string == null || string.isEmpty());
@@ -52,6 +54,7 @@ public abstract class BaseValidation {
    * Check if the given number is smaller than or equal to the given number.
    * @param <T>    A subclass of the class number.
    * @param number The number to check.
+   * @param max    The maximum number to check against.
    * @return True if the number is smaller than or equal to the length, false otherwise.
    */
   public static <T extends Number> boolean isSmallerThanOrEqual(Number number, Number max) {
@@ -73,6 +76,7 @@ public abstract class BaseValidation {
    * Check if the given number is larger than or equal to the given number.
    * @param <T>    A subclass of the class number.
    * @param number The number to check.
+   * @param min    The minimum number to check against.
    * @return True if the number is larger than or equal to the length, false otherwise.
    */
   public static <T extends Number> boolean isLargerThanOrEqual(Number number, Number min) {
@@ -115,6 +119,7 @@ public abstract class BaseValidation {
    * @param <T>    A subclass of the class number.
    * @param number The number to check.
    * @param min    The minimum number to check against.
+   * @param max    The maximum number to check against.
    * @return True if the number is smaller than the minimum, false otherwise.
    */
   public static <T extends Number> boolean isBetween(T number, T min, T max) {
@@ -174,6 +179,12 @@ public abstract class BaseValidation {
     return array != null && array.length != 0;
   }
 
+  /**
+   * Check if a generic array is null or empty.
+   * @param <T> The type of the array.
+   * @param array The array to check.
+   * @return True if the array is empty, false otherwise.
+   */
   public static <T extends Number> boolean validatePositive(T[] array) {
     for (T t : array) if (!isLargerThan(t, 0)) return false;
 

@@ -23,6 +23,10 @@ public enum HouseholdValidationRules {
     this.value = value;
   }
 
+  /**
+   * Get the value of the enum.
+   * @return The value of the enum.
+   */
   public int getValue() {
     return value;
   }

@@ -76,7 +76,7 @@ public class TokenController {
 
   /**
    * Generate a JWT token for the given user.
-   * @param userId The user to generate a token for.
+   * @param user The user to generate a token for.
    * @return The generated token.
    */
   public String generateToken(final User user) {

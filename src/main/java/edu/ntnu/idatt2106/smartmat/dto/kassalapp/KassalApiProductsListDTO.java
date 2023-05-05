@@ -6,6 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object for Kassal api.
+ * Puts the data from KassalAPIProductDTO into a list of products.
+ * @author Tobias O.
+ * @version 1.0 - 01.05.2023
+ */
 @Data
 @AllArgsConstructor
 @Builder

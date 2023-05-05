@@ -10,7 +10,6 @@ import lombok.NonNull;
 
 /**
  * Object for creating a basket.
- *
  * @author Callum G.
  * @version 1.0 - 03.05.2023.
  */

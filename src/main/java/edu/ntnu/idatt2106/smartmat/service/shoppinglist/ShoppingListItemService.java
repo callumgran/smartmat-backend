@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Interface for the shopping list item service.
- * @author Carl G. & Callum G.
+ * @author Carl G. Callum G.
  * @version 1.1 - 26.04.2023.
  */
 @Service

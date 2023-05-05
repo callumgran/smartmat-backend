@@ -200,10 +200,13 @@ public class FoodProductController {
    * Then frontend can set the ingredient of the food product
    * This will only be applicable in the start when many food products are
    * directly from Kassal.app.
+   * @param auth           The authentication of the user.
+   * @param id             The id of the food product to update.
    * @param foodProductDTO The food product to update.
    * @return a 200 OK response with the updated food product.
-   * @throws PermissionDeniedException    If the user does not have permission to update the food product.
    * @throws FoodProductNotFoundException If the food product is not found.
+   * @throws IngredientNotFoundException  If the ingredient is not found.
+   * @throws BadInputException            If the input is invalid.
    * @throws NullPointerException         If the food product is null.
    */
   @PutMapping(
@@ -256,6 +259,7 @@ public class FoodProductController {
   /**
    * Deletes a food product.
    *
+   * @param auth The authentication of the user.
    * @param id The id of the food product to delete.
    * @return a 204 NO CONTENT response.
    * @throws PermissionDeniedException    If the user does not have permission to delete the food product.
@@ -287,6 +291,7 @@ public class FoodProductController {
   /**
    * Creates a food product.
    *
+   * @param auth           The authentication of the user.
    * @param foodProductDTO The food product to create.
    * @return a 201 CREATED response with the created food product.
    * @throws PermissionDeniedException   If the user does not have permission to create the food product.
@@ -344,6 +349,7 @@ public class FoodProductController {
   /**
    * Searches for food products.
    *
+   * @param auth           The authentication of the user.
    * @param searchRequest The search request.
    * @return a 200 OK response with the found food products.
    * @throws BadInputException    If the search request is invalid.
@@ -380,6 +386,7 @@ public class FoodProductController {
    *
    * @param ingredientId The id of the ingredient.
    * @return a 200 OK response with the found food product.
+   * @throws FoodProductNotFoundException If the food product is not found.
    * @throws IngredientNotFoundException If the ingredient is not found.
    * @throws NullPointerException        If the id is null.
    * @throws BadInputException           If the input is invalid.

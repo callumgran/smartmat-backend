@@ -62,6 +62,8 @@ public abstract class HouseholdMapper {
    * Maps a household member to a household member DTO.
    * @param memberDTOs The household member to map.
    * @return The mapped household member DTO.
+   * @throws HouseholdNotFoundException If the household is not found.
+   * @throws UserDoesNotExistsException If the user does not exist.
    */
   @Named("memberDTOsToMembers")
   public Set<HouseholdMember> memberDTOToMember(Set<HouseholdMemberDTO> memberDTOs)
@@ -107,6 +109,11 @@ public abstract class HouseholdMapper {
       .collect(Collectors.toSet());
   }
 
+  /**
+   * Maps a list of custom food item DTOs to a list of custom food items.
+   * @param customFoodItemDTOs the custom food item DTOs to map.
+   * @return the mapped custom food items.
+   */
   @Named("customFoddItemDTOsToCustomgFoodItems")
   public Set<CustomFoodItem> customFoddItemDTOsToCustomgFoodItems(
     Set<CustomFoodItemDTO> customFoodItemDTOs
@@ -120,6 +127,11 @@ public abstract class HouseholdMapper {
       .collect(Collectors.toSet());
   }
 
+  /**
+   * Maps a list of shopping lists to a list of shopping list DTOs.
+   * @param shoppingLists the shopping lists to map.
+   * @return the mapped shopping lists.
+   */
   @Named("shoppingListsToShoppingListDTOs")
   public Set<ListingShoppingListDTO> shoppingListsToShoppingListDTOs(
     Set<ShoppingList> shoppingLists
@@ -133,6 +145,11 @@ public abstract class HouseholdMapper {
       .collect(Collectors.toSet());
   }
 
+  /**
+   * Maps a list of shopping list DTOs to a list of shopping lists.
+   * @param shoppingListDTOs the shopping list DTOs to map.
+   * @return the mapped shopping list DTOs.
+   */
   @Named("shoppingListDTOsToShoppingLists")
   public Set<ShoppingList> shoppingListDTOsToShoppingLists(
     Set<ListingShoppingListDTO> shoppingListDTOs

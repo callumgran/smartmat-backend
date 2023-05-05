@@ -26,8 +26,8 @@ public class HouseholdRecipeRecommend {
 
   /**
    * Returns a collection of recommended recipes for a household.
-   * @param household The household to recommend recipes for.
-   * @param recipes The recipes to recommend.
+   * @param householdIngredients The household to recommend recipes for.
+   * @param recipeIngredients The recipes to recommend.
    * @return A collection of recommended recipes for a household.
    */
   private static double getRecipeScore(
@@ -88,7 +88,8 @@ public class HouseholdRecipeRecommend {
    * Starts by iterating through the recipes and multiplying the amount of ingredients by the number of members in the household.
    * Then iterates through the household food products and removes the amount of ingredients from the household food products.
    * If the amount of ingredients is greater than the amount of household food products, the amount of ingredients is set to 0.
-   * @param household The household to get household food products from.
+   * @param householdSize the size of the household.
+   * @param householdFoodProducts the household food products to get ingredients from.
    * @param usedRecipes The recipes that are going to be used.
    * @return A collection of household food products that are going to be used.
    */

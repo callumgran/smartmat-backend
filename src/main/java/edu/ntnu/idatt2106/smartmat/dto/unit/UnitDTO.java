@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO for unit with name and abbreviation
- * @author Simen G. & Callum G.
+ * @author Simen G. Callum G.
  * @version 1.1 28.04.2023
  */
 @Data

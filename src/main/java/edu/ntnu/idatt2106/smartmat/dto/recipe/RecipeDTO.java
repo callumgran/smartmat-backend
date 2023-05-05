@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 /**
  * Data transfer object for Recipe.
- * @author Simen G. & Callum G.
+ * @author Simen G. Callum G.
  * @version 1.1 - 21.04.2023
  */
 @Data
