@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller for public user endpoints.
  * Based on the PublicUserController from the IDATT2105 project.
  * @author Thomas S, Callum Gran
- * @version 1.0 - 17.04.2023
+ * @version 1.1 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/public/users")
@@ -74,7 +74,7 @@ public class PublicUserController {
   /**
    * Create a new user.
    * @param registerUser The user to create.
-   * @return The created user.
+   * @return The created user and a 201 status code.
    * @throws BadInputException If the input is invalid.
    * @throws UsernameAlreadyExistsException If the username already exists.
    * @throws EmailAlreadyExistsException If the email already exists.

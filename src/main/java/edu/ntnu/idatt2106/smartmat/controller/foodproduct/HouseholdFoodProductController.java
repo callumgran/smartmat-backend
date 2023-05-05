@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller for household food product endpoints.
  * All food product endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.0 - 21.04.2023
+ * @version 1.1 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -70,7 +70,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param id The id of the food product.
-   * @return The household food product.
+   * @return 200 OK if the household food product was found.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -83,7 +83,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Get a household food product by id",
-    description = "Get a household food product by its id and the household id, requires authentication.",
+    description = "Get a household food product by its id and the household id, requires authentication and household membership.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<HouseholdFoodProductDTO> getHouseholdFoodProductById(
@@ -112,7 +112,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param ean The ean of the food product.
-   * @return The household food product.
+   * @return 200 OK if the household food product was found.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -162,7 +162,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param searchRequest The search request.
-   * @return The household food product.
+   * @return 200 OK and the search result if the search was successful.
    * @throws BadInputException If the search request is invalid.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.
@@ -176,7 +176,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Search for a household food product",
-    description = "Search for a household food product by its name and the household id, requires authentication.",
+    description = "Search for a household food product by its name and the household id, requires authentication and household membership.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<List<HouseholdFoodProductDTO>> searchForHouseholdFoodProduct(
@@ -210,7 +210,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param createHouseholdFoodProductDTO The household food product to create.
-   * @return The created household food product.
+   * @return 201 CREATED if the household food product was created.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -221,7 +221,7 @@ public class HouseholdFoodProductController {
   @PostMapping(value = "/{householdId}/foodproducts", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Create a household food product",
-    description = "Create a household food product, requires authentication.",
+    description = "Delete a household food product, requires authentication and admin or household privilege.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<HouseholdFoodProductDTO> createHouseholdFoodProduct(
@@ -302,7 +302,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Update a household food product",
-    description = "Update a household food product, requires authentication.",
+    description = "Delete a household food product, requires authentication and admin or household privilege.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<HouseholdFoodProductDTO> updateHouseholdFoodProduct(
@@ -380,7 +380,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Delete a household food product",
-    description = "Delete a household food product, requires authentication.",
+    description = "Delete a household food product, requires authentication and admin or household privilege.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<Void> deleteHouseholdFoodProduct(
@@ -421,7 +421,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Use a household food product",
-    description = "Use a household food product, requires authentication.",
+    description = "Use a household food product, requires authentication and admin or household privilege.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<HouseholdFoodProductDTO> useHouseholdFoodProduct(
@@ -481,7 +481,7 @@ public class HouseholdFoodProductController {
    * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param id The id of the household food product to throw away.
-   * @return The 200 ok or 204 No Content if the household food product was deleted for having no quantity.
+   * @return 204 No Content if the household food product was deleted for having no quantity.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -494,7 +494,7 @@ public class HouseholdFoodProductController {
   )
   @Operation(
     summary = "Use a household food product",
-    description = "Use a household food product, requires authentication.",
+    description = "Use a household food product, requires authentication and admin or household privilege.",
     tags = { "householdfoodproduct" }
   )
   public ResponseEntity<Void> throwHouseholdFoodProduct(

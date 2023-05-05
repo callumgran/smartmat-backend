@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to shopping list items.
  * @auther Callum G.
- * @version 1.0 - 02.05.2023
+ * @version 1.1 - 05.05.2023
  */
 @RestController
 @RequestMapping("/api/v1/private/basket")
@@ -73,7 +73,7 @@ public class BasketController {
   /**
    * Creates a new shopping list basket.
    * @param auth The auth object of the user.
-   * @param shoppingListId The id of the shopping list to create the basket for.
+   * @param basketDTO The basket to create.
    * @return The created shopping list basket.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws ShoppingListNotFoundException If the shopping list does not exist.
@@ -146,6 +146,7 @@ public class BasketController {
    * Adds an item to the shopping list basket.
    * @param auth The auth object of the user.
    * @param basketId The id of the basket to add the item to.
+   * @param createBasketItemDTO The item to add to the basket.
    * @return The item that was added to the basket.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -176,7 +177,9 @@ public class BasketController {
         householdService
       )
     ) {
-      throw new PermissionDeniedException("User does not exist.");
+      throw new PermissionDeniedException(
+        "Bruker har ikke tilgang til å legge til en vare i handlekurven."
+      );
     }
 
     LOGGER.info("User has permission to add item to basket with id: {}", basketId);
@@ -230,7 +233,9 @@ public class BasketController {
         householdService
       )
     ) {
-      throw new PermissionDeniedException("User does not exist.");
+      throw new PermissionDeniedException(
+        "Bruker har ikke tilgang til å legge til en vare i handlekurven."
+      );
     }
 
     LOGGER.info("User has permission to add item to basket with id: {}", basketId);
@@ -280,7 +285,9 @@ public class BasketController {
         householdService
       )
     ) {
-      throw new PermissionDeniedException("User does not exist.");
+      throw new PermissionDeniedException(
+        "Bruker har ikke tilgang til å fjerne en vare fra handlekurven."
+      );
     }
 
     LOGGER.info("User has permission to remove item from basket with id: {}", basketId);
@@ -325,7 +332,9 @@ public class BasketController {
         householdService
       )
     ) {
-      throw new PermissionDeniedException("User does not exist.");
+      throw new PermissionDeniedException(
+        "Bruker har ikke tilgang til å fjerne en vare fra handlekurven."
+      );
     }
 
     basket.getCustomFoodItems().removeIf(item -> item.getId().equals(basketItemId));
@@ -375,7 +384,7 @@ public class BasketController {
         householdService
       )
     ) {
-      throw new PermissionDeniedException("User does not exist.");
+      throw new PermissionDeniedException("Bruker har ikke tilgang til å hente handlekurven.");
     }
 
     LOGGER.info("User has permission to get basket with id: {}", basketId);

@@ -68,7 +68,7 @@ import org.springframework.web.bind.annotation.*;
  * Used for all household endpoints.
  * All endpoints are private and require authentication.
  * @author Callum G.
- * @version 1.5 - 24.04.2023
+ * @version 1.6 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/households")
@@ -90,16 +90,18 @@ public class HouseholdController {
 
   /**
    * Get a household by id.
+   * @param auth The authentication of the user.
    * @param id The id of the household.
    * @return 200 if the household was found and the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdDoesNotExistsException If the household does not exist.
+   * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws NullPointerException If the id is null.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Get a household by id",
-    description = "Get a household by id, if the household does not exist, an error is thrown. Requires authentication.",
+    description = "Get a household by id, if the household does not exist, an error is thrown. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<HouseholdDTO> getHousehold(
@@ -123,6 +125,7 @@ public class HouseholdController {
 
   /**
    * Create a household.
+   * @param auth The authentication of the user.
    * @param householdDTO The household to create.
    * @return 201 if the household was created.
    * @throws UserDoesNotExistsException If the user does not exist.
@@ -176,17 +179,19 @@ public class HouseholdController {
 
   /**
    * Method to update a households name.
-   * @param householdId The id of the household.
+   * @param auth The authentication of the user.
+   * @param id The id of the household.
    * @param updateDTO The new name of the household.
    * @return 200 OK if the household was updated and the updated household.
    * @throws NullPointerException If the household does not exist.
+   * @throws PermissionDeniedException If the user does not have permission to update the household.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    */
   @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Update a households name",
-    description = "Update a households name, if the household does not exist, an error is thrown. Requires authentication.",
+    description = "Update a households name, if the household does not exist, an error is thrown. Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<HouseholdDTO> updateHouseholdName(
@@ -213,16 +218,18 @@ public class HouseholdController {
 
   /**
    * Method to delete a household.
+   * @param auth The authenticated user.
    * @param householdId The id of the household.
    * @return 204 No Content.
    * @throws NullPointerException If the household does not exist.
+   * @throws PermissionDeniedException If the user does not have permission to delete the household.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    */
   @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Delete a household",
-    description = "Delete a household, if the household does not exist, an error is thrown. Requires authentication.",
+    description = "Delete a household, if the household does not exist, an error is thrown. Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<String> deleteHousehold(
@@ -250,13 +257,14 @@ public class HouseholdController {
    * @param username The username of the user.
    * @param auth The authentication object.
    * @return 200 OK if the user was found and the households.
+   * @throws PermissionDeniedException If the user does not have permission to get the households.
    * @throws NullPointerException If any value are null.
    * @throws UserDoesNotExistsException If the user does not exist.
    */
   @GetMapping(value = "/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Get all households for a user",
-    description = "Get all households for a user, if the user does not exist, an error is thrown. Requires authentication.",
+    description = "Get all households for a user, if the user does not exist, an error is thrown.  Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<List<HouseholdDTO>> getHouseholdsForUser(
@@ -280,9 +288,10 @@ public class HouseholdController {
 
   /**
    * Method to add a user to a household.
+   * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param username The username of the user to add.
-   * @return 200 OK if the user was added to the household.
+   * @return 201 Created if the user was added to the household and the household member.
    * @throws NullPointerException If any value are null.
    * @throws PermissionDeniedException If the user does not have permission to add a user to the household.
    * @throws MemberAlreadyExistsException If the user is already a member of the household.
@@ -292,7 +301,7 @@ public class HouseholdController {
   @PostMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Add a user to a household",
-    description = "Add a user to a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    description = "Add a user to a household, if the user or household does not exist, an error is thrown.  Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<HouseholdMemberDTO> addUserToHousehold(
@@ -321,11 +330,12 @@ public class HouseholdController {
     );
 
     LOGGER.info("Mapped householdMember to householdMemberDTO: {}", householdMemberDTORet);
-    return ResponseEntity.ok(householdMemberDTORet);
+    return ResponseEntity.status(HttpStatus.CREATED).body(householdMemberDTORet);
   }
 
   /**
    * Method to remove a user from a household.
+   * @param auth The authentication object.
    * @param householdId The id of the household.
    * @param username The username of the user to remove.
    * @return 204 No Content.
@@ -336,7 +346,7 @@ public class HouseholdController {
   @DeleteMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Remove a user from a household",
-    description = "Remove a user from a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    description = "Remove a user from a household, if the user or household does not exist, an error is thrown. Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<String> removeUserFromHousehold(
@@ -368,6 +378,7 @@ public class HouseholdController {
 
   /**
    * Method to update the role of a user in a household.
+   * @param auth The auth of the user.
    * @param householdId The id of the household.
    * @param username The username of the user to update.
    * @param householdRole The new role of the user.
@@ -379,7 +390,7 @@ public class HouseholdController {
   @PutMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Update the role of a user in a household",
-    description = "Update the role of a user in a household, if the user or household does not exist, an error is thrown. Requires authentication.",
+    description = "Update the role of a user in a household, if the user or household does not exist, an error is thrown. Requires admin or household ownership.",
     tags = { "household" }
   )
   public ResponseEntity<HouseholdMemberDTO> updateUserInHousehold(
@@ -426,7 +437,7 @@ public class HouseholdController {
   @GetMapping(value = "/{id}/current", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Get the current shopping list by a household",
-    description = "Get a household by id and find its current shopping list. Requires authentication.",
+    description = "Get a household by id and find its current shopping list. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<ShoppingListDTO> getCurrentShoppingList(
@@ -467,7 +478,7 @@ public class HouseholdController {
   @GetMapping(value = "/{id}/recipes", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Get recommended recipes for a household",
-    description = "Get recommended recipes for a household. Recipes are recommended based on the household's ingredients. Requires authentication.",
+    description = "Get recommended recipes for a household. Recipes are recommended based on the household's ingredients. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<List<RecipeRecommendationDTO>> getRecommendedRecipes(
@@ -513,6 +524,7 @@ public class HouseholdController {
    * @param auth The authentication of the user.
    * @param id The id of the household.
    * @param recipeId The id of the recipe.
+   * @param createWeeklyRecipeDTO The DTO containing the date for the recipe.
    * @return 201 CREATED if the recipe was added.
    * @throws NullPointerException If any values are null.
    * @throws PermissionDeniedException If the user does not have access to the household.
@@ -523,7 +535,7 @@ public class HouseholdController {
   @PostMapping(value = "/{id}/recipes/{recipeId}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Add a weekly recipe to a household",
-    description = "Add a weekly recipe to a household. Requires authentication.",
+    description = "Add a weekly recipe to a household. Requires admin or household privilege.",
     tags = { "household" }
   )
   public ResponseEntity<Void> addWeeklyRecipe(
@@ -574,7 +586,7 @@ public class HouseholdController {
   @DeleteMapping(value = "/{id}/recipes/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Delete temporary used ingredients for a household on a specific date",
-    description = "Delete temporary used ingredients for a household on a specific date. Requires authentication.",
+    description = "Delete temporary used ingredients for a household on a specific date. Requires admin or household privilege.",
     tags = { "household" }
   )
   public ResponseEntity<Void> deleteWeeklyRecipe(
@@ -616,7 +628,7 @@ public class HouseholdController {
   @GetMapping(value = "/{id}/recipes/{monday}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Gets the weekly recipes for a household from a specific monday",
-    description = "Gets the weekly recipes for a household from a specific monday. Requires authentication.",
+    description = "Gets the weekly recipes for a household from a specific monday. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<Collection<WeeklyRecipeDTO>> getWeeklyRecipes(
@@ -663,7 +675,7 @@ public class HouseholdController {
   @GetMapping(value = "/{id}/recipes/today", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Gets the planned recipe for today for a household",
-    description = "Gets the planned recipe for a household today. Requires authentication.",
+    description = "Gets the planned recipe for a household today. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<WeeklyRecipeDTO> getWeeklyRecipeToday(
@@ -709,7 +721,7 @@ public class HouseholdController {
   @GetMapping(value = "/{id}/recipes/{monday}/items", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Gets the shopping list items for a household from a specific monday",
-    description = "Gets the shopping list items for a household from a specific monday. Requires authentication.",
+    description = "Gets the shopping list items for a household from a specific monday. Requires admin or household privilege.",
     tags = { "household" }
   )
   public ResponseEntity<Collection<RecipeShoppingListItemDTO>> getShoppingListItems(
@@ -761,7 +773,7 @@ public class HouseholdController {
   @PatchMapping(value = "/{id}/recipes/{date}/use", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
     summary = "Uses a recipe for a household on a specific date",
-    description = "Uses a recipe for a household on a specific date. Requires authentication.",
+    description = "Uses a recipe for a household on a specific date. Requires admin or household membership.",
     tags = { "household" }
   )
   public ResponseEntity<Void> useRecipe(

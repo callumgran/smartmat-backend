@@ -48,7 +48,7 @@ import org.springframework.web.client.RestTemplate;
  * All food product endpoints are private and require authentication.
  *
  * @author Callum G, Nicolai H, Brand,
- * @version 1.3 - 26.04.2023
+ * @version 1.4 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/foodproducts")
@@ -134,7 +134,7 @@ public class FoodProductController {
         response =
           restTemplate.exchange(kassalApiUrl, HttpMethod.GET, entity, KassalApiDataDTO.class);
       } catch (Exception e1) {
-        throw new FoodProductNotFoundException(e1.getMessage());
+        throw new FoodProductNotFoundException("Matvaren ble ikke funnet i vår eksterne database");
       }
 
       // logga responsen for å debugg

@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to shopping list items.
  * @auther Callum Gran
- * @version 1.1 - 26.04.2023
+ * @version 1.2 - 05.05.2023
  */
 @RestController
 @RequestMapping("/api/v1/private/shoppinglistitems")
@@ -64,7 +64,7 @@ public class ShoppingListItemController {
    * Method to add an an item to a shopping list.
    * @param auth authentication for user.
    * @param item the item to add.
-   * @return the item added.
+   * @return 201 CREATED if the item is added.
    * @throws NullPointerException if any value are null.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws IngredientNotFoundException if the ingredient is not found.
@@ -101,7 +101,7 @@ public class ShoppingListItemController {
       )
     ) {
       throw new PermissionDeniedException(
-        "You do not have permission to add an item to this shopping list."
+        "Du har ikke tilgang til å legge til ingredienser i handlelisten"
       );
     }
 
@@ -157,8 +157,8 @@ public class ShoppingListItemController {
   /**
    * Method to delete an item from a shopping list.
    * @param auth authentication for user.
-   * @param id the id for the shopping list.
-   * @param itemId the id for the item that is being deleted.
+   * @param householdId the id for the household.
+   * @param id the id for the item that is being deleted.
    * @return the deleted item.
    * @throws NullPointerException if any values are null.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
@@ -180,13 +180,15 @@ public class ShoppingListItemController {
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
     if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
-        "You do not have permission to delete an item from this shopping list."
+        "Du har ikke tilgang til å slette ingredienser i handlelisten"
       );
     }
 
     LOGGER.info("Deleting item {} from shopping list", id);
 
     shoppingListItemService.deleteShoppingListItem(id);
+
+    LOGGER.info("Deleted item {} from shopping list", id);
 
     return ResponseEntity.noContent().build();
   }
@@ -196,7 +198,7 @@ public class ShoppingListItemController {
    * An item can be checked or unchecked.
    * @param auth authentication for user.
    * @param itemId the id for the item that is being checked.
-   * @return the item to be checked or unched.
+   * @return 200 OK if the item to be checked or unchecked.
    * @throws NullPointerException if any values are null.
    * @throws ShoppingListNotFoundException if the shopping list the items is in is not found.
    * @throws UserDoesNotExistsException if the user does not exist.
@@ -232,6 +234,7 @@ public class ShoppingListItemController {
       shoppingListItem,
       shoppingListItem.isChecked()
     );
+
     shoppingListItemService.updateShoppingListItem(shoppingListItem);
 
     return ResponseEntity.ok(

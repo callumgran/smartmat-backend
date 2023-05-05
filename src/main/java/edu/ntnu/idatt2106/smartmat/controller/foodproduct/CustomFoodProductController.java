@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -95,7 +96,7 @@ public class CustomFoodProductController {
       )
     ) {
       throw new PermissionDeniedException(
-        "Du har ikke tilgang til å legge til en vare i denne handlelisten"
+        "Brukeren har ikke tilgang til å legge til en vare i handlelisten"
       );
     }
 
@@ -138,7 +139,7 @@ public class CustomFoodProductController {
 
     LOGGER.info("Returning item with id: " + customFoodItemDTO.getId());
 
-    return ResponseEntity.ok(customFoodItemDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(customFoodItemDTO);
   }
 
   /**
@@ -167,7 +168,7 @@ public class CustomFoodProductController {
     throws NullPointerException, ShoppingListItemNotFoundException, UserDoesNotExistsException, HouseholdNotFoundException, PermissionDeniedException {
     if (!PrivilegeUtil.isAdminOrHouseholdPrivileged(auth, householdId, householdService)) {
       throw new PermissionDeniedException(
-        "Du har ikke tilgang til å slette en vare i denne handlelisten"
+        "Du har ikke tilgang til å slette en vare fra denne handlelisten"
       );
     }
 

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
  * Controller for private user endpoints.
  * Based on the PrivateUserController from the IDATT2105 project.
  * @author Thomas S, Callum Gran, Nicolai H. B.
- * @version 1.0 - 17.04.2023
+ * @version 1.2 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/users")
@@ -44,8 +44,9 @@ public class PrivateUserController {
    * Get the authenticated user.
    * @param username The username of the authenticated user.
    * @return The authenticated user.
-   * @throws PermissionDeniedException If the auth is null.
+   * @throws PermissionDeniedException If the user is not authorized to get the user.
    * @throws UserDoesNotExistsException If the user does not exist.
+   * @throws NullPointerException If the user is null.
    */
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -54,7 +55,7 @@ public class PrivateUserController {
     tags = { "user" }
   )
   public ResponseEntity<UserDTO> getUser(@NonNull @AuthenticationPrincipal Auth user)
-    throws PermissionDeniedException, UserDoesNotExistsException {
+    throws PermissionDeniedException, UserDoesNotExistsException, NullPointerException {
     if (!AuthValidation.validateAuth(user)) throw new PermissionDeniedException(
       "Brukeren er ikke autentisert."
     );
@@ -79,6 +80,7 @@ public class PrivateUserController {
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws WrongPasswordException If the old password is incorrect.
    * @throws BadInputException If the input is invalid.
+   * @throws NullPointerException If the user is null.
    */
   @PatchMapping(
     value = "/{username}",
@@ -95,7 +97,7 @@ public class PrivateUserController {
     @NonNull @PathVariable String username,
     @NonNull @RequestBody UserPatchDTO userUpdateDTO
   )
-    throws PermissionDeniedException, UserDoesNotExistsException, WrongPasswordException, BadInputException {
+    throws PermissionDeniedException, UserDoesNotExistsException, WrongPasswordException, BadInputException, NullPointerException {
     if (
       !AuthValidation.hasRoleOrIsUser(auth, UserRole.ADMIN, username)
     ) throw new PermissionDeniedException("Brukeren har ikke tilgang til å oppdatere brukeren.");

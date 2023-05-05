@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Controller for public shopping list endpoints.
  * @author Tobias O., Carl G., Callum G.
- * @version 1.1 - 26.04.2023.
+ * @version 1.3 - 05.05.2023.
  */
 @RestController
 @RequestMapping("/api/v1/private/shoppinglists")
@@ -56,7 +56,7 @@ public class ShoppingListController {
    * Method to create a shopping list.
    * @param auth authentication for user
    * @param shoppingListDTO the DTO for the shopping list.
-   * @return the created shopping list.
+   * @return 201 if the shopping list is created.
    * @throws ShoppingListAlreadyExistsException if the shopping list already exists.
    * @throws NullPointerException if any values are null.
    * @throws HouseholdNotFoundException if the household is not found.
@@ -70,7 +70,7 @@ public class ShoppingListController {
   )
   @Operation(
     summary = "Creates a new shopping list for the given household",
-    description = "Get a household by id and create a shopping list if an open one does not exist. Requires authentication and be owner of the household.",
+    description = "Get a household by id and create a shopping list if an open one does not exist. Requires authentication and be a privileged user for the household.",
     tags = { "shopping list" }
   )
   public ResponseEntity<ShoppingListDTO> createShoppingList(
@@ -117,7 +117,7 @@ public class ShoppingListController {
    * Method to retrieve a shopping list.
    * @param auth authentication for user.
    * @param id id for the shopping list.
-   * @return the shopping list.
+   * @return 200 if the shopping list is found.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws NullPointerException if any values are null.
    * @throws PermissionDeniedException if the user does not have permission to create a shopping list.
@@ -159,7 +159,7 @@ public class ShoppingListController {
    * to what is in the basket.
    * @param auth authentication for user.
    * @param id id for the shopping list.
-   * @return the shopping list.
+   * @return 200 OK and the shopping list with the difference.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws BasketNotFoundException if the basket is not found.
    * @throws NullPointerException if any values are null.
@@ -205,7 +205,7 @@ public class ShoppingListController {
    * @param auth authentication for user.
    * @param id id for the shopping list.
    * @param shoppingListDTO the DTO for the shopping list.
-   * @return the updated shopping list.
+   * @return 200 OK if the shopping list is updated.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws NullPointerException if any values are null.
    * @throws UserDoesNotExistsException if the user does not exist.
@@ -269,7 +269,7 @@ public class ShoppingListController {
    * Method to complete a shopping list.
    * @param auth authentication for user.
    * @param id id for the shopping list.
-   * @return the completed shopping list.
+   * @return 200 OK if the shopping list is completed.
    * @throws NullPointerException if any values are null.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws PermissionDeniedException if the user does not have permission to complete a shopping list.
@@ -341,7 +341,7 @@ public class ShoppingListController {
    * Method to delete a shopping list.
    * @param auth authentication for user.
    * @param id id for the shopping list.
-   * @return the deleted shopping list.
+   * @return 204 NO CONTENT if the shopping list is deleted.
    * @throws ShoppingListNotFoundException if the shopping list is not found.
    * @throws NullPointerException if any values are null.
    * @throws UserDoesNotExistsException if the user does not exist.
