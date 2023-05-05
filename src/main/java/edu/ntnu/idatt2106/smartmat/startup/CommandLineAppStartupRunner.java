@@ -45,13 +45,13 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
     if (!userService.usernameExists("admin")) {
       RegisterDTO admin = new RegisterDTO("admin", "admin", "admin", "admin", "admin");
       RegisterDTO privelegedUser = new RegisterDTO(
-        "priveleged",
-        "priveleged",
-        "priveleged",
-        "priveleged",
-        "priveleged"
+        "privileged",
+        "privileged",
+        "privileged",
+        "privileged",
+        "privileged"
       );
-      RegisterDTO normalUser = new RegisterDTO("normal", "normal", "normal", "normal", "normal");
+      RegisterDTO normalUser = new RegisterDTO("member", "member", "member", "member", "member");
       User user = RegisterMapper.INSTANCE.registerDTOtoUser(admin);
       user.setRole(UserRole.ADMIN);
       user = userService.saveUser(user);

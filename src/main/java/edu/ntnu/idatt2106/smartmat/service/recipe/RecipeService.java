@@ -37,9 +37,6 @@ public interface RecipeService {
 
   Page<Recipe> searchRecipes(@NonNull SearchRequest searchRequest) throws NullPointerException;
 
-  void useRecipe(@NonNull UUID id, @NonNull Household household, int portions)
-    throws RecipeNotFoundException, NullPointerException;
-
   Collection<ShoppingListItem> getShoppingListItems(
     @NonNull UUID recipeId,
     @NonNull Household household,

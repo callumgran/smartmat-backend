@@ -17,10 +17,8 @@ import edu.ntnu.idatt2106.smartmat.model.recipe.Recipe;
 import edu.ntnu.idatt2106.smartmat.model.recipe.RecipeDifficulty;
 import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeIngredientRepository;
 import edu.ntnu.idatt2106.smartmat.repository.recipe.RecipeRepository;
-import edu.ntnu.idatt2106.smartmat.service.foodproduct.HouseholdFoodProductService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeServiceImpl;
-import edu.ntnu.idatt2106.smartmat.service.statistic.FoodProductHistoryService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +31,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -62,12 +59,6 @@ public class RecipeServiceIntegrationTest {
 
   @MockBean
   private RecipeIngredientRepository recipeIngredientRepository;
-
-  @MockBean
-  private HouseholdFoodProductService householdFoodProductService;
-
-  @MockBean
-  private FoodProductHistoryService foodProductHistoryService;
 
   Recipe carrotCake;
   Recipe bananaCake;

@@ -22,6 +22,7 @@ import edu.ntnu.idatt2106.smartmat.helperfunctions.TestUserEnum;
 import edu.ntnu.idatt2106.smartmat.model.household.Household;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdMember;
 import edu.ntnu.idatt2106.smartmat.model.household.HouseholdRole;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.model.user.User;
 import edu.ntnu.idatt2106.smartmat.security.Auth;
 import edu.ntnu.idatt2106.smartmat.security.SecurityConfig;
@@ -31,6 +32,7 @@ import edu.ntnu.idatt2106.smartmat.service.recipe.RecipeService;
 import edu.ntnu.idatt2106.smartmat.service.shoppinglist.ShoppingListService;
 import edu.ntnu.idatt2106.smartmat.service.user.UserService;
 import edu.ntnu.idatt2106.smartmat.utils.PrivilegeUtil;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.Before;
@@ -285,6 +287,23 @@ public class HouseholdControllerTest {
   }
 
   @Test
+  public void testDeleteExistingHouseholdNoPermission() {
+    try {
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      mvc
+        .perform(
+          delete(String.format("%s/%s", BASE_URL, household.getId()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isForbidden());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
   public void testGetHouseholdsByUser() {
     try {
       when(householdService.getHouseholdsByUser(user.getUsername())).thenReturn(Set.of(household));
@@ -341,6 +360,176 @@ public class HouseholdControllerTest {
             .with(authentication(createAuthenticationToken(user)))
         )
         .andExpect(status().isConflict());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testAddMemberToHouseholdWithPermission() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      when(householdService.isHouseholdMember(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      when(
+        householdService.addHouseholdMember(
+          household.getId(),
+          user.getUsername(),
+          HouseholdRole.MEMBER
+        )
+      )
+        .thenReturn(new HouseholdMember(household, user, HouseholdRole.MEMBER));
+      mvc
+        .perform(
+          post(String.format("%s/%s/user/%s", BASE_URL, household.getId(), user.getUsername()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isCreated());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testAddMemberToHouseholdWithoutPermission() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      when(householdService.isHouseholdMember(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      when(
+        householdService.addHouseholdMember(
+          household.getId(),
+          user.getUsername(),
+          HouseholdRole.MEMBER
+        )
+      )
+        .thenReturn(new HouseholdMember(household, user, HouseholdRole.MEMBER));
+      mvc
+        .perform(
+          post(String.format("%s/%s/user/%s", BASE_URL, household.getId(), user.getUsername()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isForbidden());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testRemoveMemberFromHouseholdWithPermission() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      when(
+        householdService.isHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        )
+      )
+        .thenReturn(true);
+      doNothing()
+        .when(householdService)
+        .deleteHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        );
+      mvc
+        .perform(
+          delete(
+            String.format(
+              "%s/%s/user/%s",
+              BASE_URL,
+              household.getId(),
+              testUserFactory(TestUserEnum.UPDATE).getUsername()
+            )
+          )
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNoContent());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testRemoveMemberFromHouseholdWithoutPermission() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(false);
+      when(
+        householdService.isHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        )
+      )
+        .thenReturn(true);
+      doNothing()
+        .when(householdService)
+        .deleteHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        );
+      mvc
+        .perform(
+          delete(
+            String.format(
+              "%s/%s/user/%s",
+              BASE_URL,
+              household.getId(),
+              testUserFactory(TestUserEnum.UPDATE).getUsername()
+            )
+          )
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isForbidden());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testRemoveMemberFromHouseholdWithPermissionButNotMember() {
+    try {
+      when(householdService.getHouseholdById(household.getId())).thenReturn(household);
+      when(householdService.isHouseholdOwner(household.getId(), user.getUsername()))
+        .thenReturn(true);
+      when(
+        householdService.isHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        )
+      )
+        .thenReturn(false);
+      doNothing()
+        .when(householdService)
+        .deleteHouseholdMember(
+          household.getId(),
+          testUserFactory(TestUserEnum.UPDATE).getUsername()
+        );
+      mvc
+        .perform(
+          delete(
+            String.format(
+              "%s/%s/user/%s",
+              BASE_URL,
+              household.getId(),
+              testUserFactory(TestUserEnum.UPDATE).getUsername()
+            )
+          )
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(authentication(createAuthenticationToken(user)))
+        )
+        .andExpect(status().isNotFound());
     } catch (Exception e) {
       fail(e.getMessage());
     }
