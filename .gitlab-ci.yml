@@ -5,6 +5,7 @@ stages:
   - compile
   - test
   - install
+  - deploy
 
 checkstyle:
   stage: checkstyle
@@ -28,3 +29,13 @@ install:
   script:
       - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest,\!FoodProductControllerTest#testGetFoodProductByEanThatDoesNotExist install
       - mvn clean
+
+pages:
+  stage: deploy
+  script:
+    - mvn jacoco:report
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
