@@ -12,6 +12,7 @@ import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundExcepti
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListItemNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.ShoppingListNotFoundException;
+import edu.ntnu.idatt2106.smartmat.exceptions.statistic.FoodProductHistoryNotFoundException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.EmailAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UserDoesNotExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.user.UsernameAlreadyExistsException;
@@ -132,6 +133,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       ShoppingListNotFoundException.class,
       ShoppingListItemNotFoundException.class,
       FoodProductNotFoundException.class,
+      FoodProductHistoryNotFoundException.class,
       BasketNotFoundException.class,
     }
   )
