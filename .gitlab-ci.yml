@@ -28,12 +28,12 @@ install:
   stage: install
   script:
       - mvn -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest,\!FoodProductControllerTest#testGetFoodProductByEanThatDoesNotExist install
-      - mvn clean
 
 pages:
   stage: deploy
   script:
-    - mvn jacoco:report
+    - mvn clean -Dtest=\!JwtTokenSingletonTest,\!TokenControllerTest,\!FoodProductControllerTest#testGetFoodProductByEanThatDoesNotExist test jacoco:report
+    - mv target/site/jacoco/ public
   artifacts:
     paths:
       - public

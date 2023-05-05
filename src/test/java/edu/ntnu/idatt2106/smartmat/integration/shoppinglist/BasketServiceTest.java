@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketAlreadyExistsException;
 import edu.ntnu.idatt2106.smartmat.exceptions.shoppinglist.BasketNotFoundException;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.Basket;
+import edu.ntnu.idatt2106.smartmat.model.shoppinglist.BasketItem;
 import edu.ntnu.idatt2106.smartmat.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketItemRepository;
 import edu.ntnu.idatt2106.smartmat.repository.shoppinglist.BasketRepository;
@@ -201,6 +202,25 @@ public class BasketServiceTest {
     assertThrows(
       NullPointerException.class,
       () -> basketService.getBasketByShoppingListId(shoppingListId)
+    );
+  }
+
+  @Test
+  public void testDeleteBasketItemWhenBasketItemExists() throws Exception {
+    BasketItem basketItem = BasketItem.builder().id(UUID.randomUUID()).build();
+    when(basketItemRepository.existsById(basketItem.getId())).thenReturn(true);
+    doNothing().when(basketItemRepository).deleteById(basketItem.getId());
+    assertDoesNotThrow(() -> basketService.deleteBasketItem(basketItem.getId()));
+  }
+
+  @Test
+  public void testDeleteBasketItemWhenBasketItemDoesNotExist() throws Exception {
+    BasketItem basketItem = BasketItem.builder().id(UUID.randomUUID()).build();
+    when(basketItemRepository.existsById(basketItem.getId())).thenReturn(false);
+    doNothing().when(basketItemRepository).deleteById(basketItem.getId());
+    assertThrows(
+      BasketNotFoundException.class,
+      () -> basketService.deleteBasketItem(basketItem.getId())
     );
   }
 }

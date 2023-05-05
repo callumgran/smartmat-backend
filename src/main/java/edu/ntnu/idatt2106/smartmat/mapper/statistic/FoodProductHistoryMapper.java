@@ -1,6 +1,9 @@
 package edu.ntnu.idatt2106.smartmat.mapper.statistic;
 
+import edu.ntnu.idatt2106.smartmat.dto.foodproduct.FoodProductDTO;
 import edu.ntnu.idatt2106.smartmat.dto.statistic.FoodProductHistoryDTO;
+import edu.ntnu.idatt2106.smartmat.mapper.foodproduct.FoodProductMapper;
+import edu.ntnu.idatt2106.smartmat.model.foodproduct.FoodProduct;
 import edu.ntnu.idatt2106.smartmat.model.statistic.FoodProductHistory;
 import java.util.UUID;
 import org.mapstruct.Mapper;

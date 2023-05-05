@@ -59,4 +59,16 @@ public class UnitServiceIntegrationTest {
     assertEquals(g, units.get(1));
     assertEquals(l, units.get(2));
   }
+
+  @Test
+  public void testGetUnit() {
+    when(unitRepository.findById("kilogram")).thenReturn(java.util.Optional.ofNullable(kg));
+    assertEquals(kg, unitService.getUnit("kilogram"));
+  }
+
+  @Test
+  public void testGetUnitByAbbreviation() {
+    when(unitRepository.findByAbbreviation("kg")).thenReturn(java.util.Optional.ofNullable(kg));
+    assertEquals(kg, unitService.getUnitByAbbreviation("kg"));
+  }
 }

@@ -22,7 +22,7 @@ public enum Operator {
       Predicate predicate
     ) {
       Object value = request.getFieldType().parse(request.getValue().toString());
-      Expression<?> key = root.get(request.getKeyWord()).as(String.class);
+      Expression<?> key = root.get(request.getKeyWord());
       return builder.and(builder.equal(key, value), predicate);
     }
   },
