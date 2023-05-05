@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 public interface WeeklyRecipeRepository extends JpaRepository<WeeklyRecipe, WeeklyRecipeId> {
   /**
    * Finds all WeeklyRecipe recipes by the household id.
-   * @param householdId The id of the household.
+   * @param houseHoldId The id of the household.
    * @return A collection of recipes.
    */
   @Query("SELECT w FROM WeeklyRecipe w WHERE w.id.household.id = ?1")
@@ -27,7 +27,7 @@ public interface WeeklyRecipeRepository extends JpaRepository<WeeklyRecipe, Week
 
   /**
    * Finds all WeeklyRecipe recipes by the household id and the week.
-   * @param householdId The id of the household.
+   * @param houseHoldId The id of the household.
    * @param monday The monday of the week.
    * @return A collection of recipes.
    */

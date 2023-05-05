@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Interface for the recipe service.
- * @author Simen G. & Callum G.
+ * @author Simen G. Callum G.
  * @version 1.3 - 20.4.2023
  */
 @Service

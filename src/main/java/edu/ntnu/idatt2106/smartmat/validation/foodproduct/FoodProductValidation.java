@@ -63,6 +63,7 @@ public class FoodProductValidation extends BaseValidation {
    * @param name the name to validate
    * @param ean the EAN code to validate
    * @param amount the amount to validate
+   * @param looseWeight true if loose weight, false otherwise
    * @param ingredientId the ingredient ID to validate
    * @return true if the EAN code, name, amount and ingredient ID are valid, false otherwise
    */
@@ -83,13 +84,13 @@ public class FoodProductValidation extends BaseValidation {
 
   /**
    * Validates the update of a food product
-   * Checks if the EAN code, name, amount and ingredient ID are valid
+   * Checks if the EAN code, name, amount and loose weight are valid
    * @param id the ID of the food product to update
    * @param name the name to validate
    * @param ean the EAN code to validate
    * @param amount the amount to validate
-   * @param ingredientId the ingredient ID to validate
-   * @return true if the EAN code, name, amount and ingredient ID are valid, false otherwise
+   * @param looseWeight true if loose weight, false otherwise
+   * @return true if the EAN code, name, amount and loose weight are valid, false otherwise
    */
   public static boolean validateUpdateFoodProduct(
     Long id,
@@ -163,6 +164,7 @@ public class FoodProductValidation extends BaseValidation {
    * @param foodProductId the food product id to validate
    * @param expirationDate the expiration date to validate
    * @param amountLeft the amount left to validate
+   * @return true if the food product id, expiration date and amount left are valid, false otherwise
    */
   public static boolean validateUpdateHouseholdFoodProduct(
     Long foodProductId,

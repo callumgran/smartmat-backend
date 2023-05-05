@@ -94,7 +94,7 @@ public class HouseholdController {
    * @param id The id of the household.
    * @return 200 if the household was found and the household.
    * @throws UserDoesNotExistsException If the user does not exist.
-   * @throws HouseholdDoesNotExistsException If the household does not exist.
+   * @throws HouseholdNotFoundException If the household does not exist.
    * @throws PermissionDeniedException If the user does not have permission to access the household.
    * @throws NullPointerException If the id is null.
    */
@@ -219,7 +219,7 @@ public class HouseholdController {
   /**
    * Method to delete a household.
    * @param auth The authenticated user.
-   * @param householdId The id of the household.
+   * @param id The id of the household.
    * @return 204 No Content.
    * @throws NullPointerException If the household does not exist.
    * @throws PermissionDeniedException If the user does not have permission to delete the household.
@@ -289,7 +289,7 @@ public class HouseholdController {
   /**
    * Method to add a user to a household.
    * @param auth The authentication object.
-   * @param householdId The id of the household.
+   * @param id The id of the household.
    * @param username The username of the user to add.
    * @return 201 Created if the user was added to the household and the household member.
    * @throws NullPointerException If any value are null.
@@ -336,12 +336,13 @@ public class HouseholdController {
   /**
    * Method to remove a user from a household.
    * @param auth The authentication object.
-   * @param householdId The id of the household.
+   * @param id The id of the household.
    * @param username The username of the user to remove.
    * @return 204 No Content.
    * @throws NullPointerException If any value are null.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws PermissionDeniedException If the user does not have permission to remove a user from the household.
    */
   @DeleteMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -379,13 +380,14 @@ public class HouseholdController {
   /**
    * Method to update the role of a user in a household.
    * @param auth The auth of the user.
-   * @param householdId The id of the household.
+   * @param id The id of the household.
    * @param username The username of the user to update.
    * @param householdRole The new role of the user.
    * @return 200 OK if the user was updated.
    * @throws NullPointerException If any value are null.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws PermissionDeniedException If the user does not have permission to update the user.
    */
   @PutMapping(value = "/{id}/user/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
@@ -710,7 +712,7 @@ public class HouseholdController {
    * Method to get the shopping list items needed for a household
    * based on the weekly recipes for a specific week.
    * @param auth The authentication of the user.
-   * @param householdId The id of the household.
+   * @param id The id of the household.
    * @param monday The monday date of the weekly recipe.
    * @return 200 OK if the shopping list items were found.
    * @throws NullPointerException If any values are null.

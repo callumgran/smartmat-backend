@@ -6,8 +6,7 @@ import lombok.Data;
 /**
  * A response object for exceptions
  * that are not handled.
- * Detail is a message about why the exception occured.
- *
+ * Detail is a message about why the exception occurred.
  * @author Carl. G
  * @version 1.0 - 18.04.2023
  */

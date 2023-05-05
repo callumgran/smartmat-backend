@@ -96,7 +96,8 @@ public class FoodProductHistoryController {
   /**
    * Method for updating a single stat entry for a food product.
    * @param auth The auth object of the user.
-   * @param foodProductId The id of the food product.
+   * @param foodProductHistoryId The id of the food product.
+   * @param updateFoodHistoryDTO The updated food product history.
    * @return 200 OK if successful.
    * @throws PermissionDeniedException If the user is not an admin or a privilege of the household.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
@@ -291,6 +292,7 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the total waste for a household.
+   * @param auth The auth object of the user.
    * @param householdId The id of the household.
    * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
@@ -317,6 +319,7 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the total waste for a household.
+   * @param auth The auth object of the user.
    * @param householdId The id of the household.
    * @param year The year to get the total waste for.
    * @return A response entity with the total waste and 200 OK.
@@ -351,6 +354,7 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the total waste for a household.
+   * @param auth The auth object of the user.
    * @param householdId The id of the household.
    * @param year The year to get the total waste for.
    * @param month The month to get the total waste for.
@@ -388,8 +392,9 @@ public class FoodProductHistoryController {
   /**
    * Method for getting the total waste for a household.
    * @param householdId The id of the household.
-   * @param year The year to get the total waste for.
-   * @param month The month to get the total waste for.
+   * @param auth The authentication principal.
+   * @param startDate The start date to get the total waste for.
+   * @param endDate The end date to get the total waste for.
    * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
@@ -397,7 +402,7 @@ public class FoodProductHistoryController {
    * @throws BadInputException If the start date is after the end date or if the start date is after today.
    * @throws NullPointerException If the household id is null.
    */
-  @GetMapping("/household/{householdId}/by-month/{startDate}:{endDate}")
+  @GetMapping("/household/{householdId}/by-month/{startDate}/{endDate}")
   @Operation(
     summary = "Get the total waste for a household.",
     description = "Returns the total waste for a household for a month. If the user is not an admin, the householdId must be the id of the household the user is a member of.",

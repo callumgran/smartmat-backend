@@ -124,7 +124,7 @@ public class FoodProductServiceImpl implements FoodProductService {
 
   /**
    * Get an ingredient as a FoodProduct from the database by its id.
-   * @param id The id of the Ingredient to be retrieved.
+   * @param ingredient The ingredient to be retrieved.
    * @return The retrieved FoodProduct.
    * @throws NullPointerException If the id is null.
    */

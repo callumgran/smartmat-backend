@@ -178,8 +178,8 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to check if a user is the owner of a household.
-   * @param householdId The UUID of the respective household.
-   * @param userId The UUID of the respective user.
+   * @param id The UUID of the respective household.
+   * @param username The username of the respective user.
    * @return True if the user is the owner, false otherwise.
    * @throws NullPointerException if the household or user is null.
    * @throws HouseholdNotFoundException if the household is not found.
@@ -193,11 +193,12 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to check if a user is a member of a household.
-   * @param householdId The UUID of the respective household.
-   * @param userId The UUID of the respective user.
+   * @param username The username of the respective user.
+   * @param id The UUID of the respective user.
    * @return True if the user is a member, false otherwise.
    * @throws NullPointerException if the household or user is null.
    * @throws HouseholdNotFoundException if the household is not found.
+   * @throws UserDoesNotExistsException if the suer does not exist.
    */
   @Override
   public boolean isHouseholdMember(@NonNull UUID id, @NonNull String username)
@@ -210,8 +211,8 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to check if a user is a member of a household with a specific role.
-   * @param householdId The UUID of the respective household.
-   * @param userId The UUID of the respective user.
+   * @param id The UUID of the respective household.
+   * @param username The username of the respective user.
    * @param role The role to filter by.
    * @return True if the user is a member with the role, false otherwise.
    * @throws NullPointerException if the household or user is null.
@@ -231,7 +232,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to remove a user from a household.
-   * @param householdId The UUID of the respective household.
+   * @param id The UUID of the respective household.
    * @param username The username of the respective user.
    * @throws NullPointerException if the household or user is null.
    * @throws HouseholdNotFoundException if the household is not found.
@@ -247,7 +248,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to delete all members of a household.
-   * @param householdId The UUID of the respective household.
+   * @param id The UUID of the respective household.
    * @throws NullPointerException if the household is null.
    * @throws HouseholdNotFoundException if the household is not found.
    */
@@ -274,7 +275,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to add a user to a household.
-   * @param householdId The UUID of the respective household.
+   * @param id The UUID of the respective household.
    * @param username The username of the respective user.
    * @param role The role of the user in the household.
    * @return The household member.
@@ -297,7 +298,7 @@ public class HouseholdServiceImpl implements HouseholdService {
 
   /**
    * Method to update a household member.
-   * @param householdId The UUID of the respective household.
+   * @param id The UUID of the respective household.
    * @param username The username of the respective user.
    * @param role The new role of the user in the household.
    * @return The household member.

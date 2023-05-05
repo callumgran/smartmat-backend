@@ -83,7 +83,7 @@ public interface HouseholdRepository extends JpaRepository<Household, UUID> {
   Optional<Collection<Household>> findAllByUsername(@NonNull String username);
 
   /**
-   * Find a householdmember by its household and user.
+   * Find a household member by its household and user.
    * @param id The id of the household.
    * @param username The username of the user.
    * @return The household member.

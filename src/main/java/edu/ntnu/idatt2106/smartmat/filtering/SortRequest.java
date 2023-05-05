@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Base class for all sort requests.
- * @see https://blog.piinalpin.com/2022/04/searching-and-filtering-using-jpa-specification/
+ * @see <a href="https://blog.piinalpin.com/2022/04/searching-and-filtering-using-jpa-specification/">Piinalpin</a>
  * @author Callum G.
  * @version 1.0 - 18.3.2023
  */

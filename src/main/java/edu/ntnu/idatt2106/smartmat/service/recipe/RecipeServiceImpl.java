@@ -30,7 +30,7 @@ import org.zalando.fauxpas.FauxPas;
 /**
  * Implementation of the recipe service.
  * This class is responsible for all logic related to recipes.
- * @author Simen G. & Callum G.
+ * @author Simen G. Callum G.
  * @version 1.2 - 25.04.2023
  */
 @Service
@@ -137,7 +137,6 @@ public class RecipeServiceImpl implements RecipeService {
   /**
    * Method to delete a recipe with the specified id from the repository.
    * @param id the id of the recipe to delete.
-   * @return true if the recipe was deleted successfully, false otherwise.
    */
   @Override
   public void deleteRecipeById(@NonNull UUID id)

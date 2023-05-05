@@ -46,7 +46,7 @@ public interface RecipeMapper {
 
   /**
    * Maps an ingredientDTO to an ingredient.
-   * @param ingredientDTO The ingredientDTO to be mapped.
+   * @param ingredientDTOs The ingredientDTOs to be mapped.
    * @return The mapped ingredient.
    */
   @Named("ingredientDTOsToIngredients")
@@ -61,7 +61,7 @@ public interface RecipeMapper {
 
   /**
    * Maps an ingredient to an ingredientDTO.
-   * @param ingredient The ingredient to be mapped.
+   * @param ingredients The ingredients to be mapped.
    * @return The mapped ingredientDTO.
    */
   @Named("ingredientsToIngredientDTOs")

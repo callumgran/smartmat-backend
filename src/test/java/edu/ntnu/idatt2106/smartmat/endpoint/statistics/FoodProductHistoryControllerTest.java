@@ -297,7 +297,7 @@ public class FoodProductHistoryControllerTest {
           BASE_URL +
           "/household/" +
           foodProductHistory.getHousehold().getId() +
-          "/by-month/2021-04-01:2021-05-01"
+          "/by-month/2021-04-01/2021-05-01"
         )
           .with(authentication(createAuthenticationToken(user)))
       )

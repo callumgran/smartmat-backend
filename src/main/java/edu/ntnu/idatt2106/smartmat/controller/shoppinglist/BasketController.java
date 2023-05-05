@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Rest controller for shopping list items.
  * Handles requests from the client, and sends the response back to the client.
  * Handles all requests related to shopping list items.
- * @auther Callum G.
+ * @author Callum G.
  * @version 1.1 - 05.05.2023
  */
 @RestController
@@ -204,6 +204,7 @@ public class BasketController {
    * @param auth The auth object of the user.
    * @param basketId The id of the basket to add the item to.
    * @param customFoodProductId The custom item to add to the basket.
+   * @return 201 CREATED if the item was added to the basket.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws BasketNotFoundException If the basket does not exist.
@@ -304,11 +305,13 @@ public class BasketController {
    * @param auth The auth object of the user.
    * @param basketId The id of the basket to remove the item from.
    * @param basketItemId The id of the custom item to remove from the basket.
+   * @return 204 NO CONTENT if the item was removed from the basket.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
    * @throws BasketNotFoundException If the basket does not exist.
    * @throws PermissionDeniedException If the user does not have permission to remove an item from the basket.
    * @throws NullPointerException If the householdId is null.
+   * @throws ShoppingListItemNotFoundException If the shopping list item does not exist.
    */
   @DeleteMapping("/{basketId}/custom-item/{basketItemId}")
   @Operation(

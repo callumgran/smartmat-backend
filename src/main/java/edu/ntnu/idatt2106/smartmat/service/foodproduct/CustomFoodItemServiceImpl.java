@@ -54,7 +54,7 @@ public class CustomFoodItemServiceImpl implements CustomFoodItemService {
    * @param customFoodItem custom food item.
    * @return the updated custom food item.
    * @throws NullPointerException if any values are null.
-   * @throws ShoppingListNotFoundException if shopping list does not exist.
+   * @throws ShoppingListItemNotFoundException if shopping list item does not exist.
    */
   public CustomFoodItem updateCustomFoodItem(@NonNull CustomFoodItem customFoodItem)
     throws NullPointerException, ShoppingListItemNotFoundException {

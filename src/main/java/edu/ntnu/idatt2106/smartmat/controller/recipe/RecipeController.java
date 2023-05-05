@@ -317,9 +317,10 @@ public class RecipeController {
    * @return A response entity with status code 200.
    * @throws PermissionDeniedException If the user does not have permission to use a recipe.
    * @throws RecipeNotFoundException If the recipe does not exist.
-   * @throws HouseNotFoundException If the house does not exist.
+   * @throws HouseholdNotFoundException If the house does not exist.
    * @throws BadInputException If the recipe use request is invalid.
    * @throws NullPointerException If any of the parameters are null.
+   * @throws UserDoesNotExistsException If the user does not exist.
    */
   @PatchMapping(
     value = "/{id}/use",

@@ -28,7 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * If an invalid token is found, the user is unauthenticated.
  * If no token is found, the user is unauthenticated.
  * Based on the JwtAuthenticationFilter from the IDATT2105 project.
- * @author Thomas S. & Callum G.
+ * @author Thomas S. Callum G.
  * @version 1.0 - 17.04.2023
  */
 @Component

@@ -5,6 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data transfer object for Kassal api.
+ * @author Tobias O.
+ * @version 1.0 - 01.05.2023
+ */
 @Data
 @AllArgsConstructor
 @Builder

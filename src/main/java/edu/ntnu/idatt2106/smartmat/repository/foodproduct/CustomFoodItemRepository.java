@@ -16,10 +16,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CustomFoodItemRepository extends JpaRepository<CustomFoodItem, UUID> {
   /**
-   * Checks if a custom food item item exists in a shopping list in a which is connected to a household.
-   * @param id The id of the shopping list item.
-   * @param householdId The id of the household.
-   * @return True if the shopping list item exists in the household, false otherwise.
+   * Checks if a collection of custom food items have the specified id and shopping list id
+   * @param id The id of the custom food item.
+   * @param shoppingListId The id of the shopping list.
+   * @return A collection of custom food items.
    */
   @Query("SELECT cfi FROM CustomFoodItem cfi WHERE cfi.id = ?1 AND cfi.shoppingList.id = ?2")
   Optional<Collection<CustomFoodItem>> findByIdInShoppingList(UUID id, UUID shoppingListId);

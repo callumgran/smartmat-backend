@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 /**
  * Implementation of the shopping list item service.
  * The class is responsible for all business logic related to shopping list items.
- * @author Carl G. & Callum G.
+ * @author Carl G. Callum G.
  * @version 1.2 - 26.04.2023.
  */
 @Service
@@ -24,7 +24,6 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
 
   /**
    * Method to check if a shopping list item exists in a shopping list.
-   * @param shoppingListId the shopping list id.
    * @param id the id of the item.
    * @return true if the item exists in the shopping list.
    * @throws NullPointerException if any values are null.
@@ -65,7 +64,6 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
 
   /**
    * Method to delete a shopping list item in shopping list.
-   * @param shoppingListId the shopping list id.
    * @param id the id of the item being deleted.
    * @throws NullPointerException if any values are null.
    * @throws ShoppingListItemNotFoundException if shopping list does not exist.

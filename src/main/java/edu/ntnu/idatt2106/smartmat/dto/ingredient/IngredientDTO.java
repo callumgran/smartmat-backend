@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 /**
  * Class representing an ingredientDTO.
- * @author Tobias. O & Callum G.
+ * @author Tobias. O, Callum G.
  * @version 1.1 - 21.04.2023
  */
 @Data
