@@ -117,7 +117,7 @@ public class CustomFoodProductControllerTest {
               "}"
             )
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated());
     } catch (Exception e) {
       fail();
     }
@@ -153,7 +153,7 @@ public class CustomFoodProductControllerTest {
               "}"
             )
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated());
     } catch (Exception e) {
       fail();
     }
@@ -254,7 +254,7 @@ public class CustomFoodProductControllerTest {
               "}"
             )
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated());
     } catch (Exception e) {
       fail();
     }

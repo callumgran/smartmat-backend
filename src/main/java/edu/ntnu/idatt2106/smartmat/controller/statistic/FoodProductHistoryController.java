@@ -37,6 +37,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling requests for food product stats.
+ * @author Callum G.
+ * @version 1.3 05.05.2023
+ */
 @RestController
 @RequestMapping(value = "/api/v1/private/stats")
 @RequiredArgsConstructor
@@ -50,7 +55,7 @@ public class FoodProductHistoryController {
    * Method for getting a single stat entry for a food product.
    * @param auth The auth object of the user.
    * @param foodProductHistoryId The id of the food product history.
-   * @return The food product stats.
+   * @return 200 OK if successful.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
@@ -89,11 +94,11 @@ public class FoodProductHistoryController {
   }
 
   /**
-   * Method for getting all stat entries for a food product.
+   * Method for updating a single stat entry for a food product.
    * @param auth The auth object of the user.
    * @param foodProductId The id of the food product.
-   * @return A list of food product stats.
-   * @throws PermissionDeniedException If the user is not an admin or a member of the household.
+   * @return 200 OK if successful.
+   * @throws PermissionDeniedException If the user is not an admin or a privilege of the household.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -102,7 +107,7 @@ public class FoodProductHistoryController {
   @PutMapping("/{foodProductHistoryId}")
   @Operation(
     summary = "Update a single stat entry for a food product.",
-    description = "Updates a single stat entry for a food product. Requires admin access or household member access.",
+    description = "Updates a single stat entry for a food product. Requires admin access or household privileged access.",
     tags = { "stats" }
   )
   public ResponseEntity<FoodProductHistoryDTO> updateFoodProductHistory(
@@ -115,7 +120,7 @@ public class FoodProductHistoryController {
       foodProductHistoryId
     );
     if (
-      !PrivilegeUtil.isAdminOrHouseholdMember(
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
         auth,
         foodProductHistory.getHousehold().getId(),
         householdService
@@ -147,7 +152,7 @@ public class FoodProductHistoryController {
    * @param auth The auth object of the user.
    * @param foodProductHistoryId The id of the food product history.
    * @return A response entity with 204 no content.
-   * @throws PermissionDeniedException If the user is not an admin or a member of the household.
+   * @throws PermissionDeniedException If the user is not an admin or a privilege of the household.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -156,7 +161,7 @@ public class FoodProductHistoryController {
   @DeleteMapping("/{foodProductHistoryId}")
   @Operation(
     summary = "Delete a single stat entry for a food product.",
-    description = "Deletes a single stat entry for a food product. Requires admin access or household member access.",
+    description = "Deletes a single stat entry for a food product. Requires admin access or household privilege access.",
     tags = { "stats" }
   )
   public ResponseEntity<Void> deleteFoodProductHistory(
@@ -168,7 +173,7 @@ public class FoodProductHistoryController {
       foodProductHistoryId
     );
     if (
-      !PrivilegeUtil.isAdminOrHouseholdMember(
+      !PrivilegeUtil.isAdminOrHouseholdPrivileged(
         auth,
         foodProductHistory.getHousehold().getId(),
         householdService
@@ -184,8 +189,9 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the stats and history of a food product.
+   * @param auth The auth object of the user.
    * @param foodProductId The id of the food product.
-   * @return The history of the food product.
+   * @return A response entity with a collection of food product history dtos and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
    */
@@ -214,9 +220,10 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the stats and history of a food product.
+   * @param auth The auth object of the user.
    * @param foodProductId The id of the food product.
    * @param householdId The id of the household.
-   * @return The history of the food product.
+   * @return 200 OK if successful.
    * @throws PermissionDeniedException If the user is not an admin.
    * @throws FoodProductHistoryNotFoundException If the food product history does not exist.
    * @throws UserDoesNotExistsException If the user does not exist.
@@ -250,8 +257,9 @@ public class FoodProductHistoryController {
 
   /**
    * Method for getting the stats and history of all food products for a household.
+   * @param auth The auth object of the user.
    * @param householdId The id of the household.
-   * @return The history of food products.
+   * @return A response entity with a collection of food product history dtos and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -284,7 +292,7 @@ public class FoodProductHistoryController {
   /**
    * Method for getting the total waste for a household.
    * @param householdId The id of the household.
-   * @return The total waste for a household.
+   * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -311,7 +319,7 @@ public class FoodProductHistoryController {
    * Method for getting the total waste for a household.
    * @param householdId The id of the household.
    * @param year The year to get the total waste for.
-   * @return The total waste for a household.
+   * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -346,7 +354,7 @@ public class FoodProductHistoryController {
    * @param householdId The id of the household.
    * @param year The year to get the total waste for.
    * @param month The month to get the total waste for.
-   * @return The total waste for a household.
+   * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
@@ -382,10 +390,11 @@ public class FoodProductHistoryController {
    * @param householdId The id of the household.
    * @param year The year to get the total waste for.
    * @param month The month to get the total waste for.
-   * @return The total waste for a household.
+   * @return A response entity with the total waste and 200 OK.
    * @throws PermissionDeniedException If the user is not an admin or a member of the household.
    * @throws UserDoesNotExistsException If the user does not exist.
    * @throws HouseholdNotFoundException If the household does not exist.
+   * @throws BadInputException If the start date is after the end date or if the start date is after today.
    * @throws NullPointerException If the household id is null.
    */
   @GetMapping("/household/{householdId}/by-month/{start-date}:{end-date}")

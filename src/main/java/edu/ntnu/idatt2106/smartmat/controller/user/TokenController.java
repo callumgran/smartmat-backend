@@ -28,7 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
  * Controller for generating JWT tokens.
  * Based on the TokenController from the IDATT2105 project.
  * @author Thomas S., Callum G.
- * @version 1.1 - 17.04.2023
+ * @version 1.2 - 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/public/token")
@@ -52,6 +52,7 @@ public class TokenController {
    * @return The generated token.
    * @throws UserDoesNotExistsException if the user does not exist.
    * @throws WrongPasswordException if the user credentials are wrong.
+   * @throws ResponseStatusException if the user credentials are wrong.
    */
   @PostMapping(value = "")
   @Operation(

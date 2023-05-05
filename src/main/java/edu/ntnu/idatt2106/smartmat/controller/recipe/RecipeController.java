@@ -47,9 +47,9 @@ import org.zalando.fauxpas.ThrowingFunction;
 
 /**
  * Controller for recipe.
- *
- * @author Simen J. G, Nicolai H. Brand., Carl G.
- * @version 1.2 26.03.2020
+ * Handles requests for creating, updating, deleting and getting recipes.
+ * @author Simen J. G, Nicolai H. Brand., Carl G., Callum G.
+ * @version 1.3 05.05.2023
  */
 @RestController
 @RequestMapping(value = "/api/v1/private/recipes")
@@ -64,10 +64,10 @@ public class RecipeController {
 
   /**
    * Method to get all recipes.
-   * @return A collection of recipes.
+   * @return 200 OK with a collection of recipes.
    */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "Get all recipes", description = "Get all recipes.", tags = { "recipe" })
+  @Operation(summary = "Method ", description = "Get all recipes.", tags = { "recipe" })
   public ResponseEntity<Collection<RecipeDTO>> getAllRecipes() {
     LOGGER.info("GET request for all recipes");
     Collection<Recipe> recipes = recipeService.findAllRecipes();
@@ -83,6 +83,7 @@ public class RecipeController {
 
   /**
    * Method for searching recipes.
+   * @param name The name of the recipe.
    * @return A collection of recipes.
    */
   @GetMapping(value = "/search/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -118,7 +119,7 @@ public class RecipeController {
     Recipe recipe = recipeService.findRecipeById(UUID.fromString(id));
 
     if (recipe == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      throw new RecipeNotFoundException();
     }
 
     RecipeDTO recipeDTO = RecipeMapper.INSTANCE.recipeToRecipeDTO(recipe);
@@ -131,7 +132,8 @@ public class RecipeController {
   /**
    * Creates a recipe.
    * @param recipeDTO The recipe to create.
-   * @return The created recipe.
+   * @param auth The auth of the user.
+   * @return 201 Created with the created recipe.
    * @throws PermissionDeniedException If the user does not have permission to create a recipe.
    * @throws RecipeAlreadyExistsException If the recipe already exists.
    */
@@ -141,7 +143,7 @@ public class RecipeController {
   )
   @Operation(
     summary = "Create a recipe",
-    description = "Create a recipe. Requires valid JWT token in header.",
+    description = "Create a recipe. Requires valid JWT token in header with role ADMIN.",
     tags = { "recipe" }
   )
   public ResponseEntity<RecipeDTO> createRecipe(
@@ -187,7 +189,8 @@ public class RecipeController {
    * Updates a recipe with the given id.
    * @param id The id of the recipe to update.
    * @param recipeDTO The recipe to update.
-   * @return The updated recipe.
+   * @param auth The auth of the user.
+   * @return 200 OK with the updated recipe.
    * @throws PermissionDeniedException If the user does not have permission to update a recipe.
    * @throws RecipeNotFoundException If the recipe does not exist.
    * @throws NullPointerException If any of the parameters are null.
@@ -200,7 +203,7 @@ public class RecipeController {
   @Operation(
     summary = "Update a recipe",
     description = "Update a recipe with the given id." +
-    " The id in the path must match the id in the request body.",
+    " The id in the path must match the id in the request body. Requires valid JWT token in header with role ADMIN.",
     tags = { "recipe" }
   )
   public ResponseEntity<RecipeDTO> updateRecipe(
@@ -245,6 +248,7 @@ public class RecipeController {
   /**
    * Deletes a recipe with the given id.
    * @param id The id of the recipe to delete.
+   * @param auth The auth of the user.
    * @return A response entity with status code 204.
    * @throws PermissionDeniedException If the user does not have permission to delete a recipe.
    * @throws RecipeNotFoundException If the recipe does not exist.
@@ -271,7 +275,9 @@ public class RecipeController {
   /**
    * Method for searching recipes.
    * @param searchRequest The search request.
-   * @return A collection of recipes.
+   * @return 200 OK with a collection of recipes.
+   * @throws BadInputException If the search request is invalid.
+   * @throws NullPointerException If the search request is null.
    */
   @PostMapping(
     value = "/search",
@@ -307,6 +313,7 @@ public class RecipeController {
    * Method for using a recipe to use ingredients.
    * @param id The id of the recipe to use.
    * @param recipeUseDTO The recipe use request.
+   * @param auth The auth of the user.
    * @return A response entity with status code 200.
    * @throws PermissionDeniedException If the user does not have permission to use a recipe.
    * @throws RecipeNotFoundException If the recipe does not exist.
@@ -314,7 +321,7 @@ public class RecipeController {
    * @throws BadInputException If the recipe use request is invalid.
    * @throws NullPointerException If any of the parameters are null.
    */
-  @PutMapping(
+  @PatchMapping(
     value = "/{id}/use",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE
@@ -350,6 +357,7 @@ public class RecipeController {
 
   /**
    * Method for getting the shopping list items for a recipe.
+   * @param auth The auth of the user.
    * @param id The id of the recipe to get shopping list items for.
    * @param householdId The id of the household to get shopping list items for.
    * @param portions The number of portions to get shopping list items for.
@@ -366,7 +374,7 @@ public class RecipeController {
   )
   @Operation(
     summary = "Gets the shopping list items for a household from a recipe",
-    description = "Gets the shopping list items for a household from a recipe. Requires authentication.",
+    description = "Gets the shopping list items for a household from a recipe. Requires admin or household privilege. Requires valid JWT token in header.",
     tags = { "recipe" }
   )
   public ResponseEntity<Collection<RecipeShoppingListItemDTO>> getShoppingListItems(

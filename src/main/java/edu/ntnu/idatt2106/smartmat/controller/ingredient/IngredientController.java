@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for public ingredient endpoints.
- * @author Tobias O.
- * @version 1.0 - 20.04.2023
+ * @author Tobias O. Callum G.
+ * @version 1.1 - 05.05.2023
  */
 @RestController
 @RequestMapping("/api/v1/public/ingredients")
@@ -43,8 +43,9 @@ public class IngredientController {
   /**
    * Get an ingredient by ID.
    * @param id long ID of the ingredient.
+   * @return 200 OK with the ingredient.
    * @throws NullPointerException if the ingredient is not found.
-   * @return the ingredient.
+   * @throws IngredientNotFoundException if the ingredient is not found.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<IngredientDTO> getIngredient(@PathVariable long id)
@@ -63,8 +64,9 @@ public class IngredientController {
   /**
    * Get ingredients by a search request
    * @param searchRequest search request which contains page size, page, sorting and filtering
-   * @return a list of ingredients which match the search request.
+   * @return 200 OK with a list of ingredients.
    * @throws BadInputException if the search request is invalid.
+   * @throws NullPointerException if the search request is invalid.
    */
   @PostMapping(
     value = "/search",
@@ -78,10 +80,11 @@ public class IngredientController {
   )
   public ResponseEntity<Collection<IngredientDTO>> searchIngredients(
     @RequestBody SearchRequest searchRequest
-  ) throws BadInputException {
+  ) throws BadInputException, NullPointerException {
     if (!SearchRequestValidation.validateSearchRequest(searchRequest)) throw new BadInputException(
       "Ugyldig søkeforespørsel"
     );
+
     LOGGER.info("POST request for recipes by search request: {}", searchRequest);
 
     List<IngredientDTO> ingredients = ingredientService
