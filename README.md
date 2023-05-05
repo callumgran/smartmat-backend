@@ -25,6 +25,10 @@ For å kjøre programmet trenger du:
 - Docker
 - Docker-compose
 
+#### Om du ikke har vil laste ned Make
+
+Se i Makefile å kjør kommandoene selv.
+
 ### Installasjon og kjøre opp lokalt fra terminalen
 
 1. Klon repositoriet
@@ -60,6 +64,19 @@ For å kjøre programmet trenger du:
 - `make compile` - Kompilerer kildekoden
 - `make prettier` - Formatterer kildekoden
 - `make clean` - Sletter `target` mappen
+
+### Test brukere
+Admin member
+- Brukernavn: admin
+- Passord: admin
+
+Privilage member:
+- Brukernavn: privileged
+- Passord: privileged
+
+Normal member
+- Brukernavn: member
+- Passord: member
 
 ## Kontakt
 
