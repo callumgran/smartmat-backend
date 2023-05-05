@@ -395,4 +395,24 @@ public class ShoppingListServiceTest {
     assertTrue(2 == shoppingListItems.get(1).getAmount());
     assertTrue(4 == shoppingListItems.get(2).getAmount());
   }
+
+  @Test
+  public void deleteAllShoppingListItems() throws Exception {
+    when(shoppingListRepository.existsById(shoppingList.getId())).thenReturn(true);
+    doNothing()
+      .when(shoppingListRepository)
+      .deleteShoppingListItemsByShoppingList(shoppingList.getId());
+    assertDoesNotThrow(() -> shoppingListService.deleteAllShoppingListItems(shoppingList.getId()));
+  }
+
+  @Test
+  public void deleteAllShoppingListItemsNonExistingShoppingList() {
+    when(shoppingListRepository.existsById(shoppingList.getId())).thenReturn(false);
+    assertThrows(
+      ShoppingListNotFoundException.class,
+      () -> {
+        shoppingListService.deleteAllShoppingListItems(shoppingList.getId());
+      }
+    );
+  }
 }

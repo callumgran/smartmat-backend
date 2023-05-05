@@ -397,7 +397,7 @@ public class FoodProductHistoryController {
    * @throws BadInputException If the start date is after the end date or if the start date is after today.
    * @throws NullPointerException If the household id is null.
    */
-  @GetMapping("/household/{householdId}/by-month/{start-date}:{end-date}")
+  @GetMapping("/household/{householdId}/by-month/{startDate}:{endDate}")
   @Operation(
     summary = "Get the total waste for a household.",
     description = "Returns the total waste for a household for a month. If the user is not an admin, the householdId must be the id of the household the user is a member of.",

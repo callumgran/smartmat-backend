@@ -86,7 +86,7 @@ public enum UnitTypeEnum {
       case LIQUID:
         return 1 / fromNormalFormConversionFactor;
       case BY_PIECE:
-        return 1 / (4 * fromNormalFormConversionFactor);
+        return 4 / (fromNormalFormConversionFactor);
       default:
         return 1 / fromNormalFormConversionFactor;
     }

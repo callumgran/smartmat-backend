@@ -135,7 +135,7 @@ public class BasketServiceImpl implements BasketService {
   public void deleteBasketItem(@NonNull UUID itemId)
     throws BasketNotFoundException, NullPointerException {
     if (!basketItemRepository.existsById(itemId)) {
-      throw new BasketNotFoundException();
+      throw new BasketNotFoundException("Fant ikke handlekurv vare");
     }
     basketItemRepository.deleteById(itemId);
   }

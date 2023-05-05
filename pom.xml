@@ -226,6 +226,8 @@
 						<exclude>edu/ntnu/idatt2106/smartmat/dto/**/*</exclude>
 						<exclude>edu/ntnu/idatt2106/smartmat/exceptions/*</exclude>
 						<exclude>edu/ntnu/idatt2106/smartmat/exceptions/**/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/startup/*</exclude>
+						<exclude>edu/ntnu/idatt2106/smartmat/config/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
